@@ -1,0 +1,17 @@
+# Default owner for the Duesora repository
+* @Adarshkumar76
+
+# Repository configuration and GitHub workflows
+/.github/ @Adarshkumar76
+
+# Security-sensitive files
+/SECURITY.md @Adarshkumar76
+/LICENSE @Adarshkumar76
+/docs/SECURITY_ARCHITECTURE.md @Adarshkumar76
+/docs/AI_AGENT_INSTRUCTIONS.md @Adarshkumar76
+
+# Application code
+/apps/ @Adarshkumar76
+
+# Project documentation
+/docs/ @Adarshkumar76

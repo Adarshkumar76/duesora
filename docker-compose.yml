@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: duesora-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: duesora
+      POSTGRES_PASSWORD: duesora
+      POSTGRES_DB: duesora
+    ports:
+      - "5432:5432"
+    volumes:
+      - duesora_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  duesora_postgres_data:
