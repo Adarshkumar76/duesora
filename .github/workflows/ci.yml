@@ -37,6 +37,8 @@ jobs:
         run: npm ci
 
       - name: Check Drizzle migrations
+        env:
+          DATABASE_URL: postgresql://duesora:duesora@localhost:5432/duesora
         run: npx drizzle-kit check
 
       - name: Lint
