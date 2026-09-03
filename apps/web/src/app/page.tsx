@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -6,16 +6,10 @@ import { Badge } from "@/components/ui/badge";
 export default function Home() {
   return (
     <main className="min-h-screen bg-background flex items-center justify-center px-6">
-      <Card className="w-full max-w-2xl">
+      <Card className="w-full max-w-2xl border-border/60 shadow-xl shadow-black/5">
         <CardContent className="p-10 text-center">
           <div className="flex justify-center mb-6">
-            <Image
-              src="/logo.png"
-              alt="Duesora logo"
-              width={110}
-              height={110}
-              priority
-            />
+            <Logo size={100} withGlow className="drop-shadow-sm transition-transform hover:scale-105 duration-200" />
           </div>
 
           <Badge variant="secondary" className="mb-4">

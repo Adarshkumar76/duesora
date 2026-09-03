@@ -1,0 +1,21 @@
+{
+  "name": "duesora-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Know what you own. Know what's due.",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=apps/web",
+    "build": "npm run build --workspace=apps/web",
+    "start": "npm run start --workspace=apps/web",
+    "lint": "npm run lint --workspace=apps/web",
+    "test": "npm test --workspace=apps/web",
+    "generate:assets": "node apps/web/scripts/generate_all_assets.js"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "license": "Apache-2.0"
+}
