@@ -14,6 +14,7 @@ A free, open-source renewal, expiry, ownership, and recurring-cost management pl
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178c6?logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?logo=postgresql)](https://www.postgresql.org/)
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Donate-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/adarshk3113)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
 </div>
@@ -45,12 +46,13 @@ Surprise card charges and unexpected service outages occur because nobody knew:
 
 ---
 
-## 🎨 Design System & Mockups
+## 🎨 Design System & Specifications
 
-Duesora includes a complete 22-page desktop UI specification and design matrix:
+Duesora is built with a sleek, dark-mode-first aesthetic and WCAG AA accessibility compliance:
 
-- 📐 [Design System & UI Story Specifications](docs/assets/designs/README.md)
-- 🖼️ [High-Fidelity UI Mockups Directory](docs/assets/designs/mockups/)
+- 🎨 [Brand Guidelines & Visual System](docs/product/BRANDING.md)
+- ♿ [UX & Accessibility Standards](docs/product/UX_ACCESSIBILITY.md)
+- 📋 [Product Specifications](docs/product/PRODUCT.md)
 
 ---
 
@@ -146,6 +148,14 @@ Security is fundamental to Duesora. If you discover a vulnerability or security 
 ## 🤝 Contributing
 
 We welcome community contributions! Please check out our [Contributing Guidelines](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md) before submitting pull requests.
+
+---
+
+## ☕ Support & Sponsorship
+
+If Duesora helps you track your assets and prevent unexpected renewals, consider supporting its open-source development:
+
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Support%20Project-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/adarshk3113)
 
 ---
 

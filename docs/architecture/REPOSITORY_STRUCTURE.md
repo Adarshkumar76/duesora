@@ -14,7 +14,7 @@ duesora/
 ├── .github/
 │   └── workflows/
 ├── .env.example
-├── .env.local
+├── .env.local               # Local development environment (git-ignored)
 ├── docker-compose.yml
 ├── drizzle.config.ts
 ├── next.config.ts

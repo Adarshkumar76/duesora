@@ -26,7 +26,6 @@ Product philosophy, core features, roadmap, and visual design assets.
 - [Roadmap](product/ROADMAP.md) — Development milestones from Phase 0 foundation to v1.0
 - [Branding Guidelines](product/BRANDING.md) — Color palettes, typography, logos, tone of voice
 - [UX & Accessibility](product/UX_ACCESSIBILITY.md) — WCAG standards, keyboard navigation, responsiveness
-- [UI Mockups & Stories](assets/designs/README.md) — Complete 22-page desktop mockups and technical story matrix
 
 ---
 
@@ -79,7 +78,7 @@ Compliance, privacy standards, community governance, and self-hosted terms.
 Key community documents maintained directly at the project root:
 
 - [README.md](../README.md) — Project homepage, quickstart, overview, and features
-- [LICENSE](../LICENSE) — Apache 2.0 / MIT Open Source License
+- [LICENSE](../LICENSE) — MIT License
 - [SECURITY.md](../SECURITY.md) — Vulnerability reporting policy and security disclosures
 - [SUPPORT.md](../SUPPORT.md) — Community support channels and troubleshooting
 - [TRADEMARK.md](../TRADEMARK.md) — Brand and trademark guidelines

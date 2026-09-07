@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { stripHtml, sanitizeString, isSafeUrl } from "../security/sanitize";
 
 export const resourceTypeSchema = z.enum([
   "domain",
@@ -16,31 +17,52 @@ export const resourceTypeSchema = z.enum([
 export const createResourceSchema = z.object({
   name: z
     .string()
-    .trim()
-    .min(1, "Name is required")
-    .max(200, "Name must be 200 characters or less"),
+    .transform((val) => stripHtml(val))
+    .pipe(
+      z
+        .string()
+        .min(1, "Name is required")
+        .max(200, "Name must be 200 characters or less")
+        .refine((val) => !/[<>]/.test(val), {
+          message: "Name cannot contain HTML or script characters",
+        }),
+    ),
 
   type: resourceTypeSchema,
 
   description: z
     .string()
-    .trim()
-    .max(2000, "Description must be 2000 characters or less")
+    .transform((val) => stripHtml(val))
+    .pipe(z.string().max(2000, "Description must be 2000 characters or less"))
     .nullable()
     .optional(),
 
   provider: z
     .string()
-    .trim()
-    .max(120, "Provider must be 120 characters or less")
+    .transform((val) => stripHtml(val))
+    .pipe(
+      z
+        .string()
+        .max(120, "Provider must be 120 characters or less")
+        .refine((val) => !/[<>]/.test(val), {
+          message: "Provider cannot contain HTML tags",
+        }),
+    )
     .nullable()
     .optional(),
 
   websiteUrl: z
     .string()
-    .trim()
-    .url("Website URL must be valid")
-    .max(2048)
+    .transform((val) => sanitizeString(val))
+    .pipe(
+      z
+        .string()
+        .url("Website URL must be valid")
+        .max(2048)
+        .refine((val) => isSafeUrl(val), {
+          message: "Website URL must use http or https protocol",
+        }),
+    )
     .nullable()
     .optional(),
 });

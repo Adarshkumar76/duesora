@@ -47,4 +47,8 @@ jobs:
         run: npm test
 
       - name: Build
+        env:
+          DATABASE_URL: postgresql://duesora:duesora@localhost:5432/duesora
+          REDIS_URL: redis://localhost:6379
+          AUTH_SECRET: ci-build-dummy-auth-secret-key-32-chars-long
         run: npm run build

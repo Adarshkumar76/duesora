@@ -32,10 +32,19 @@ describe("Environment Validation", () => {
     }
   });
 
-  it("fails on invalid URL for APP_URL", () => {
-    const parsed = envSchema.safeParse({
-      APP_URL: "not-a-valid-url",
+  it("fails in production when DATABASE_URL or REDIS_URL are missing", () => {
+    const missingDb = envSchema.safeParse({
+      NODE_ENV: "production",
+      APP_URL: "https://duesora.example.com",
+      REDIS_URL: "redis://localhost:6379",
     });
-    expect(parsed.success).toBe(false);
+    expect(missingDb.success).toBe(false);
+
+    const missingRedis = envSchema.safeParse({
+      NODE_ENV: "production",
+      APP_URL: "https://duesora.example.com",
+      DATABASE_URL: "postgresql://user:pass@localhost:5432/db",
+    });
+    expect(missingRedis.success).toBe(false);
   });
 });
