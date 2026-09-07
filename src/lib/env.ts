@@ -1,3 +1,4 @@
+import "server-only";
 import { z } from "zod";
 
 export const envSchema = z.object({
@@ -7,11 +8,11 @@ export const envSchema = z.object({
   APP_URL: z.string().url().default("http://localhost:3000"),
   DATABASE_URL: z
     .string()
-    .min(1, "DATABASE_URL is required")
+    .min(1, "DATABASE_URL must be a non-empty string")
     .default("postgresql://duesora:duesora@localhost:5432/duesora"),
   REDIS_URL: z
     .string()
-    .min(1)
+    .min(1, "REDIS_URL must be a non-empty string")
     .default("redis://localhost:6379"),
   AUTH_SECRET: z.string().optional(),
   NEXTAUTH_SECRET: z.string().optional(),

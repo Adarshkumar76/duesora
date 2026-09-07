@@ -48,7 +48,8 @@ export function Logo({
             width={height}
             height={height}
             fill="none"
-            aria-label="Duesora mark"
+            aria-hidden="true"
+            focusable="false"
             {...props}
           >
             <path d={DUESORA_MARK_PATH} fill={color} fillRule="evenodd" />
