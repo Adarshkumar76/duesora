@@ -1,7 +1,11 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# Plans, blueprints, and internal docs
 *.docx
-/assets/designs
+*implementation_plan*.md
+*.plan.md
+/internal/
+/docs/assets/designs
 
 # dependencies
 /node_modules

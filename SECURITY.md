@@ -54,4 +54,4 @@ link-local, private/internal ranges, metadata endpoints, and unsafe
 redirect chains unless an explicitly designed trusted-network mode
 exists.
 
-See `docs/SECURITY_ARCHITECTURE.md`.
+See `docs/architecture/SECURITY_ARCHITECTURE.md`.

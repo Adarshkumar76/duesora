@@ -1,32 +1,26 @@
 # Repository Structure
 
-Recommended monorepo:
+Duesora structure:
 
 ``` text
 duesora/
-├── apps/
-│   ├── web/                 # Next.js UI + HTTP API
-│   └── worker/              # background workers
-├── packages/
-│   ├── core/                # domain rules/use cases
-│   ├── database/            # schema, migrations, repositories
-│   ├── ui/                  # shared components
-│   ├── integrations/        # notification/monitor adapters
-│   ├── validation/          # shared schemas
-│   └── config/              # typed config
+├── src/                     # Next.js App Router, components, db & libraries
+├── public/                  # Static assets & brand icons
+├── drizzle/                 # Database migrations & schemas
 ├── docs/
 │   ├── adr/
+│   ├── assets/              # Design mockups, UI specs & assets
 │   └── ...
-├── tests/
-│   ├── integration/
-│   └── fixtures/
-├── docker/
-├── scripts/
 ├── .github/
-│   ├── ISSUE_TEMPLATE/
 │   └── workflows/
 ├── .env.example
+├── .env.local
 ├── docker-compose.yml
+├── drizzle.config.ts
+├── next.config.ts
+├── package.json
+├── package-lock.json
+├── tsconfig.json
 ├── README.md
 ├── CONTRIBUTING.md
 ├── SECURITY.md

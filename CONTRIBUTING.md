@@ -71,4 +71,4 @@ Code is not done until:
 -   docs are updated;
 -   migration/rollback impact is understood.
 
-See `docs/ENGINEERING_STANDARDS.md` and `docs/AI_AGENT_INSTRUCTIONS.md`.
+See `docs/development/ENGINEERING_STANDARDS.md`.
