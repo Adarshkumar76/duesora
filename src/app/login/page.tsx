@@ -19,7 +19,6 @@ function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -128,19 +127,6 @@ function LoginForm() {
                 )}
               </button>
             </div>
-          </div>
-
-          <div className="flex items-center space-x-2 pt-1">
-            <input
-              type="checkbox"
-              id="remember"
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-              className="w-4 h-4 rounded border-input text-primary focus:ring-primary focus:ring-offset-background"
-            />
-            <Label htmlFor="remember" className="text-xs text-muted-foreground cursor-pointer">
-              Remember this device for 30 days
-            </Label>
           </div>
 
           <Button

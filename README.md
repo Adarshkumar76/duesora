@@ -46,12 +46,13 @@ Surprise card charges and unexpected service outages occur because nobody knew:
 
 ---
 
-## 🎨 Design System & Mockups
+## 🎨 Design System & Specifications
 
-Duesora includes a complete 22-page desktop UI specification and design matrix:
+Duesora is built with a sleek, dark-mode-first aesthetic and WCAG AA accessibility compliance:
 
-- 📐 [Design System & UI Story Specifications](docs/assets/designs/README.md)
-- 🖼️ [High-Fidelity UI Mockups Directory](docs/assets/designs/mockups/)
+- 🎨 [Brand Guidelines & Visual System](docs/product/BRANDING.md)
+- ♿ [UX & Accessibility Standards](docs/product/UX_ACCESSIBILITY.md)
+- 📋 [Product Specifications](docs/product/PRODUCT.md)
 
 ---
 

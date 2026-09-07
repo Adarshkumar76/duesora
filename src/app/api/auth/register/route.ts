@@ -11,7 +11,7 @@ function generateSlug(name: string): string {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")
     .slice(0, 30);
-  const suffix = Math.random().toString(36).substring(2, 8);
+  const suffix = crypto.randomUUID().slice(0, 6);
   return `${sanitized || "workspace"}-${suffix}`;
 }
 

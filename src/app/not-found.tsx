@@ -1,8 +1,7 @@
 import Link from "next/link";
-import { ArrowLeft, Home, Compass, Coffee, ShieldAlert, Sparkles, BookOpen } from "lucide-react";
+import { Home, Compass, Coffee, Sparkles } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { BUY_ME_A_COFFEE_URL } from "@/lib/constants";
 
 export default function NotFound() {

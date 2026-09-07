@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { sanitizeString, stripHtml, sanitizeEmail } from "../security/sanitize";
+import { stripHtml, sanitizeEmail } from "../security/sanitize";
 
 export const registerSchema = z
   .object({

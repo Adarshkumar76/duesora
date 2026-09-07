@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-
+import { auth } from "@/auth";
 import {
   createWorkspaceResource,
   listWorkspaceResources,
@@ -13,10 +13,21 @@ export async function GET(
   context: { params: Promise<{ workspaceId: string }> },
 ) {
   try {
-    const { workspaceId } = await context.params;
+    const session = await auth();
+    if (!session?.user?.id) {
+      return Response.json(
+        {
+          error: {
+            code: "UNAUTHORIZED",
+            message: "Authentication required to access workspace resources",
+          },
+        },
+        { status: 401 },
+      );
+    }
 
-    // Temporary until real authentication is added
-    const userId = "TEMP_USER_ID";
+    const { workspaceId } = await context.params;
+    const userId = session.user.id;
 
     const resources = await listWorkspaceResources(userId, workspaceId);
 
@@ -53,10 +64,21 @@ export async function POST(
   context: { params: Promise<{ workspaceId: string }> },
 ) {
   try {
-    const { workspaceId } = await context.params;
+    const session = await auth();
+    if (!session?.user?.id) {
+      return Response.json(
+        {
+          error: {
+            code: "UNAUTHORIZED",
+            message: "Authentication required to create workspace resources",
+          },
+        },
+        { status: 401 },
+      );
+    }
 
-    // Temporary until real authentication is added
-    const userId = "TEMP_USER_ID";
+    const { workspaceId } = await context.params;
+    const userId = session.user.id;
 
     const body = await request.json();
 
