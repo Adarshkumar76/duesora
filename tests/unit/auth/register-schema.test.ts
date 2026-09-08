@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { registerSchema } from "./register-schema";
+import { registerSchema } from "@/lib/auth/register-schema";
 
 describe("Registration Schema Validation", () => {
   it("validates correct registration inputs", () => {

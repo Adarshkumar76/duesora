@@ -6,7 +6,7 @@ import {
   sanitizeEmail,
   isSafeUrl,
   sanitizeUrl,
-} from "./sanitize";
+} from "@/lib/security/sanitize";
 
 describe("Security Sanitization Utility", () => {
   describe("sanitizeString", () => {

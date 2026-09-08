@@ -4,11 +4,11 @@ import {
   createWorkspaceResource,
   getWorkspaceResource,
   listWorkspaceResources,
-} from "./service";
-import { createResource, getResourceById, listResources } from "./repository";
+} from "@/lib/resources/service";
+import { createResource, getResourceById, listResources } from "@/lib/resources/repository";
 import { requireWorkspaceRole } from "@/lib/auth/workspace";
 
-vi.mock("./repository", () => ({
+vi.mock("@/lib/resources/repository", () => ({
   createResource: vi.fn(),
   getResourceById: vi.fn(),
   listResources: vi.fn(),
@@ -22,6 +22,7 @@ describe("resource service", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
+
   it("allows a viewer to list workspace resources", async () => {
     vi.mocked(requireWorkspaceRole).mockResolvedValue({} as never);
     vi.mocked(listResources).mockResolvedValue([]);
@@ -71,9 +72,6 @@ describe("resource service", () => {
     );
 
     expect(createResource).not.toHaveBeenCalled();
-  });
-  beforeEach(() => {
-    vi.clearAllMocks();
   });
 
   it("checks workspace membership before returning a resource", async () => {
