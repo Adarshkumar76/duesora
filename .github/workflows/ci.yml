@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+  push:
+    branches:
+      - develop
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  web:
+    name: Web checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check Drizzle migrations
+        env:
+          DATABASE_URL: postgresql://duesora:duesora@localhost:5432/duesora
+        run: npx drizzle-kit check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type check
+        run: npx tsc --noEmit
+      
+      - name: Unit tests
+        run: npm test
+
+      - name: Build
+        env:
+          DATABASE_URL: postgresql://duesora:duesora@localhost:5432/duesora
+          REDIS_URL: redis://localhost:6379
+          AUTH_SECRET: ci-build-dummy-auth-secret-key-32-chars-long
+        run: npm run build

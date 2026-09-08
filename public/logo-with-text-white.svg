@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3200 800" width="3200" height="800" fill="none">
+  <g transform="translate(40, -100)">
+    <path d="M 460 93 Q 500 73 540 93 L 869 284 Q 900 302 900 339 L 900 661 Q 900 698 869 716 L 540 907 Q 500 927 460 907 L 131 716 Q 100 698 100 661 L 100 339 Q 100 302 131 284 Z M 377 303 Q 386 310 386 326 L 386 659 Q 386 679 372 697 L 355 737 Q 348 747 338 740 L 251 666 Q 244 658 244 642 L 244 370 Q 244 355 258 343 L 363 299 Q 370 295 377 303 Z M 465 280 Q 465 268 478 268 L 566 268 Q 585 268 602 282 C 716 365 766 439 766 517 C 766 595 716 668 602 751 Q 585 767 566 767 L 478 767 Q 465 767 465 754 L 465 650 Q 465 640 475 630 A 170 170 0 0 0 475 404 Q 465 394 465 383 Z" fill="#B0F028" fill-rule="evenodd" />
+  </g>
+  <text
+    x="1060"
+    y="560"
+    font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif"
+    font-size="440"
+    font-weight="800"
+    letter-spacing="-12"
+    fill="#FFFFFF"
+  >Duesora</text>
+</svg>

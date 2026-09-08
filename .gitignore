@@ -1,6 +1,11 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# Plans, blueprints, and internal docs
 *.docx
+*implementation_plan*.md
+*.plan.md
+/internal/
+/docs/assets/designs
 
 # dependencies
 /node_modules
@@ -33,7 +38,9 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # env files (can opt-in for committing if needed)
-.env*
+.env
+.env.local
+.env*.local
 
 # vercel
 .vercel
