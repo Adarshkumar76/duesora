@@ -25,7 +25,10 @@ describe("resource service", () => {
 
   it("allows a viewer to list workspace resources", async () => {
     vi.mocked(requireWorkspaceRole).mockResolvedValue({} as never);
-    vi.mocked(listResources).mockResolvedValue([]);
+    vi.mocked(listResources).mockResolvedValue({
+      items: [],
+      pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 },
+    });
 
     await listWorkspaceResources("user-1", "workspace-1");
 
@@ -93,6 +96,11 @@ describe("resource service", () => {
       description: null,
       provider: null,
       websiteUrl: null,
+      amountMinor: null,
+      currency: "USD",
+      billingCycle: "yearly",
+      renewalDate: null,
+      autoRenew: true,
       createdAt: new Date(),
       updatedAt: new Date(),
     });

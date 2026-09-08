@@ -65,6 +65,18 @@ export const createResourceSchema = z.object({
     )
     .nullable()
     .optional(),
+
+  amountMinor: z.number().int().min(0).nullable().optional(),
+
+  currency: z.string().length(3).default("USD"),
+
+  billingCycle: z
+    .enum(["yearly", "monthly", "quarterly", "one_time", "lifetime"])
+    .default("yearly"),
+
+  renewalDate: z.string().nullable().optional(),
+
+  autoRenew: z.boolean().default(true),
 });
 
 export type CreateResourceRequest = z.infer<typeof createResourceSchema>;

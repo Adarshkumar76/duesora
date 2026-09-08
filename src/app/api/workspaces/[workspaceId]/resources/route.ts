@@ -9,7 +9,7 @@ import { createResourceSchema } from "@/lib/resources/validation";
 export const dynamic = "force-dynamic";
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   context: { params: Promise<{ workspaceId: string }> },
 ) {
   try {
@@ -29,10 +29,28 @@ export async function GET(
     const { workspaceId } = await context.params;
     const userId = session.user.id;
 
-    const resources = await listWorkspaceResources(userId, workspaceId);
+    const { searchParams } = request.nextUrl;
+    const search = searchParams.get("search");
+    const type = searchParams.get("type");
+    const status = searchParams.get("status") as
+      | "active"
+      | "inactive"
+      | "expired"
+      | "archived"
+      | null;
+    const page = parseInt(searchParams.get("page") || "1", 10);
+    const pageSize = parseInt(searchParams.get("pageSize") || "20", 10);
+
+    const result = await listWorkspaceResources(userId, workspaceId, {
+      search,
+      type,
+      status,
+      page,
+      pageSize,
+    });
 
     return Response.json({
-      data: resources,
+      data: result,
     });
   } catch (error) {
     if (error instanceof Error && error.message === "FORBIDDEN") {
@@ -97,9 +115,19 @@ export async function POST(
       );
     }
 
+    // Convert decimal amount to integer minor units if provided
+    let amountMinor = result.data.amountMinor ?? null;
+    if (amountMinor === null && body.amount !== undefined && body.amount !== null && body.amount !== "") {
+      const parsedAmount = Number(body.amount);
+      if (!isNaN(parsedAmount) && parsedAmount >= 0) {
+        amountMinor = Math.round(parsedAmount * 100);
+      }
+    }
+
     const resource = await createWorkspaceResource(userId, {
       workspaceId,
       ...result.data,
+      amountMinor,
     });
 
     return Response.json(

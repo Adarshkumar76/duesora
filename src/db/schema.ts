@@ -6,6 +6,8 @@ import {
   pgEnum,
   unique,
   text,
+  integer,
+  boolean,
 } from "drizzle-orm/pg-core";
 
 export const workspaceTypeEnum = pgEnum("workspace_type", [
@@ -151,6 +153,18 @@ export const resources = pgTable("resources", {
   provider: varchar("provider", { length: 120 }),
 
   websiteUrl: varchar("website_url", { length: 2048 }),
+
+  amountMinor: integer("amount_minor"),
+
+  currency: varchar("currency", { length: 3 }).default("USD").notNull(),
+
+  billingCycle: varchar("billing_cycle", { length: 20 }).default("yearly").notNull(),
+
+  renewalDate: timestamp("renewal_date", {
+    withTimezone: true,
+  }),
+
+  autoRenew: boolean("auto_renew").default(true).notNull(),
 
   createdAt: timestamp("created_at", {
     withTimezone: true,
