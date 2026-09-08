@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 
 vi.mock("server-only", () => ({}));
 
-import { envSchema } from "./env";
+import { envSchema } from "@/lib/env";
 
 describe("Environment Validation", () => {
   it("parses valid environment configurations", () => {

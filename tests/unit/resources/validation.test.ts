@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createResourceSchema } from "./validation";
+import { createResourceSchema } from "@/lib/resources/validation";
 
 describe("createResourceSchema", () => {
   it("accepts a valid resource", () => {

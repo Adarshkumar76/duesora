@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { hasMinimumRole } from "./permissions";
+import { hasMinimumRole } from "@/lib/auth/permissions";
 
 describe("hasMinimumRole", () => {
   it("allows owner to satisfy all roles", () => {
