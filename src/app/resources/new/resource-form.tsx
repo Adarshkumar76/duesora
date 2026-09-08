@@ -69,6 +69,14 @@ export function ResourceForm({ workspaceId }: ResourceFormProps) {
     }
   }
 
+  const currencySymbols: Record<string, string> = {
+    USD: "$",
+    INR: "₹",
+    EUR: "€",
+    GBP: "£",
+  };
+  const activeCurrencySymbol = currencySymbols[currency] || "$";
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
@@ -167,8 +175,8 @@ export function ResourceForm({ workspaceId }: ResourceFormProps) {
                   Amount
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                    $
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium">
+                    {activeCurrencySymbol}
                   </span>
                   <input
                     type="number"
