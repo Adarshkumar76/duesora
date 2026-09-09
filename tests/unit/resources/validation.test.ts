@@ -64,4 +64,33 @@ describe("createResourceSchema", () => {
       expect(result.data.description).toBe("Description with text");
     }
   });
+
+  it("validates pricing minor units and billing cycle", () => {
+    const result = createResourceSchema.safeParse({
+      name: "AWS Production",
+      type: "hosting",
+      amountMinor: 6812,
+      currency: "USD",
+      billingCycle: "monthly",
+      renewalDate: "2025-05-18",
+      autoRenew: true,
+    });
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.amountMinor).toBe(6812);
+      expect(result.data.billingCycle).toBe("monthly");
+      expect(result.data.autoRenew).toBe(true);
+    }
+  });
+
+  it("rejects negative amountMinor", () => {
+    const result = createResourceSchema.safeParse({
+      name: "Invalid Pricing Resource",
+      type: "subscription",
+      amountMinor: -100,
+    });
+
+    expect(result.success).toBe(false);
+  });
 });

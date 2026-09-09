@@ -57,27 +57,35 @@ describe("Multi-Tenancy Workspace Isolation", () => {
 
   describe("Cross-Tenant Read Isolation", () => {
     it("permits User Alpha to read resources in Workspace Alpha", async () => {
-      const mockResources = [
-        {
-          id: "res-alpha-1",
-          workspaceId: WORKSPACE_ALPHA,
-          name: "alpha.internal",
-          type: "domain" as const,
-          status: "active" as const,
-          description: null,
-          provider: "Cloudflare",
-          websiteUrl: "https://alpha.internal",
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ];
+      const mockResult = {
+        items: [
+          {
+            id: "res-alpha-1",
+            workspaceId: WORKSPACE_ALPHA,
+            name: "alpha.internal",
+            type: "domain" as const,
+            status: "active" as const,
+            description: null,
+            provider: "Cloudflare",
+            websiteUrl: "https://alpha.internal",
+            amountMinor: null,
+            currency: "USD",
+            billingCycle: "yearly" as const,
+            renewalDate: null,
+            autoRenew: true,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        ],
+        pagination: { page: 1, pageSize: 20, total: 1, totalPages: 1 },
+      };
 
-      vi.mocked(listResources).mockResolvedValue(mockResources);
+      vi.mocked(listResources).mockResolvedValue(mockResult as never);
 
       const result = await listWorkspaceResources(USER_ALPHA, WORKSPACE_ALPHA);
 
-      expect(result).toHaveLength(1);
-      expect(result[0].workspaceId).toBe(WORKSPACE_ALPHA);
+      expect(result.items).toHaveLength(1);
+      expect(result.items[0].workspaceId).toBe(WORKSPACE_ALPHA);
       expect(listResources).toHaveBeenCalledWith(WORKSPACE_ALPHA);
     });
 
@@ -120,6 +128,11 @@ describe("Multi-Tenancy Workspace Isolation", () => {
         description: null,
         provider: null,
         websiteUrl: null,
+        amountMinor: null,
+        currency: "USD",
+        billingCycle: "yearly" as const,
+        renewalDate: null,
+        autoRenew: true,
         createdAt: new Date(),
         updatedAt: new Date(),
         ...input,
@@ -162,10 +175,13 @@ describe("Multi-Tenancy Workspace Isolation", () => {
 
   describe("Intra-Tenant Privilege Escalation Prevention", () => {
     it("allows viewer in Workspace Alpha to read resources", async () => {
-      vi.mocked(listResources).mockResolvedValue([]);
+      vi.mocked(listResources).mockResolvedValue({
+        items: [],
+        pagination: { page: 1, pageSize: 20, total: 0, totalPages: 0 },
+      } as never);
 
       const result = await listWorkspaceResources(USER_VIEWER_ALPHA, WORKSPACE_ALPHA);
-      expect(result).toEqual([]);
+      expect(result.items).toEqual([]);
       expect(listResources).toHaveBeenCalledWith(WORKSPACE_ALPHA);
     });
 

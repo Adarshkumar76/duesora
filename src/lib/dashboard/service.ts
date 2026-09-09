@@ -32,6 +32,7 @@ export interface DashboardData {
     category: string;
     renewalDate: string;
     amount: number;
+    currency: string;
     status: "active" | "expiring" | "inactive";
   }>;
 }
@@ -73,7 +74,7 @@ export async function getWorkspaceDashboardData(
     .from(resources)
     .where(eq(resources.workspaceId, workspaceId))
     .orderBy(desc(resources.createdAt))
-    .limit(50);
+    .limit(100);
 
   const totalResources = workspaceResources.length;
 
@@ -91,25 +92,39 @@ export async function getWorkspaceDashboardData(
         actual: 0,
         projected: 0,
       })),
-      topCategories: [
-        { name: "Domains", count: 0, percentage: 0, color: "#10B981" },
-        { name: "Subscriptions", count: 0, percentage: 0, color: "#34D399" },
-        { name: "Hosting", count: 0, percentage: 0, color: "#64748B" },
-        { name: "SSL & Security", count: 0, percentage: 0, color: "#94A3B8" },
-      ],
+      topCategories: [],
       recentActivity: [],
     };
   }
 
-  // 3. Category distribution aggregation
+  const now = new Date();
+  const thirtyDaysFromNow = new Date();
+  thirtyDaysFromNow.setDate(now.getDate() + 30);
+  const currentMonthIdx = now.getMonth();
+
+  let renewalsDue = 0;
+  let expiringSoon = 0;
+  let totalSpendMinor = 0;
+
+  // Monthly buckets for renewals overview
+  const monthlyActualMinor: number[] = new Array(12).fill(0);
+  const monthlyProjectedMinor: number[] = new Array(12).fill(0);
+
+  // Category counts
   const categoryCounts: Record<string, number> = {
     Domains: 0,
     Subscriptions: 0,
     Hosting: 0,
     "SSL & Security": 0,
+    Other: 0,
   };
 
   for (const r of workspaceResources) {
+    // Tally spend
+    const amountMinor = r.amountMinor ?? 0;
+    totalSpendMinor += amountMinor;
+
+    // Tally categories
     if (r.type === "domain") {
       categoryCounts["Domains"]++;
     } else if (r.type === "subscription" || r.type === "software_license") {
@@ -119,7 +134,30 @@ export async function getWorkspaceDashboardData(
     } else if (r.type === "ssl_certificate") {
       categoryCounts["SSL & Security"]++;
     } else {
-      categoryCounts["Domains"]++;
+      categoryCounts["Other"]++;
+    }
+
+    // Renewal date calculations
+    if (r.renewalDate) {
+      const renewalDate = new Date(r.renewalDate);
+      const renewalMonth = renewalDate.getMonth();
+
+      // Check if renewal is due within this year or upcoming
+      if (renewalDate >= now) {
+        renewalsDue++;
+      }
+
+      // Check if expiring within 30 days
+      if (renewalDate >= now && renewalDate <= thirtyDaysFromNow) {
+        expiringSoon++;
+      }
+
+      // Distribute to monthly graph
+      if (renewalMonth <= currentMonthIdx) {
+        monthlyActualMinor[renewalMonth] += amountMinor;
+      } else {
+        monthlyProjectedMinor[renewalMonth] += amountMinor;
+      }
     }
   }
 
@@ -128,60 +166,71 @@ export async function getWorkspaceDashboardData(
     Subscriptions: "#34D399",
     Hosting: "#64748B",
     "SSL & Security": "#94A3B8",
+    Other: "#CBD5E1",
   };
 
-  const topCategories = Object.entries(categoryCounts).map(([name, count]) => ({
-    name,
-    count,
-    percentage: Math.round((count / totalResources) * 100) || 0,
-    color: categoryColors[name],
-  }));
+  const topCategories = Object.entries(categoryCounts)
+    .filter(([, count]) => count > 0)
+    .map(([name, count]) => ({
+      name,
+      count,
+      percentage: Math.round((count / totalResources) * 100) || 0,
+      color: categoryColors[name] || "#10B981",
+    }));
 
-  // 4. Map recent activity
-  const recentActivity = workspaceResources.slice(0, 5).map((r, index) => {
-    let category = "Domains";
+  // Map recent activity from the most recently updated or created resources
+  const recentActivity = workspaceResources.slice(0, 5).map((r) => {
+    let category = "Domain";
     if (r.type === "subscription") category = "Subscription";
     else if (r.type === "ssl_certificate") category = "SSL Certificate";
     else if (r.type === "hosting" || r.type === "cloud_service") category = "Hosting";
+    else if (r.type === "software_license") category = "Software";
+    else if (r.type === "custom") category = "Other";
 
-    // Format renewal date from updated or created date + offset
-    const dateObj = new Date(r.updatedAt || r.createdAt);
-    dateObj.setMonth(dateObj.getMonth() + ((index + 1) * 2));
-    const renewalDate = dateObj.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
+    let status: "active" | "expiring" | "inactive" = "active";
+    let renewalDateStr = "—";
+
+    if (r.renewalDate) {
+      const d = new Date(r.renewalDate);
+      renewalDateStr = d.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+
+      if (d < now) {
+        status = "inactive";
+      } else if (d <= thirtyDaysFromNow) {
+        status = "expiring";
+      }
+    }
 
     return {
       id: r.id,
       name: r.name,
       category,
-      renewalDate,
-      amount: 50.0 + index * 25.0,
-      status: "active" as const,
+      renewalDate: renewalDateStr,
+      amount: (r.amountMinor ?? 0) / 100,
+      currency: r.currency || "USD",
+      status,
     };
   });
 
-  // 5. Monthly renewals chart distribution
-  const renewalsOverview = MONTH_NAMES.map((month, idx) => {
-    const base = ((idx % 4) + 1) * 15;
-    return {
-      month,
-      actual: totalResources > 0 ? base + (idx * 3) : 0,
-      projected: totalResources > 0 ? base + 10 + (idx * 2) : 0,
-    };
-  });
+  const renewalsOverview = MONTH_NAMES.map((month, idx) => ({
+    month,
+    actual: Math.round(monthlyActualMinor[idx] / 100),
+    projected: Math.round(monthlyProjectedMinor[idx] / 100),
+  }));
 
-  const totalSpend = recentActivity.reduce((sum, item) => sum + item.amount, 0);
+  const totalSpend = totalSpendMinor / 100;
 
   return {
     workspace: workspaceInfo,
     kpis: {
       totalResources,
-      renewalsDue: Math.min(totalResources, 12),
+      renewalsDue,
       totalSpend,
-      expiringSoon: Math.min(totalResources, 5),
+      expiringSoon,
     },
     renewalsOverview,
     topCategories,
