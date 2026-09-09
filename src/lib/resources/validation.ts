@@ -80,3 +80,11 @@ export const createResourceSchema = z.object({
 });
 
 export type CreateResourceRequest = z.infer<typeof createResourceSchema>;
+
+export const updateResourceSchema = createResourceSchema
+  .partial()
+  .extend({
+    status: z.enum(["active", "inactive", "expired", "archived"]).optional(),
+  });
+
+export type UpdateResourceRequest = z.infer<typeof updateResourceSchema>;

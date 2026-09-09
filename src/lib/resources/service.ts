@@ -3,7 +3,9 @@ import {
   getResourceById,
   listResources,
   deleteResource,
+  updateResource,
   type CreateResourceInput,
+  type UpdateResourceInput,
   type ListResourcesOptions,
 } from "./repository";
 
@@ -53,3 +55,14 @@ export async function deleteWorkspaceResource(
 
   return deleteResource(workspaceId, resourceId);
 }
+
+export async function updateWorkspaceResource(
+  userId: string,
+  workspaceId: string,
+  resourceId: string,
+  input: UpdateResourceInput
+) {
+  await requireWorkspaceRole(userId, workspaceId, "member");
+
+  return updateResource(workspaceId, resourceId, input);
+}
