@@ -58,30 +58,45 @@ describe("API: /api/workspaces/[workspaceId]/resources Route Authorization", () 
         user: { id: "user-authorized" },
       } as never);
 
-      const mockData = [
-        {
-          id: "res-1",
-          workspaceId: "ws-test-123",
-          name: "example.org",
-          type: "domain" as const,
-          status: "active" as const,
-          description: null,
-          provider: null,
-          websiteUrl: null,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ];
+      const mockData = {
+        items: [
+          {
+            id: "res-1",
+            workspaceId: "ws-test-123",
+            name: "example.org",
+            type: "domain" as const,
+            status: "active" as const,
+            description: null,
+            provider: null,
+            websiteUrl: null,
+            amountMinor: null,
+            currency: "USD",
+            billingCycle: "yearly" as const,
+            renewalDate: null,
+            autoRenew: true,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        ],
+        pagination: { page: 1, pageSize: 20, total: 1, totalPages: 1 },
+      };
 
-      vi.mocked(listWorkspaceResources).mockResolvedValue(mockData);
+      vi.mocked(listWorkspaceResources).mockResolvedValue(mockData as never);
 
       const request = new NextRequest("http://localhost:3000/api/workspaces/ws-test-123/resources");
       const response = await GET(request, context);
       const json = await response.json();
 
       expect(response.status).toBe(200);
-      expect(json.data).toHaveLength(1);
-      expect(listWorkspaceResources).toHaveBeenCalledWith("user-authorized", "ws-test-123");
+      expect(json.data.items).toHaveLength(1);
+      expect(listWorkspaceResources).toHaveBeenCalledWith(
+        "user-authorized",
+        "ws-test-123",
+        expect.objectContaining({
+          page: 1,
+          pageSize: 20,
+        }),
+      );
     });
   });
 
@@ -135,6 +150,11 @@ describe("API: /api/workspaces/[workspaceId]/resources Route Authorization", () 
         description: null,
         provider: null,
         websiteUrl: null,
+        amountMinor: null,
+        currency: "USD",
+        billingCycle: "yearly" as const,
+        renewalDate: null,
+        autoRenew: true,
         createdAt: new Date(),
         updatedAt: new Date(),
       };

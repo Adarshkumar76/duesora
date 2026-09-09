@@ -2,7 +2,9 @@ import {
   createResource,
   getResourceById,
   listResources,
+  deleteResource,
   type CreateResourceInput,
+  type ListResourcesOptions,
 } from "./repository";
 
 import { requireWorkspaceRole } from "@/lib/auth/workspace";
@@ -19,11 +21,14 @@ export async function getWorkspaceResource(
 
 export async function listWorkspaceResources(
   userId: string,
-  workspaceId: string
+  workspaceId: string,
+  options?: ListResourcesOptions
 ) {
   await requireWorkspaceRole(userId, workspaceId, "viewer");
 
-  return listResources(workspaceId);
+  return options !== undefined
+    ? listResources(workspaceId, options)
+    : listResources(workspaceId);
 }
 
 export async function createWorkspaceResource(
@@ -37,4 +42,14 @@ export async function createWorkspaceResource(
   );
 
   return createResource(input);
+}
+
+export async function deleteWorkspaceResource(
+  userId: string,
+  workspaceId: string,
+  resourceId: string
+) {
+  await requireWorkspaceRole(userId, workspaceId, "member");
+
+  return deleteResource(workspaceId, resourceId);
 }
