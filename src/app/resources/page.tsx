@@ -216,7 +216,12 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
                         <tr key={item.id} className="hover:bg-muted/20 transition-colors">
                           {/* Name */}
                           <td className="py-4 px-6 font-medium text-foreground">
-                            {item.name}
+                            <Link
+                              href={`/resources/${item.id}`}
+                              className="hover:text-emerald-600 dark:hover:text-emerald-400 hover:underline transition-colors"
+                            >
+                              {item.name}
+                            </Link>
                           </td>
 
                           {/* Type Pill */}
@@ -260,13 +265,13 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
 
                           {/* Actions Menu */}
                           <td className="py-4 px-6 text-right">
-                            <button
-                              type="button"
-                              aria-label="Actions"
-                              className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors cursor-pointer"
+                            <Link
+                              href={`/resources/${item.id}`}
+                              aria-label={`View details for ${item.name}`}
+                              className="inline-flex p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors cursor-pointer"
                             >
                               <MoreHorizontal className="w-4 h-4" />
-                            </button>
+                            </Link>
                           </td>
                         </tr>
                       ))}
