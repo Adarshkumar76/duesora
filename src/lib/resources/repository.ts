@@ -157,3 +157,51 @@ export async function deleteResource(
 
   return deleted ?? null;
 }
+
+export type UpdateResourceInput = Partial<CreateResourceInput> & {
+  status?: "active" | "inactive" | "expired" | "archived";
+};
+
+export async function updateResource(
+  workspaceId: string,
+  resourceId: string,
+  input: UpdateResourceInput
+) {
+  const db = getDb();
+
+  const renewalDateVal =
+    input.renewalDate !== undefined
+      ? input.renewalDate
+        ? new Date(input.renewalDate)
+        : null
+      : undefined;
+
+  const updateValues: Record<string, unknown> = {
+    updatedAt: new Date(),
+  };
+
+  if (input.name !== undefined) updateValues.name = input.name;
+  if (input.type !== undefined) updateValues.type = input.type;
+  if (input.description !== undefined) updateValues.description = input.description;
+  if (input.provider !== undefined) updateValues.provider = input.provider;
+  if (input.websiteUrl !== undefined) updateValues.websiteUrl = input.websiteUrl;
+  if (input.amountMinor !== undefined) updateValues.amountMinor = input.amountMinor;
+  if (input.currency !== undefined) updateValues.currency = input.currency;
+  if (input.billingCycle !== undefined) updateValues.billingCycle = input.billingCycle;
+  if (renewalDateVal !== undefined) updateValues.renewalDate = renewalDateVal;
+  if (input.autoRenew !== undefined) updateValues.autoRenew = input.autoRenew;
+  if (input.status !== undefined) updateValues.status = input.status;
+
+  const [updated] = await db
+    .update(resources)
+    .set(updateValues)
+    .where(
+      and(
+        eq(resources.id, resourceId),
+        eq(resources.workspaceId, workspaceId)
+      )
+    )
+    .returning();
+
+  return updated ?? null;
+}
