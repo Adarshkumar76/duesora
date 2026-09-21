@@ -452,9 +452,17 @@ export default async function Home() {
           </div>
 
           <div className="text-xs text-muted-foreground flex items-center gap-1">
-            <span>Built with</span>
-            <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />
-            <span>by Adarsh Kumar</span>
+            <a
+              className="hover:text-foreground transition-colors inline-flex items-center gap-1.5"
+              target="_blank"
+              rel="noopener noreferrer"
+              href="https://adarshportfolio.onrender.com/"
+            >
+              <span>Built with</span>
+              <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />
+              <span>by</span>
+              <span className="font-medium underline underline-offset-2">Adarsh Kumar</span>
+            </a>
           </div>
         </div>
       </footer>
