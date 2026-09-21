@@ -10,6 +10,7 @@ import {
   ExternalLink,
   Copy,
   Check,
+  Download,
   X,
 } from "lucide-react";
 
@@ -48,12 +49,31 @@ export function CalendarView({
 
   const cleanAppUrl = appUrl.replace(/\/$/, "");
   const icsHttpsUrl = `${cleanAppUrl}/api/workspaces/${workspaceId}/calendar.ics?token=${calendarToken}`;
-  const webcalUrl = icsHttpsUrl.replace(/^https?:\/\//i, "webcal://");
+  const icsDownloadUrl = `${icsHttpsUrl}&download=1`;
+  const webcalUrl = `webcal://${cleanAppUrl.replace(/^https?:\/\//i, "")}/api/workspaces/${workspaceId}/calendar.ics?token=${calendarToken}`;
+  const googleCalendarUrl = `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(icsHttpsUrl)}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(icsHttpsUrl);
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2000);
+  };
+
+  const handleOpenDefaultCalendar = (e: React.MouseEvent) => {
+    e.preventDefault();
+
+    // 1. Download the .ics file which directly opens in default desktop calendar
+    const link = document.createElement("a");
+    link.href = icsDownloadUrl;
+    link.download = `${workspaceName.replace(/[^a-zA-Z0-9_-]/g, "_")}-renewals.ics`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // 2. Also try webcal protocol
+    try {
+      window.location.href = webcalUrl;
+    } catch {}
   };
 
   // Calendar math
@@ -410,20 +430,43 @@ export function CalendarView({
               </ul>
             </div>
 
-            <div className="pt-2 flex items-center justify-between">
-              <a
-                href={webcalUrl}
-                className="text-xs font-semibold text-emerald-600 hover:underline flex items-center gap-1"
-              >
-                <span>1-Click Open in Default Calendar</span>
-                <ExternalLink className="w-3.5 h-3.5" />
-              </a>
+            <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-t border-border/50">
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleOpenDefaultCalendar}
+                  className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+                  title="Directly downloads .ics calendar and prompts default calendar app"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download .ics Calendar</span>
+                </button>
+
+                <a
+                  href={googleCalendarUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/30 transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+                  title="Open Google Calendar to subscribe"
+                >
+                  <span>Google Calendar</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+
+                <a
+                  href={webcalUrl}
+                  className="text-xs text-muted-foreground hover:text-foreground underline transition-colors px-1 cursor-pointer"
+                  title="Open via webcal protocol"
+                >
+                  <span>Webcal link</span>
+                </a>
+              </div>
 
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setSubscribeModalOpen(false)}
-                className="rounded-xl cursor-pointer text-xs"
+                className="rounded-xl cursor-pointer text-xs shrink-0 self-end sm:self-auto"
               >
                 Done
               </Button>

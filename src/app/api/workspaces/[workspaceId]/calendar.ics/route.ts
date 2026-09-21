@@ -79,11 +79,15 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       resources: items,
     });
 
+    const isDownload = request.nextUrl.searchParams.get("download") === "1";
+    const dispositionType = isDownload ? "attachment" : "inline";
+    const filename = `${workspace.name.replace(/[^a-zA-Z0-9_-]/g, "_")}-renewals.ics`;
+
     return new NextResponse(icsContent, {
       status: 200,
       headers: {
         "Content-Type": "text/calendar; charset=utf-8",
-        "Content-Disposition": `inline; filename="${encodeURIComponent(workspace.name)}-renewals.ics"`,
+        "Content-Disposition": `${dispositionType}; filename="${filename}"`,
         "Cache-Control": "public, max-age=1800",
       },
     });
