@@ -12,6 +12,8 @@ import {
 import { requireWorkspaceRole } from "@/lib/auth/workspace";
 import { emitWorkspaceWebhook } from "@/lib/webhooks/dispatcher";
 
+export { getResourceById };
+
 export async function getWorkspaceResource(
   userId: string,
   workspaceId: string,

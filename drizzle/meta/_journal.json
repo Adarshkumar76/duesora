@@ -50,6 +50,13 @@
       "when": 1790001821393,
       "tag": "0006_stiff_the_phantom",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1790009932219,
+      "tag": "0007_chief_meltdown",
+      "breakpoints": true
     }
   ]
 }
