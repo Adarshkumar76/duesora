@@ -7,6 +7,7 @@ import { listUserWorkspaces } from "@/lib/auth/workspace";
 import { getWorkspaceResource } from "@/lib/resources/service";
 import { ResourceDetailsActions } from "@/components/resources/resource-details-actions";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { TagBadge } from "@/components/tags/tag-badge";
 import {
   Globe,
   RefreshCw,
@@ -16,6 +17,8 @@ import {
   FileText,
   Clock,
   ArrowLeft,
+  User,
+  Tag,
 } from "lucide-react";
 
 interface ResourceDetailsPageProps {
@@ -132,9 +135,7 @@ export default async function ResourceDetailsPage({
   return (
     <div className="min-h-screen bg-slate-50/50 dark:bg-background flex flex-row">
       {/* Sidebar */}
-      <div className="hidden md:block shrink-0">
-        <AppSidebar />
-      </div>
+      <AppSidebar />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
@@ -145,7 +146,7 @@ export default async function ResourceDetailsPage({
           onSignOut={handleSignOut}
         />
 
-        <main className="flex-1 p-6 sm:p-8 max-w-7xl w-full mx-auto space-y-6">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
           {/* Breadcrumb matching mockup 07_resource_details_page.jpg */}
           <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
             <Link
@@ -295,12 +296,56 @@ export default async function ResourceDetailsPage({
                     )}
                   </div>
 
+                  {/* Category */}
+                  <div className="py-3 flex items-center justify-between">
+                    <span className="text-muted-foreground">Category</span>
+                    <span className="font-semibold text-foreground">
+                      {resource.category || "—"}
+                    </span>
+                  </div>
+
+                  {/* Assigned Owner */}
+                  <div className="py-3 flex items-center justify-between">
+                    <span className="text-muted-foreground">Assigned Owner</span>
+                    <span className="font-semibold text-foreground flex items-center gap-1.5">
+                      <User className="w-3.5 h-3.5 text-muted-foreground" />
+                      {resource.owner ? (resource.owner.name || resource.owner.email) : "Unassigned"}
+                    </span>
+                  </div>
+
                   <div className="py-3 flex items-center justify-between">
                     <span className="text-muted-foreground">Auto-renew</span>
                     <span className="font-semibold text-foreground">
                       {resource.autoRenew ? "Enabled" : "Disabled"}
                     </span>
                   </div>
+                </CardContent>
+              </Card>
+
+              {/* Card: Tags */}
+              <Card className="rounded-2xl border border-border/80 bg-card shadow-xs">
+                <CardHeader className="pb-3 flex flex-row items-center justify-between space-y-0">
+                  <CardTitle className="text-base font-bold text-foreground flex items-center gap-2">
+                    <Tag className="w-4 h-4 text-emerald-600" />
+                    <span>Tags</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {resource.tags && resource.tags.length > 0 ? (
+                    <div className="flex flex-wrap gap-1.5">
+                      {resource.tags.map((t) => (
+                        <TagBadge
+                          key={t.id}
+                          name={t.name}
+                          colorToken={t.colorToken}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground italic">
+                      No tags attached to this resource.
+                    </p>
+                  )}
                 </CardContent>
               </Card>
 

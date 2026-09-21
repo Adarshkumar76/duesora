@@ -8,6 +8,7 @@ import {
   text,
   integer,
   boolean,
+  primaryKey,
 } from "drizzle-orm/pg-core";
 
 export const workspaceTypeEnum = pgEnum("workspace_type", [
@@ -148,6 +149,12 @@ export const resources = pgTable("resources", {
 
   status: resourceStatusEnum("status").notNull().default("active"),
 
+  category: varchar("category", { length: 60 }),
+
+  ownerId: uuid("owner_id").references(() => users.id, {
+    onDelete: "set null",
+  }),
+
   description: text("description"),
 
   provider: varchar("provider", { length: 120 }),
@@ -178,3 +185,197 @@ export const resources = pgTable("resources", {
     .defaultNow()
     .notNull(),
 });
+
+export const tags = pgTable(
+  "tags",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+
+    workspaceId: uuid("workspace_id")
+      .notNull()
+      .references(() => workspaces.id, { onDelete: "cascade" }),
+
+    name: varchar("name", { length: 50 }).notNull(),
+
+    colorToken: varchar("color_token", { length: 20 }).default("slate").notNull(),
+
+    createdAt: timestamp("created_at", {
+      withTimezone: true,
+    })
+      .defaultNow()
+      .notNull(),
+
+    updatedAt: timestamp("updated_at", {
+      withTimezone: true,
+    })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    unique("tags_workspace_name_unique").on(table.workspaceId, table.name),
+  ],
+);
+
+export const resourceTags = pgTable(
+  "resource_tags",
+  {
+    resourceId: uuid("resource_id")
+      .notNull()
+      .references(() => resources.id, { onDelete: "cascade" }),
+
+    tagId: uuid("tag_id")
+      .notNull()
+      .references(() => tags.id, { onDelete: "cascade" }),
+
+    createdAt: timestamp("created_at", {
+      withTimezone: true,
+    })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.resourceId, table.tagId] }),
+  ],
+);
+
+export const notifications = pgTable("notifications", {
+  id: uuid("id").defaultRandom().primaryKey(),
+
+  workspaceId: uuid("workspace_id")
+    .notNull()
+    .references(() => workspaces.id, { onDelete: "cascade" }),
+
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+
+  resourceId: uuid("resource_id").references(() => resources.id, {
+    onDelete: "set null",
+  }),
+
+  title: varchar("title", { length: 255 }).notNull(),
+
+  message: text("message").notNull(),
+
+  type: varchar("type", { length: 50 }).notNull().default("system"),
+
+  severity: varchar("severity", { length: 20 }).notNull().default("info"),
+
+  status: varchar("status", { length: 20 }).notNull().default("unread"),
+
+  metadata: text("metadata"),
+
+  readAt: timestamp("read_at", {
+    withTimezone: true,
+  }),
+
+  createdAt: timestamp("created_at", {
+    withTimezone: true,
+  })
+    .defaultNow()
+    .notNull(),
+});
+
+export const reminderLogs = pgTable(
+  "reminder_logs",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+
+    workspaceId: uuid("workspace_id")
+      .notNull()
+      .references(() => workspaces.id, { onDelete: "cascade" }),
+
+    resourceId: uuid("resource_id")
+      .notNull()
+      .references(() => resources.id, { onDelete: "cascade" }),
+
+    channel: varchar("channel", { length: 30 }).notNull().default("in_app"),
+
+    intervalDays: integer("interval_days").notNull(),
+
+    cycleKey: varchar("cycle_key", { length: 50 }).notNull(),
+
+    recipient: varchar("recipient", { length: 255 }).notNull(),
+
+    status: varchar("status", { length: 20 }).notNull().default("sent"),
+
+    dispatchedAt: timestamp("dispatched_at", {
+      withTimezone: true,
+    })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    unique("reminder_logs_resource_channel_interval_cycle_unique").on(
+      table.resourceId,
+      table.channel,
+      table.intervalDays,
+      table.cycleKey
+    ),
+  ]
+);
+
+export const webhookEndpoints = pgTable("webhook_endpoints", {
+  id: uuid("id").defaultRandom().primaryKey(),
+
+  workspaceId: uuid("workspace_id")
+    .notNull()
+    .references(() => workspaces.id, { onDelete: "cascade" }),
+
+  url: varchar("url", { length: 2048 }).notNull(),
+
+  description: varchar("description", { length: 255 }),
+
+  secret: varchar("secret", { length: 255 }).notNull(),
+
+  events: text("events").notNull().default('["*"]'),
+
+  active: boolean("active").notNull().default(true),
+
+  createdAt: timestamp("created_at", {
+    withTimezone: true,
+  })
+    .defaultNow()
+    .notNull(),
+
+  updatedAt: timestamp("updated_at", {
+    withTimezone: true,
+  })
+    .defaultNow()
+    .notNull(),
+});
+
+export const webhookDeliveries = pgTable("webhook_deliveries", {
+  id: uuid("id").defaultRandom().primaryKey(),
+
+  webhookEndpointId: uuid("webhook_endpoint_id")
+    .notNull()
+    .references(() => webhookEndpoints.id, { onDelete: "cascade" }),
+
+  workspaceId: uuid("workspace_id")
+    .notNull()
+    .references(() => workspaces.id, { onDelete: "cascade" }),
+
+  event: varchar("event", { length: 100 }).notNull(),
+
+  payload: text("payload").notNull(),
+
+  statusCode: integer("status_code"),
+
+  responseBody: text("response_body"),
+
+  durationMs: integer("duration_ms"),
+
+  error: text("error"),
+
+  status: varchar("status", { length: 20 }).notNull().default("pending"),
+
+  deliveredAt: timestamp("delivered_at", {
+    withTimezone: true,
+  })
+    .defaultNow()
+    .notNull(),
+});
+
+
+

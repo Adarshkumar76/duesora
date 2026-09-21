@@ -77,6 +77,40 @@ export const createResourceSchema = z.object({
   renewalDate: z.string().nullable().optional(),
 
   autoRenew: z.boolean().default(true),
+
+  category: z
+    .string()
+    .transform((val) => stripHtml(val))
+    .pipe(
+      z
+        .string()
+        .max(60, "Category must be 60 characters or less")
+        .refine((val) => !/[<>]/.test(val), {
+          message: "Category cannot contain HTML tags",
+        }),
+    )
+    .nullable()
+    .optional(),
+
+  ownerId: z.string().uuid("Invalid owner user ID").nullable().optional(),
+
+  tags: z
+    .array(
+      z
+        .string()
+        .transform((val) => stripHtml(val))
+        .pipe(
+          z
+            .string()
+            .min(1, "Tag cannot be empty")
+            .max(50, "Tag must be 50 characters or less")
+            .refine((val) => !/[<>]/.test(val), {
+              message: "Tag cannot contain HTML tags",
+            }),
+        ),
+    )
+    .max(20, "Cannot add more than 20 tags")
+    .optional(),
 });
 
 export type CreateResourceRequest = z.infer<typeof createResourceSchema>;
@@ -88,3 +122,4 @@ export const updateResourceSchema = createResourceSchema
   });
 
 export type UpdateResourceRequest = z.infer<typeof updateResourceSchema>;
+

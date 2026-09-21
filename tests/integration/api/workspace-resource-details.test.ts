@@ -77,6 +77,8 @@ describe("API: /api/workspaces/[workspaceId]/resources/[resourceId] Handlers", (
         name: "duesora.com",
         type: "domain" as const,
         status: "active" as const,
+        category: null,
+        ownerId: null,
         description: "Primary domain",
         provider: "GoDaddy",
         websiteUrl: "https://duesora.com",
@@ -87,6 +89,8 @@ describe("API: /api/workspaces/[workspaceId]/resources/[resourceId] Handlers", (
         autoRenew: true,
         createdAt: new Date(),
         updatedAt: new Date(),
+        owner: null,
+        tags: [],
       };
 
       vi.mocked(getWorkspaceResource).mockResolvedValue(mockResource);
@@ -132,6 +136,8 @@ describe("API: /api/workspaces/[workspaceId]/resources/[resourceId] Handlers", (
         name: "duesora-updated.com",
         type: "domain" as const,
         status: "active" as const,
+        category: null,
+        ownerId: null,
         description: null,
         provider: "Cloudflare",
         websiteUrl: null,
@@ -142,6 +148,8 @@ describe("API: /api/workspaces/[workspaceId]/resources/[resourceId] Handlers", (
         autoRenew: true,
         createdAt: new Date(),
         updatedAt: new Date(),
+        owner: null,
+        tags: [],
       };
 
       vi.mocked(updateWorkspaceResource).mockResolvedValue(updatedResource);
@@ -204,6 +212,8 @@ describe("API: /api/workspaces/[workspaceId]/resources/[resourceId] Handlers", (
         name: "deleted-resource",
         type: "domain",
         status: "active",
+        category: null,
+        ownerId: null,
         description: null,
         provider: null,
         websiteUrl: null,

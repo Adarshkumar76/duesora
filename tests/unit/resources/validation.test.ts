@@ -93,4 +93,47 @@ describe("createResourceSchema", () => {
 
     expect(result.success).toBe(false);
   });
+
+  it("accepts valid category, ownerId, and tags", () => {
+    const result = createResourceSchema.safeParse({
+      name: "GitHub Enterprise",
+      type: "subscription",
+      category: "Developer Tools",
+      ownerId: "a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+      tags: ["dev", "prod", "critical"],
+    });
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.category).toBe("Developer Tools");
+      expect(result.data.ownerId).toBe("a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d");
+      expect(result.data.tags).toEqual(["dev", "prod", "critical"]);
+    }
+  });
+
+  it("sanitizes category and tags HTML", () => {
+    const result = createResourceSchema.safeParse({
+      name: "Safe Name",
+      type: "hosting",
+      category: "<b>Infrastructure</b>",
+      tags: ["<script>evil</script>tag1", "normal-tag"],
+    });
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.category).toBe("Infrastructure");
+      expect(result.data.tags).toEqual(["tag1", "normal-tag"]);
+    }
+  });
+
+  it("rejects invalid ownerId UUID format", () => {
+    const result = createResourceSchema.safeParse({
+      name: "Service",
+      type: "custom",
+      ownerId: "not-a-valid-uuid",
+    });
+
+    expect(result.success).toBe(false);
+  });
 });
+

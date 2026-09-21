@@ -93,6 +93,8 @@ describe("resource service", () => {
       name: "example.com",
       type: "domain",
       status: "active",
+      category: null,
+      ownerId: null,
       description: null,
       provider: null,
       websiteUrl: null,
@@ -103,6 +105,8 @@ describe("resource service", () => {
       autoRenew: true,
       createdAt: new Date(),
       updatedAt: new Date(),
+      owner: null,
+      tags: [],
     });
 
     const result = await getWorkspaceResource(

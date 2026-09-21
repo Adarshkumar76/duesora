@@ -5,6 +5,8 @@ import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import { AppHeader } from "@/components/dashboard/app-header";
 import { listUserWorkspaces } from "@/lib/auth/workspace";
 import { listWorkspaceResources } from "@/lib/resources/service";
+import { listWorkspaceTags } from "@/lib/tags/service";
+import { TagBadge } from "@/components/tags/tag-badge";
 import { Button } from "@/components/ui/button";
 import { Plus, MoreHorizontal, FolderKanban, SearchX } from "lucide-react";
 import { ResourcesToolbar } from "@/components/resources/resources-toolbar";
@@ -14,6 +16,9 @@ interface ResourcesPageProps {
   searchParams: Promise<{
     tab?: string;
     search?: string;
+    tag?: string;
+    category?: string;
+    ownerId?: string;
     status?: "all" | "active" | "inactive" | "expired";
     page?: string;
   }>;
@@ -35,7 +40,7 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
     redirect("/login");
   }
 
-  const { tab = "all", search = "", status, page = "1" } = await searchParams;
+  const { tab = "all", search = "", tag, category, ownerId, status, page = "1" } = await searchParams;
   const currentPage = Math.max(1, parseInt(page, 10) || 1);
 
   // 1. Fetch user's workspaces
@@ -50,13 +55,24 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
       role: "owner",
     };
 
-  // 2. Fetch resources from database (no mock fallback!)
+  // 2. Fetch workspace tags for filter dropdown
+  let availableTags: Awaited<ReturnType<typeof listWorkspaceTags>> = [];
+  try {
+    availableTags = await listWorkspaceTags(session.user.id, activeWorkspace.id);
+  } catch {
+    availableTags = [];
+  }
+
+  // 3. Fetch resources from database (no mock fallback!)
   let resourceData;
   try {
     resourceData = await listWorkspaceResources(session.user.id, activeWorkspace.id, {
       type: tab === "all" ? undefined : tab === "other" ? "custom" : tab,
       status: status === "all" ? undefined : status,
       search: search || undefined,
+      tag: tag || undefined,
+      category: category || undefined,
+      ownerId: ownerId || undefined,
       page: currentPage,
       pageSize: 10,
     });
@@ -125,9 +141,7 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
   return (
     <div className="min-h-screen bg-slate-50/50 dark:bg-background flex flex-row">
       {/* Sidebar */}
-      <div className="hidden md:block shrink-0">
-        <AppSidebar />
-      </div>
+      <AppSidebar />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
@@ -138,7 +152,7 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
           onSignOut={handleSignOut}
         />
 
-        <main className="flex-1 p-6 sm:p-8 max-w-7xl w-full mx-auto space-y-6">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
           {/* Header Bar */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
@@ -151,10 +165,14 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
             </div>
 
             {/* Action Buttons Toolbar (Working Filters & CSV Export) */}
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
               <ResourcesToolbar
                 resources={items}
+                workspaceId={activeWorkspace.id}
                 currentStatus={status}
+                currentTag={tag}
+                currentCategory={category}
+                availableTags={availableTags}
               />
               <Link href="/resources/new">
                 <Button
@@ -175,6 +193,8 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
               const tabParams = new URLSearchParams();
               if (t.id !== "all") tabParams.set("tab", t.id);
               if (status && status !== "all") tabParams.set("status", status);
+              if (tag) tabParams.set("tag", tag);
+              if (category) tabParams.set("category", category);
               if (search) tabParams.set("search", search);
               tabParams.set("page", "1");
 
@@ -204,7 +224,7 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
                       <tr>
                         <th className="py-3.5 px-6">Name</th>
                         <th className="py-3.5 px-6">Type</th>
-                        <th className="py-3.5 px-6">Provider</th>
+                        <th className="py-3.5 px-6">Provider / Owner</th>
                         <th className="py-3.5 px-6">Status</th>
                         <th className="py-3.5 px-6">Next Renewal</th>
                         <th className="py-3.5 px-6">Amount</th>
@@ -214,14 +234,40 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
                     <tbody className="divide-y divide-border/40">
                       {items.map((item) => (
                         <tr key={item.id} className="hover:bg-muted/20 transition-colors">
-                          {/* Name */}
+                          {/* Name & Tags */}
                           <td className="py-4 px-6 font-medium text-foreground">
-                            <Link
-                              href={`/resources/${item.id}`}
-                              className="hover:text-emerald-600 dark:hover:text-emerald-400 hover:underline transition-colors"
-                            >
-                              {item.name}
-                            </Link>
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <Link
+                                  href={`/resources/${item.id}`}
+                                  className="hover:text-emerald-600 dark:hover:text-emerald-400 hover:underline transition-colors"
+                                >
+                                  {item.name}
+                                </Link>
+                                {item.category && (
+                                  <span className="text-[11px] font-medium px-1.5 py-0.5 rounded-md bg-secondary text-secondary-foreground">
+                                    {item.category}
+                                  </span>
+                                )}
+                              </div>
+                              {item.tags && item.tags.length > 0 && (
+                                <div className="flex items-center gap-1 flex-wrap pt-0.5">
+                                  {item.tags.slice(0, 3).map((t) => (
+                                    <TagBadge
+                                      key={t.id}
+                                      name={t.name}
+                                      colorToken={t.colorToken}
+                                      className="text-[10px] px-1.5 py-0"
+                                    />
+                                  ))}
+                                  {item.tags.length > 3 && (
+                                    <span className="text-[10px] text-muted-foreground font-medium">
+                                      +{item.tags.length - 3}
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+                            </div>
                           </td>
 
                           {/* Type Pill */}
@@ -231,9 +277,14 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
                             </span>
                           </td>
 
-                          {/* Provider */}
+                          {/* Provider & Owner */}
                           <td className="py-4 px-6 text-foreground font-normal">
-                            {item.provider || "—"}
+                            <div>{item.provider || "—"}</div>
+                            {item.owner && (
+                              <div className="text-xs text-muted-foreground truncate max-w-[150px]">
+                                {item.owner.name || item.owner.email}
+                              </div>
+                            )}
                           </td>
 
                           {/* Status */}

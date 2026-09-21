@@ -43,7 +43,14 @@ function getServerThemeSnapshot(): "light" | "dark" {
   return "light";
 }
 
-export function LandingNavbar() {
+interface LandingNavbarProps {
+  user?: {
+    name?: string | null;
+    email?: string | null;
+  } | null;
+}
+
+export function LandingNavbar({ user }: LandingNavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const theme = useSyncExternalStore(subscribeTheme, getThemeSnapshot, getServerThemeSnapshot);
 
@@ -133,23 +140,37 @@ export function LandingNavbar() {
             )}
           </button>
 
-          {/* Sign In */}
-          <Link href="/login" className="hidden sm:block">
-            <Button variant="ghost" size="sm" className="rounded-xl text-xs font-medium cursor-pointer">
-              Sign In
-            </Button>
-          </Link>
+          {user ? (
+            <Link href="/dashboard">
+              <Button
+                size="sm"
+                className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs gap-1.5 text-xs font-semibold cursor-pointer"
+              >
+                <span>Dashboard</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Button>
+            </Link>
+          ) : (
+            <>
+              {/* Sign In */}
+              <Link href="/login" className="hidden sm:block">
+                <Button variant="ghost" size="sm" className="rounded-xl text-xs font-medium cursor-pointer">
+                  Sign In
+                </Button>
+              </Link>
 
-          {/* Primary CTA */}
-          <Link href="/register">
-            <Button
-              size="sm"
-              className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs gap-1.5 text-xs font-semibold cursor-pointer"
-            >
-              <span>Get Started</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Button>
-          </Link>
+              {/* Primary CTA */}
+              <Link href="/register">
+                <Button
+                  size="sm"
+                  className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs gap-1.5 text-xs font-semibold cursor-pointer"
+                >
+                  <span>Get Started</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Button>
+              </Link>
+            </>
+          )}
 
           {/* Mobile Menu Button */}
           <button
@@ -205,15 +226,31 @@ export function LandingNavbar() {
             <Coffee className="w-4 h-4" />
             <span>Buy Me a Coffee</span>
           </a>
-          <div className="pt-2 border-t border-border/50 flex flex-col gap-2">
-            <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
-              <Button variant="outline" size="sm" className="w-full rounded-xl text-xs font-semibold">
-                Sign In to Workspace
-              </Button>
-            </Link>
-          </div>
+          {user ? (
+            <div className="pt-2 border-t border-border/50 flex flex-col gap-2">
+              <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
+                <Button size="sm" className="w-full rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white">
+                  Go to Dashboard
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <div className="pt-2 border-t border-border/50 flex flex-col gap-2">
+              <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                <Button variant="outline" size="sm" className="w-full rounded-xl text-xs font-semibold">
+                  Sign In to Workspace
+                </Button>
+              </Link>
+              <Link href="/register" onClick={() => setMobileMenuOpen(false)}>
+                <Button size="sm" className="w-full rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white">
+                  Get Started
+                </Button>
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </header>
   );
 }
+

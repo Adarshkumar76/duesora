@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
 import { getDb } from "@/db";
-import { memberships, workspaces } from "@/db/schema";
+import { memberships, workspaces, users } from "@/db/schema";
 import { hasMinimumRole, type WorkspaceRole } from "./permissions";
 
 export async function getWorkspaceMembership(
@@ -59,3 +59,21 @@ export async function listUserWorkspaces(userId: string) {
     .innerJoin(workspaces, eq(memberships.workspaceId, workspaces.id))
     .where(eq(memberships.userId, userId));
 }
+
+export async function listWorkspaceMembers(userId: string, workspaceId: string) {
+  await requireWorkspaceRole(userId, workspaceId, "viewer");
+  const db = getDb();
+
+  return db
+    .select({
+      id: users.id,
+      name: users.name,
+      email: users.email,
+      role: memberships.role,
+      joinedAt: memberships.createdAt,
+    })
+    .from(memberships)
+    .innerJoin(users, eq(memberships.userId, users.id))
+    .where(eq(memberships.workspaceId, workspaceId))
+    .orderBy(users.name);
+}
