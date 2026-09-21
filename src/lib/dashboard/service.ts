@@ -2,6 +2,7 @@ import { eq, desc } from "drizzle-orm";
 import { getDb } from "@/db";
 import { resources, workspaces } from "@/db/schema";
 import { requireWorkspaceRole } from "@/lib/auth/workspace";
+import { convertCurrency } from "@/lib/currency/rates";
 
 export interface DashboardData {
   workspace: {
@@ -120,8 +121,9 @@ export async function getWorkspaceDashboardData(
   };
 
   for (const r of workspaceResources) {
-    // Tally spend
-    const amountMinor = r.amountMinor ?? 0;
+    // Tally spend normalized to workspace base currency
+    const rawAmountMinor = r.amountMinor ?? 0;
+    const amountMinor = convertCurrency(rawAmountMinor, r.currency, workspace.defaultCurrency);
     totalSpendMinor += amountMinor;
 
     // Tally categories
