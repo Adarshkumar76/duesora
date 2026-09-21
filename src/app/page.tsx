@@ -40,6 +40,8 @@ function GithubIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const session = await auth();
   const user = session?.user;
