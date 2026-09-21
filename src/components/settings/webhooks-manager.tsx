@@ -364,9 +364,9 @@ export function WebhooksManager({
                     ))}
                   </div>
 
-                  <div className="flex items-center gap-2 font-mono text-[11px] bg-muted/40 px-2.5 py-1 rounded-xl border border-border/60">
+                  <div className="flex items-center gap-2 font-mono text-[11px] bg-muted/40 px-2.5 py-1 rounded-xl border border-border/60 max-w-full overflow-hidden">
                     <span className="text-muted-foreground">Secret:</span>
-                    <span className="text-foreground">
+                    <span className="text-foreground truncate">
                       {isRevealed
                         ? endpoint.secret
                         : `${endpoint.secret.slice(0, 8)}••••••••••••${endpoint.secret.slice(-4)}`}
@@ -374,7 +374,7 @@ export function WebhooksManager({
                     <button
                       type="button"
                       onClick={() => toggleSecretReveal(endpoint.id)}
-                      className="text-muted-foreground hover:text-foreground cursor-pointer"
+                      className="text-muted-foreground hover:text-foreground cursor-pointer shrink-0"
                       title={isRevealed ? "Hide Secret" : "Reveal Secret"}
                       aria-label={isRevealed ? "Hide Secret" : "Reveal Secret"}
                     >
@@ -383,7 +383,7 @@ export function WebhooksManager({
                     <button
                       type="button"
                       onClick={() => handleCopySecret(endpoint)}
-                      className="text-muted-foreground hover:text-foreground cursor-pointer ml-1"
+                      className="text-muted-foreground hover:text-foreground cursor-pointer ml-1 shrink-0"
                       title="Copy Secret"
                       aria-label="Copy Secret"
                     >
@@ -403,9 +403,9 @@ export function WebhooksManager({
 
       {/* Add Webhook Modal */}
       {isAddOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in-0 duration-200">
-          <div className="relative w-full max-w-lg bg-card border border-border/80 rounded-3xl shadow-2xl overflow-hidden flex flex-col">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-border/60 bg-muted/30">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-background/80 backdrop-blur-sm animate-in fade-in-0 duration-200">
+          <div className="relative w-full max-w-lg bg-card border border-border/80 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 border-b border-border/60 bg-muted/30">
               <div>
                 <h3 className="text-base font-semibold text-foreground">Add Webhook Endpoint</h3>
                 <p className="text-xs text-muted-foreground">
@@ -422,7 +422,7 @@ export function WebhooksManager({
               </button>
             </div>
 
-            <form onSubmit={handleCreateWebhook} className="p-6 space-y-4">
+            <form onSubmit={handleCreateWebhook} className="p-4 sm:p-6 space-y-4">
               {addError && (
                 <div className="flex items-center gap-2 p-3 rounded-2xl bg-destructive/10 text-destructive text-xs border border-destructive/20 font-medium">
                   <AlertCircle className="w-4 h-4 shrink-0" />
@@ -522,12 +522,12 @@ export function WebhooksManager({
 
       {/* Deliveries History Modal */}
       {historyEndpoint && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in-0 duration-200">
-          <div className="relative w-full max-w-2xl bg-card border border-border/80 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-border/60 bg-muted/30">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-background/80 backdrop-blur-sm animate-in fade-in-0 duration-200">
+          <div className="relative w-full max-w-2xl bg-card border border-border/80 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[88vh]">
+            <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 border-b border-border/60 bg-muted/30">
               <div>
                 <h3 className="text-base font-semibold text-foreground">Delivery History</h3>
-                <p className="text-xs font-mono text-muted-foreground truncate max-w-lg">
+                <p className="text-xs font-mono text-muted-foreground truncate max-w-xs sm:max-w-lg">
                   {historyEndpoint.url}
                 </p>
               </div>
@@ -541,7 +541,7 @@ export function WebhooksManager({
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-6 space-y-3">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3">
               {loadingHistory ? (
                 <div className="py-8 flex flex-col items-center justify-center gap-2">
                   <Loader2 className="w-6 h-6 animate-spin text-emerald-600" />
@@ -557,8 +557,8 @@ export function WebhooksManager({
                     key={del.id}
                     className="p-3.5 rounded-2xl border border-border/70 bg-muted/10 space-y-2 text-xs"
                   >
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <span
                           className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
                             del.status === "success"
@@ -605,7 +605,7 @@ export function WebhooksManager({
               )}
             </div>
 
-            <div className="px-6 py-3 border-t border-border/60 bg-muted/20 flex justify-end">
+            <div className="px-4 sm:px-6 py-3 border-t border-border/60 bg-muted/20 flex justify-end">
               <Button
                 variant="outline"
                 size="sm"

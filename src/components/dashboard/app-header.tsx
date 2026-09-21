@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useSyncExternalStore } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import {
   Search,
@@ -18,7 +18,11 @@ import {
   AlertTriangle,
   Clock,
   Info,
+  Menu,
+  X,
 } from "lucide-react";
+import { Logo } from "@/components/logo";
+import { NAV_ITEMS } from "./app-sidebar";
 import { BUY_ME_A_COFFEE_URL } from "@/lib/constants";
 
 interface WorkspaceItem {
@@ -64,6 +68,8 @@ export function AppHeader({
   onSignOut,
 }: AppHeaderProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -82,6 +88,13 @@ export function AppHeader({
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
+
+  // Close mobile drawer when route changes without cascading effect renders
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
+    setMobileMenuOpen(false);
+  }
 
   // Fetch real notifications for the active workspace
   useEffect(() => {
@@ -179,81 +192,102 @@ export function AppHeader({
     .toUpperCase();
 
   return (
-    <header className="h-16 border-b border-border/70 bg-card/60 backdrop-blur-sm px-6 flex items-center justify-between sticky top-0 z-30">
-      {/* Search Input Bar with functional submit */}
-      <form onSubmit={handleSearchSubmit} className="relative w-64 sm:w-80 md:w-96">
-        <Search className="w-4 h-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search resources, domains... (press Enter)"
-          className="w-full pl-9 pr-4 py-1.5 text-sm bg-background border border-border/70 rounded-xl placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all shadow-2xs"
-        />
-      </form>
-
-      {/* Right Header Actions */}
-      <div className="flex items-center gap-2.5 sm:gap-3">
-        {/* Buy Me a Coffee button */}
-        <a
-          href={BUY_ME_A_COFFEE_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-300 dark:border-amber-800/60 bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-300 text-xs font-semibold hover:bg-amber-100 dark:hover:bg-amber-900/60 transition-colors shadow-2xs"
-        >
-          <Coffee className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-          <span>Buy Me a Coffee</span>
-        </a>
-
-        {/* Dark Mode Toggle */}
-        <button
-          type="button"
-          onClick={toggleTheme}
-          aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-          title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-          className="w-9 h-9 rounded-xl border border-border/70 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shadow-2xs cursor-pointer"
-        >
-          {theme === "dark" ? (
-            <Sun className="w-4 h-4 text-amber-400 animate-in spin-in-90 duration-200" />
-          ) : (
-            <Moon className="w-4 h-4 text-slate-700 animate-in spin-in-90 duration-200" />
-          )}
-        </button>
-
-        {/* Notification Bell with Dropdown */}
-        <div className="relative" ref={notifRef}>
+    <>
+      <header className="h-16 border-b border-border/70 bg-card/60 backdrop-blur-sm px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30">
+        {/* Left items: Mobile Hamburger + Logo + Search */}
+        <div className="flex items-center gap-2 sm:gap-3.5 min-w-0 flex-1 mr-2">
+          {/* Mobile Menu Hamburger Button */}
           <button
             type="button"
-            onClick={() => setNotificationsOpen((prev) => !prev)}
-            aria-label="Notifications"
-            className="w-9 h-9 rounded-xl border border-border/70 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shadow-2xs relative cursor-pointer"
+            onClick={() => setMobileMenuOpen(true)}
+            aria-label="Open mobile navigation"
+            className="lg:hidden w-9 h-9 shrink-0 rounded-xl border border-border/70 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shadow-2xs cursor-pointer"
           >
-            <Bell className="w-4 h-4" />
-            {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-600 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-background">
-                {unreadCount}
-              </span>
+            <Menu className="w-5 h-5" />
+          </button>
+
+          {/* Mobile Brand Logo (< lg viewports) */}
+          <Link href="/dashboard" className="lg:hidden shrink-0 flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white shadow-sm">
+              <Logo size={18} color="#FFFFFF" />
+            </div>
+          </Link>
+
+          {/* Search Input Bar */}
+          <form onSubmit={handleSearchSubmit} className="relative w-full max-w-[170px] sm:max-w-xs md:max-w-sm">
+            <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search..."
+              className="w-full pl-8 sm:pl-9 pr-3 py-1.5 text-xs sm:text-sm bg-background border border-border/70 rounded-xl placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all shadow-2xs"
+            />
+          </form>
+        </div>
+
+        {/* Right Header Actions */}
+        <div className="flex items-center gap-1.5 sm:gap-2.5 md:gap-3 shrink-0">
+          {/* Buy Me a Coffee button */}
+          <a
+            href={BUY_ME_A_COFFEE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-300 dark:border-amber-800/60 bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-300 text-xs font-semibold hover:bg-amber-100 dark:hover:bg-amber-900/60 transition-colors shadow-2xs"
+          >
+            <Coffee className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+            <span>Buy Me a Coffee</span>
+          </a>
+
+          {/* Dark Mode Toggle */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            className="w-9 h-9 rounded-xl border border-border/70 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shadow-2xs cursor-pointer"
+          >
+            {theme === "dark" ? (
+              <Sun className="w-4 h-4 text-amber-400 animate-in spin-in-90 duration-200" />
+            ) : (
+              <Moon className="w-4 h-4 text-slate-700 animate-in spin-in-90 duration-200" />
             )}
           </button>
 
-          {/* Notifications Popover */}
-          {notificationsOpen && (
-            <div className="absolute right-0 mt-2 w-80 bg-card border border-border/80 rounded-2xl shadow-xl p-3 z-50 animate-in fade-in-0 zoom-in-95 duration-100">
-              <div className="flex items-center justify-between pb-2 mb-2 border-b border-border/50">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-sm font-bold text-foreground">Notifications</span>
+          {/* Notification Bell with Dropdown */}
+          <div className="relative" ref={notifRef}>
+            <button
+              type="button"
+              onClick={() => setNotificationsOpen((prev) => !prev)}
+              aria-label="Notifications"
+              className="w-9 h-9 rounded-xl border border-border/70 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shadow-2xs relative cursor-pointer"
+            >
+              <Bell className="w-4 h-4" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-600 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-background">
+                  {unreadCount}
+                </span>
+              )}
+            </button>
+
+            {/* Notifications Popover */}
+            {notificationsOpen && (
+              <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] max-w-xs sm:max-w-sm sm:w-80 bg-card border border-border/80 rounded-2xl shadow-xl p-3 z-50 animate-in fade-in-0 zoom-in-95 duration-100">
+                <div className="flex items-center justify-between pb-2 mb-2 border-b border-border/50">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-sm font-bold text-foreground">Notifications</span>
+                    {unreadCount > 0 && (
+                      <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                        {unreadCount} new
+                      </span>
+                    )}
+                  </div>
                   {unreadCount > 0 && (
-                    <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                      {unreadCount} new
-                    </span>
-                  )}
-                </div>
-                {unreadCount > 0 && (
-                  <button
-                    type="button"
-                    onClick={handleMarkAllRead}
-                    className="text-[11px] font-medium text-emerald-600 hover:text-emerald-700 flex items-center gap-1 cursor-pointer"
-                  >
+                    <button
+                      type="button"
+                      onClick={handleMarkAllRead}
+                      className="text-[11px] font-medium text-emerald-600 hover:text-emerald-700 flex items-center gap-1 cursor-pointer"
+                    >
                     <CheckCheck className="w-3 h-3" />
                     Mark all read
                   </button>
@@ -336,13 +370,13 @@ export function AppHeader({
           <button
             type="button"
             onClick={() => setDropdownOpen((prev) => !prev)}
-            className="flex items-center gap-2.5 pl-1.5 pr-2 py-1 rounded-xl hover:bg-muted/50 transition-colors border border-transparent hover:border-border/60 cursor-pointer"
+            className="flex items-center gap-2 pl-1 pr-1.5 sm:pl-1.5 sm:pr-2 py-1 rounded-xl hover:bg-muted/50 transition-colors border border-transparent hover:border-border/60 cursor-pointer"
           >
             {/* User Avatar */}
-            <div className="w-8 h-8 rounded-full bg-emerald-700 text-white font-semibold text-xs flex items-center justify-center overflow-hidden ring-1 ring-border shadow-xs">
+            <div className="w-8 h-8 rounded-full bg-emerald-700 text-white font-semibold text-xs flex items-center justify-center overflow-hidden ring-1 ring-border shadow-xs shrink-0">
               {userInitials || <User className="w-4 h-4" />}
             </div>
-            <span className="text-sm font-medium text-foreground">
+            <span className="hidden sm:inline text-sm font-medium text-foreground">
               {userName}
             </span>
             <ChevronDown className="w-3.5 h-3.5 text-muted-foreground transition-transform" />
@@ -350,7 +384,7 @@ export function AppHeader({
 
           {/* Profile & Workspace Dropdown Menu */}
           {dropdownOpen && (
-            <div className="absolute right-0 mt-2 w-64 bg-card border border-border/80 rounded-2xl shadow-lg p-2 z-50 animate-in fade-in-0 zoom-in-95 duration-100">
+            <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] max-w-xs sm:w-64 bg-card border border-border/80 rounded-2xl shadow-lg p-2 z-50 animate-in fade-in-0 zoom-in-95 duration-100">
               {/* User Details */}
               <div className="px-3 py-2 border-b border-border/50">
                 <p className="text-sm font-semibold text-foreground">{userName}</p>
@@ -363,11 +397,11 @@ export function AppHeader({
                   Active Workspace
                 </p>
                 <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-emerald-50/70 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-300 text-xs font-medium">
-                  <div className="flex items-center gap-2">
-                    <Building2 className="w-3.5 h-3.5" />
-                    <span>{currentWorkspace.name}</span>
+                  <div className="flex items-center gap-2 truncate">
+                    <Building2 className="w-3.5 h-3.5 shrink-0" />
+                    <span className="truncate">{currentWorkspace.name}</span>
                   </div>
-                  <Check className="w-3.5 h-3.5 text-emerald-600" />
+                  <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                 </div>
 
                 {workspaces
@@ -377,8 +411,8 @@ export function AppHeader({
                       key={ws.id}
                       className="flex items-center justify-between px-3 py-1.5 rounded-lg hover:bg-muted/60 text-xs text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
                     >
-                      <span>{ws.name}</span>
-                      <span className="text-[10px] uppercase font-semibold px-1.5 py-0.5 rounded bg-muted">
+                      <span className="truncate">{ws.name}</span>
+                      <span className="text-[10px] uppercase font-semibold px-1.5 py-0.5 rounded bg-muted shrink-0">
                         {ws.role}
                       </span>
                     </div>
@@ -402,5 +436,94 @@ export function AppHeader({
         </div>
       </div>
     </header>
+
+    {/* Mobile Navigation Drawer Backdrop & Sheet */}
+    {mobileMenuOpen && (
+      <div className="fixed inset-0 z-50 lg:hidden">
+        {/* Backdrop overlay */}
+        <div
+          className="fixed inset-0 bg-background/80 backdrop-blur-xs transition-opacity duration-200"
+          onClick={() => setMobileMenuOpen(false)}
+          aria-hidden="true"
+        />
+
+        {/* Slide-over panel */}
+        <aside className="fixed inset-y-0 left-0 w-72 max-w-[85vw] bg-card border-r border-border shadow-2xl flex flex-col z-50 animate-in slide-in-from-left duration-200">
+          {/* Drawer Header */}
+          <div className="h-16 px-5 flex items-center justify-between border-b border-border/60">
+            <Link
+              href="/dashboard"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-2.5"
+            >
+              <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white shadow-sm">
+                <Logo size={18} color="#FFFFFF" />
+              </div>
+              <span className="font-bold text-lg tracking-tight text-foreground">
+                Duesora
+              </span>
+            </Link>
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(false)}
+              aria-label="Close mobile navigation"
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Navigation links */}
+          <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+            {NAV_ITEMS.map((item) => {
+              const Icon = item.icon;
+              const isActive = pathname === item.href;
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                    isActive
+                      ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 font-semibold shadow-2xs"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  }`}
+                >
+                  <Icon
+                    className={`w-4 h-4 ${
+                      isActive
+                        ? "text-emerald-600 dark:text-emerald-400"
+                        : "text-muted-foreground"
+                    }`}
+                  />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
+
+          {/* Mobile Drawer Footer */}
+          <div className="p-4 border-t border-border/60 space-y-3 bg-muted/20">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span className="font-medium truncate max-w-[150px]">{currentWorkspace.name}</span>
+              <span className="px-1.5 py-0.5 rounded bg-muted text-[10px] uppercase font-semibold">
+                Active
+              </span>
+            </div>
+            <a
+              href={BUY_ME_A_COFFEE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-amber-300 dark:border-amber-800/60 bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-300 text-xs font-semibold hover:bg-amber-100 transition-colors shadow-2xs"
+            >
+              <Coffee className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+              <span>Buy Me a Coffee</span>
+            </a>
+          </div>
+        </aside>
+      </div>
+    )}
+  </>
   );
 }

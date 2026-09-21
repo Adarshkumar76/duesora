@@ -21,7 +21,7 @@ interface NavItem {
   icon: React.ComponentType<{ className?: string }>;
 }
 
-const NAV_ITEMS: NavItem[] = [
+export const NAV_ITEMS: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutGrid },
   { label: "Resources", href: "/resources", icon: Folder },
   { label: "Domains", href: "/domains", icon: Globe },
@@ -37,7 +37,7 @@ export function AppSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 border-r border-border/70 bg-card/60 backdrop-blur-sm flex flex-col shrink-0 min-h-screen">
+    <aside className="hidden lg:flex w-64 border-r border-border/70 bg-card/60 backdrop-blur-sm flex-col shrink-0 min-h-screen">
       {/* Brand Header */}
       <div className="h-16 px-6 flex items-center gap-3 border-b border-border/40">
         <Link href="/dashboard" className="flex items-center gap-2.5">

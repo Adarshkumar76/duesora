@@ -183,13 +183,13 @@ export function ImportModal({ isOpen, onClose, workspaceId }: ImportModalProps) 
     : 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in-0 duration-200">
-      <div className="relative w-full max-w-2xl bg-card border border-border/80 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-background/80 backdrop-blur-sm animate-in fade-in-0 duration-200">
+      <div className="relative w-full max-w-2xl bg-card border border-border/80 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border/60 bg-muted/30">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-border/60 bg-muted/30">
           <div>
-            <h2 className="text-base font-semibold text-foreground">Import Resources</h2>
-            <p className="text-xs text-muted-foreground">
+            <h2 className="text-sm sm:text-base font-semibold text-foreground">Import Resources</h2>
+            <p className="text-[11px] sm:text-xs text-muted-foreground">
               Add multiple subscriptions, domains, or licenses via CSV or JSON.
             </p>
           </div>
@@ -401,12 +401,12 @@ export function ImportModal({ isOpen, onClose, workspaceId }: ImportModalProps) 
               </div>
 
               {/* Table Preview */}
-              <div className="rounded-2xl border border-border/80 overflow-hidden max-h-56 overflow-y-auto text-xs">
+              <div className="rounded-2xl border border-border/80 overflow-hidden max-h-56 overflow-y-auto overflow-x-auto text-xs">
                 {activeTab === "valid" ? (
                   previewData.validRows.length === 0 ? (
                     <div className="p-6 text-center text-muted-foreground">No valid rows found.</div>
                   ) : (
-                    <table className="w-full text-left">
+                    <table className="w-full text-left min-w-[500px]">
                       <thead className="bg-muted/40 border-b border-border/60 text-[11px] font-semibold text-muted-foreground sticky top-0">
                         <tr>
                           <th className="py-2 px-3">#</th>
@@ -455,7 +455,7 @@ export function ImportModal({ isOpen, onClose, workspaceId }: ImportModalProps) 
                     </table>
                   )
                 ) : (
-                  <table className="w-full text-left">
+                  <table className="w-full text-left min-w-[400px]">
                     <thead className="bg-muted/40 border-b border-border/60 text-[11px] font-semibold text-muted-foreground sticky top-0">
                       <tr>
                         <th className="py-2 px-3">#</th>
@@ -488,7 +488,7 @@ export function ImportModal({ isOpen, onClose, workspaceId }: ImportModalProps) 
         </div>
 
         {/* Footer Actions */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-border/60 bg-muted/20">
+        <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 px-4 sm:px-6 py-3 sm:py-4 border-t border-border/60 bg-muted/20">
           <div>
             {previewData && !commitResult && (
               <Button
@@ -496,19 +496,19 @@ export function ImportModal({ isOpen, onClose, workspaceId }: ImportModalProps) 
                 size="sm"
                 onClick={handleReset}
                 disabled={committing}
-                className="text-xs text-muted-foreground hover:text-foreground cursor-pointer"
+                className="w-full sm:w-auto text-xs text-muted-foreground hover:text-foreground cursor-pointer"
               >
                 Choose another file
               </Button>
             )}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-end gap-2">
             <Button
               variant="outline"
               size="sm"
               onClick={handleClose}
               disabled={committing}
-              className="rounded-xl border-border/80 text-xs font-medium cursor-pointer"
+              className="flex-1 sm:flex-none rounded-xl border-border/80 text-xs font-medium cursor-pointer"
             >
               Cancel
             </Button>
@@ -517,7 +517,7 @@ export function ImportModal({ isOpen, onClose, workspaceId }: ImportModalProps) 
                 size="sm"
                 onClick={handleCommitImport}
                 disabled={committing || rowsToImportCount === 0}
-                className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium cursor-pointer shadow-xs gap-1.5"
+                className="flex-1 sm:flex-none rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium cursor-pointer shadow-xs gap-1.5"
               >
                 {committing ? (
                   <>
@@ -526,7 +526,7 @@ export function ImportModal({ isOpen, onClose, workspaceId }: ImportModalProps) 
                   </>
                 ) : (
                   <>
-                    <span>Import {rowsToImportCount} Resources</span>
+                    <span>Import {rowsToImportCount}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </>
                 )}

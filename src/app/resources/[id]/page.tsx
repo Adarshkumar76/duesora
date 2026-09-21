@@ -135,9 +135,7 @@ export default async function ResourceDetailsPage({
   return (
     <div className="min-h-screen bg-slate-50/50 dark:bg-background flex flex-row">
       {/* Sidebar */}
-      <div className="hidden md:block shrink-0">
-        <AppSidebar />
-      </div>
+      <AppSidebar />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
@@ -148,7 +146,7 @@ export default async function ResourceDetailsPage({
           onSignOut={handleSignOut}
         />
 
-        <main className="flex-1 p-6 sm:p-8 max-w-7xl w-full mx-auto space-y-6">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
           {/* Breadcrumb matching mockup 07_resource_details_page.jpg */}
           <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
             <Link

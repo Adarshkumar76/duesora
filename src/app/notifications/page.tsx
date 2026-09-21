@@ -56,7 +56,7 @@ export default async function NotificationsPage() {
           onSignOut={handleSignOut}
         />
 
-        <main className="flex-1 p-6 lg:p-8 max-w-6xl w-full mx-auto">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-6xl w-full mx-auto">
           <NotificationsView
             initialNotifications={notificationData.items}
             initialTotal={notificationData.total}

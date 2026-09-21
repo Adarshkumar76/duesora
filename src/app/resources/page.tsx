@@ -141,9 +141,7 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
   return (
     <div className="min-h-screen bg-slate-50/50 dark:bg-background flex flex-row">
       {/* Sidebar */}
-      <div className="hidden md:block shrink-0">
-        <AppSidebar />
-      </div>
+      <AppSidebar />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
@@ -154,7 +152,7 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
           onSignOut={handleSignOut}
         />
 
-        <main className="flex-1 p-6 sm:p-8 max-w-7xl w-full mx-auto space-y-6">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
           {/* Header Bar */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
@@ -167,7 +165,7 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
             </div>
 
             {/* Action Buttons Toolbar (Working Filters & CSV Export) */}
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
               <ResourcesToolbar
                 resources={items}
                 workspaceId={activeWorkspace.id}

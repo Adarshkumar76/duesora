@@ -255,7 +255,7 @@ export function NotificationsView({
             return (
               <div
                 key={notif.id}
-                className={`rounded-2xl border p-4.5 transition-all duration-150 flex items-start justify-between gap-4 ${
+                className={`rounded-2xl border p-4 sm:p-4.5 transition-all duration-150 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 ${
                   isUnread
                     ? isCritical
                       ? "border-rose-300/60 bg-rose-50/20 dark:bg-rose-950/10 shadow-xs"
@@ -263,7 +263,7 @@ export function NotificationsView({
                     : "border-border/70 bg-card hover:border-border"
                 }`}
               >
-                <div className="flex items-start gap-3.5 min-w-0">
+                <div className="flex items-start gap-3 sm:gap-3.5 min-w-0">
                   <div
                     className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
                       isCritical
@@ -317,7 +317,7 @@ export function NotificationsView({
                   </div>
                 </div>
 
-                <div className="shrink-0 flex items-center gap-2">
+                <div className="shrink-0 flex items-center gap-2 self-end sm:self-center">
                   {isUnread ? (
                     <Button
                       variant="ghost"
