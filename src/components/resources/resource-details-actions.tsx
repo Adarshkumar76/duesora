@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,6 +10,13 @@ import {
   Loader2,
   AlertTriangle,
 } from "lucide-react";
+import { TagInput } from "@/components/tags/tag-input";
+
+interface WorkspaceMember {
+  id: string;
+  name: string | null;
+  email: string;
+}
 
 interface ResourceData {
   id: string;
@@ -17,6 +24,8 @@ interface ResourceData {
   name: string;
   type: string;
   status: string;
+  category?: string | null;
+  ownerId?: string | null;
   description: string | null;
   provider: string | null;
   websiteUrl: string | null;
@@ -25,6 +34,8 @@ interface ResourceData {
   billingCycle: string;
   renewalDate: Date | string | null;
   autoRenew: boolean;
+  owner?: { id: string; name: string | null; email: string } | null;
+  tags?: Array<{ id: string; name: string; colorToken: string }>;
 }
 
 interface ResourceDetailsActionsProps {
@@ -45,6 +56,11 @@ export function ResourceDetailsActions({
   // Form states for edit
   const [name, setName] = useState(resource.name);
   const [type, setType] = useState(resource.type);
+  const [category, setCategory] = useState(resource.category || "");
+  const [ownerId, setOwnerId] = useState<string>(resource.ownerId || "");
+  const [tags, setTags] = useState<string[]>(
+    resource.tags?.map((t) => t.name) || []
+  );
   const [provider, setProvider] = useState(resource.provider || "");
   const [websiteUrl, setWebsiteUrl] = useState(resource.websiteUrl || "");
   const [amount, setAmount] = useState(
@@ -60,6 +76,21 @@ export function ResourceDetailsActions({
   );
   const [autoRenew, setAutoRenew] = useState(resource.autoRenew ?? true);
   const [description, setDescription] = useState(resource.description || "");
+
+  // Members
+  const [members, setMembers] = useState<WorkspaceMember[]>([]);
+
+  useEffect(() => {
+    if (!workspaceId) return;
+    fetch(`/api/workspaces/${workspaceId}/members`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((json) => {
+        if (json?.data) {
+          setMembers(json.data);
+        }
+      })
+      .catch(() => {});
+  }, [workspaceId]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -85,6 +116,9 @@ export function ResourceDetailsActions({
       const payload = {
         name,
         type,
+        category: category.trim() || null,
+        ownerId: ownerId || null,
+        tags,
         provider: provider.trim() || null,
         websiteUrl: websiteUrl.trim() || null,
         amountMinor: parsedAmountMinor,
@@ -231,6 +265,39 @@ export function ResourceDetailsActions({
                   </select>
                 </div>
 
+                {/* Category */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">
+                    Category
+                  </label>
+                  <input
+                    type="text"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    placeholder="e.g. Infrastructure, SaaS, Dev Tools"
+                    className="w-full px-3.5 py-2 text-sm bg-background border border-border/70 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600"
+                  />
+                </div>
+
+                {/* Owner / Assigned To */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-foreground">
+                    Assigned Owner
+                  </label>
+                  <select
+                    value={ownerId}
+                    onChange={(e) => setOwnerId(e.target.value)}
+                    className="w-full px-3.5 py-2 text-sm bg-background border border-border/70 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 cursor-pointer"
+                  >
+                    <option value="">Unassigned</option>
+                    {members.map((member) => (
+                      <option key={member.id} value={member.id}>
+                        {member.name || member.email} ({member.email})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
                 {/* Provider */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-foreground">
@@ -242,6 +309,19 @@ export function ResourceDetailsActions({
                     onChange={(e) => setProvider(e.target.value)}
                     placeholder="e.g. GoDaddy, AWS, Google"
                     className="w-full px-3.5 py-2 text-sm bg-background border border-border/70 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600"
+                  />
+                </div>
+
+                {/* Tags */}
+                <div className="space-y-1.5 sm:col-span-2">
+                  <label className="text-xs font-semibold text-foreground">
+                    Tags
+                  </label>
+                  <TagInput
+                    workspaceId={workspaceId}
+                    value={tags}
+                    onChange={setTags}
+                    placeholder="Add tags like #prod, #core..."
                   />
                 </div>
 

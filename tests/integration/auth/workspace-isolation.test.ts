@@ -125,6 +125,8 @@ describe("Multi-Tenancy Workspace Isolation", () => {
       vi.mocked(createResource).mockResolvedValue({
         id: "res-new-1",
         status: "active" as const,
+        category: null,
+        ownerId: null,
         description: null,
         provider: null,
         websiteUrl: null,
@@ -135,6 +137,8 @@ describe("Multi-Tenancy Workspace Isolation", () => {
         autoRenew: true,
         createdAt: new Date(),
         updatedAt: new Date(),
+        owner: null,
+        tags: [],
         ...input,
       });
 

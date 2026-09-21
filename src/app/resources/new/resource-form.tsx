@@ -1,11 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, Loader2 } from "lucide-react";
+import { TagInput } from "@/components/tags/tag-input";
+
+interface WorkspaceMember {
+  id: string;
+  name: string | null;
+  email: string;
+}
 
 interface ResourceFormProps {
   workspaceId: string;
@@ -19,6 +26,9 @@ export function ResourceForm({ workspaceId }: ResourceFormProps) {
   // Form Fields
   const [name, setName] = useState("");
   const [type, setType] = useState("domain");
+  const [category, setCategory] = useState("");
+  const [ownerId, setOwnerId] = useState<string>("");
+  const [tags, setTags] = useState<string[]>([]);
   const [provider, setProvider] = useState("");
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("14.99");
@@ -26,6 +36,21 @@ export function ResourceForm({ workspaceId }: ResourceFormProps) {
   const [billingCycle, setBillingCycle] = useState("yearly");
   const [renewalDate, setRenewalDate] = useState("2025-05-20");
   const [autoRenew, setAutoRenew] = useState(true);
+
+  // Members
+  const [members, setMembers] = useState<WorkspaceMember[]>([]);
+
+  useEffect(() => {
+    if (!workspaceId) return;
+    fetch(`/api/workspaces/${workspaceId}/members`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((json) => {
+        if (json?.data) {
+          setMembers(json.data);
+        }
+      })
+      .catch(() => {});
+  }, [workspaceId]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -39,6 +64,9 @@ export function ResourceForm({ workspaceId }: ResourceFormProps) {
       const payload = {
         name,
         type,
+        category: category.trim() || null,
+        ownerId: ownerId || null,
+        tags,
         provider: provider || null,
         description: description || null,
         amountMinor,
@@ -130,6 +158,39 @@ export function ResourceForm({ workspaceId }: ResourceFormProps) {
               </select>
             </div>
 
+            {/* Category */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-foreground">
+                Category
+              </label>
+              <input
+                type="text"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                placeholder="e.g. Infrastructure, SaaS, Dev Tools, Marketing"
+                className="w-full px-3.5 py-2 text-sm bg-background border border-border/70 rounded-xl placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
+              />
+            </div>
+
+            {/* Owner / Assigned To */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-foreground">
+                Assigned Owner
+              </label>
+              <select
+                value={ownerId}
+                onChange={(e) => setOwnerId(e.target.value)}
+                className="w-full px-3.5 py-2 text-sm bg-background border border-border/70 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all text-foreground cursor-pointer"
+              >
+                <option value="">Unassigned</option>
+                {members.map((member) => (
+                  <option key={member.id} value={member.id}>
+                    {member.name || member.email} ({member.email})
+                  </option>
+                ))}
+              </select>
+            </div>
+
             {/* Provider */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-foreground">
@@ -144,6 +205,19 @@ export function ResourceForm({ workspaceId }: ResourceFormProps) {
               />
             </div>
 
+            {/* Tags */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-foreground">
+                Tags
+              </label>
+              <TagInput
+                workspaceId={workspaceId}
+                value={tags}
+                onChange={setTags}
+                placeholder="Add tags like #prod, #core, #urgent..."
+              />
+            </div>
+
             {/* Description */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-foreground">
@@ -153,7 +227,7 @@ export function ResourceForm({ workspaceId }: ResourceFormProps) {
                 rows={3}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Add internal notes, purpose or owner details..."
+                placeholder="Add internal notes, purpose or details..."
                 className="w-full px-3.5 py-2 text-sm bg-background border border-border/70 rounded-xl placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all resize-none"
               />
             </div>

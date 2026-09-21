@@ -32,6 +32,9 @@ export async function GET(
     const { searchParams } = request.nextUrl;
     const search = searchParams.get("search");
     const type = searchParams.get("type");
+    const category = searchParams.get("category");
+    const ownerId = searchParams.get("ownerId");
+    const tag = searchParams.get("tag");
     const status = searchParams.get("status") as
       | "active"
       | "inactive"
@@ -44,6 +47,9 @@ export async function GET(
     const result = await listWorkspaceResources(userId, workspaceId, {
       search,
       type,
+      category,
+      ownerId,
+      tag,
       status,
       page,
       pageSize,

@@ -8,6 +8,7 @@ import {
   text,
   integer,
   boolean,
+  primaryKey,
 } from "drizzle-orm/pg-core";
 
 export const workspaceTypeEnum = pgEnum("workspace_type", [
@@ -148,6 +149,12 @@ export const resources = pgTable("resources", {
 
   status: resourceStatusEnum("status").notNull().default("active"),
 
+  category: varchar("category", { length: 60 }),
+
+  ownerId: uuid("owner_id").references(() => users.id, {
+    onDelete: "set null",
+  }),
+
   description: text("description"),
 
   provider: varchar("provider", { length: 120 }),
@@ -178,3 +185,56 @@ export const resources = pgTable("resources", {
     .defaultNow()
     .notNull(),
 });
+
+export const tags = pgTable(
+  "tags",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+
+    workspaceId: uuid("workspace_id")
+      .notNull()
+      .references(() => workspaces.id, { onDelete: "cascade" }),
+
+    name: varchar("name", { length: 50 }).notNull(),
+
+    colorToken: varchar("color_token", { length: 20 }).default("slate").notNull(),
+
+    createdAt: timestamp("created_at", {
+      withTimezone: true,
+    })
+      .defaultNow()
+      .notNull(),
+
+    updatedAt: timestamp("updated_at", {
+      withTimezone: true,
+    })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    unique("tags_workspace_name_unique").on(table.workspaceId, table.name),
+  ],
+);
+
+export const resourceTags = pgTable(
+  "resource_tags",
+  {
+    resourceId: uuid("resource_id")
+      .notNull()
+      .references(() => resources.id, { onDelete: "cascade" }),
+
+    tagId: uuid("tag_id")
+      .notNull()
+      .references(() => tags.id, { onDelete: "cascade" }),
+
+    createdAt: timestamp("created_at", {
+      withTimezone: true,
+    })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.resourceId, table.tagId] }),
+  ],
+);
+

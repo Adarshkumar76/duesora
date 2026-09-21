@@ -147,6 +147,8 @@ describe("API: /api/workspaces/[workspaceId]/resources Route Authorization", () 
         name: "test.com",
         type: "domain" as const,
         status: "active" as const,
+        category: null,
+        ownerId: null,
         description: null,
         provider: null,
         websiteUrl: null,
@@ -157,6 +159,8 @@ describe("API: /api/workspaces/[workspaceId]/resources Route Authorization", () 
         autoRenew: true,
         createdAt: new Date(),
         updatedAt: new Date(),
+        owner: null,
+        tags: [],
       };
 
       vi.mocked(createWorkspaceResource).mockResolvedValue(created);
