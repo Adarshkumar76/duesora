@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { auth } from "@/auth";
 import { LandingNavbar } from "@/components/landing/landing-navbar";
 import { HeroPreview } from "@/components/landing/hero-preview";
 import { InteractiveTabs } from "@/components/landing/interactive-tabs";
@@ -39,7 +40,10 @@ function GithubIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth();
+  const user = session?.user;
+
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col selection:bg-emerald-500/20 selection:text-emerald-700 relative overflow-x-hidden">
       {/* Subtle Background Radial Glows */}
@@ -47,7 +51,7 @@ export default function Home() {
       <div className="absolute top-[800px] right-0 w-[500px] h-[500px] bg-teal-500/10 dark:bg-teal-500/10 blur-[130px] rounded-full pointer-events-none -z-10" />
 
       {/* Sticky Glass Navbar */}
-      <LandingNavbar />
+      <LandingNavbar user={user} />
 
       <main className="flex-1">
         {/* ================= HERO SECTION ================= */}
@@ -74,25 +78,39 @@ export default function Home() {
 
           {/* CTA Action Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-            <Link href="/register">
-              <Button
-                size="lg"
-                className="w-full sm:w-auto h-12 px-7 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-lg shadow-emerald-600/25 gap-2 cursor-pointer transition-all hover:scale-102"
-              >
-                <span>Start Tracking Free</span>
-                <ArrowRight className="w-4 h-4" />
-              </Button>
-            </Link>
+            {user ? (
+              <Link href="/dashboard">
+                <Button
+                  size="lg"
+                  className="w-full sm:w-auto h-12 px-7 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-lg shadow-emerald-600/25 gap-2 cursor-pointer transition-all hover:scale-102"
+                >
+                  <span>Go to Dashboard</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <Link href="/register">
+                  <Button
+                    size="lg"
+                    className="w-full sm:w-auto h-12 px-7 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-lg shadow-emerald-600/25 gap-2 cursor-pointer transition-all hover:scale-102"
+                  >
+                    <span>Start Tracking Free</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Button>
+                </Link>
 
-            <Link href="/login">
-              <Button
-                variant="outline"
-                size="lg"
-                className="w-full sm:w-auto h-12 px-7 rounded-2xl border-border/80 hover:bg-muted font-bold text-sm cursor-pointer transition-all"
-              >
-                <span>Explore Live Dashboard</span>
-              </Button>
-            </Link>
+                <Link href="/login">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="w-full sm:w-auto h-12 px-7 rounded-2xl border-border/80 hover:bg-muted font-bold text-sm cursor-pointer transition-all"
+                  >
+                    <span>Sign In to Workspace</span>
+                  </Button>
+                </Link>
+              </>
+            )}
 
             <a
               href={GITHUB_REPO_URL}
