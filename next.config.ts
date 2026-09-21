@@ -48,6 +48,15 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      {
+        source: "/setting",
+        destination: "/settings",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

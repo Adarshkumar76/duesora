@@ -45,12 +45,9 @@ function getRelativeDateLabel(dateStr: string): { text: string; isPast: boolean;
   const diffTime = targetMidnight.getTime() - today.getTime();
   const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
   
-  const formattedDate = target.toLocaleDateString(undefined, {
-    weekday: "short",
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const formattedDate = `${DAYS[target.getDay()]}, ${MONTHS[target.getMonth()]} ${target.getDate()}, ${target.getFullYear()}`;
 
   if (diffDays === 0) {
     return { text: `Renews today (${formattedDate})`, isPast: false, isToday: true };
@@ -368,6 +365,7 @@ export function ResourceForm({ workspaceId }: ResourceFormProps) {
                     </label>
                     {renewalDate && (
                       <span
+                        suppressHydrationWarning
                         className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${
                           dateStatus.isPast
                             ? "bg-rose-500/10 text-rose-600 dark:text-rose-400"
