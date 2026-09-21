@@ -15,8 +15,9 @@ import {
   Moon,
   Coffee,
   CheckCheck,
-  Calendar,
-  ShieldCheck,
+  AlertTriangle,
+  Clock,
+  Info,
 } from "lucide-react";
 import { BUY_ME_A_COFFEE_URL } from "@/lib/constants";
 
@@ -65,12 +66,56 @@ export function AppHeader({
   const router = useRouter();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(2);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [notificationsList, setNotificationsList] = useState<Array<{
+    id: string;
+    resourceId?: string | null;
+    title: string;
+    message: string;
+    type: string;
+    severity: string;
+    status: string;
+    createdAt: string;
+  }>>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const theme = useSyncExternalStore(subscribeTheme, getThemeSnapshot, getServerThemeSnapshot);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
+
+  // Fetch real notifications for the active workspace
+  useEffect(() => {
+    if (!currentWorkspace?.id) return;
+    let isMounted = true;
+
+    fetch(`/api/workspaces/${currentWorkspace.id}/notifications?pageSize=5`)
+      .then((res) => res.json())
+      .then((json) => {
+        if (!isMounted) return;
+        if (json.data && Array.isArray(json.data)) {
+          setNotificationsList(json.data);
+          setUnreadCount(json.meta?.unreadCount ?? 0);
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      isMounted = false;
+    };
+  }, [currentWorkspace?.id]);
+
+  const handleMarkAllRead = async () => {
+    if (!currentWorkspace?.id) return;
+    try {
+      await fetch(`/api/workspaces/${currentWorkspace.id}/notifications`, {
+        method: "PATCH",
+      });
+      setUnreadCount(0);
+      setNotificationsList((prev) =>
+        prev.map((n) => ({ ...n, status: "read" }))
+      );
+    } catch {}
+  };
 
   // Synchronize dark class on mount
   useEffect(() => {
@@ -206,7 +251,7 @@ export function AppHeader({
                 {unreadCount > 0 && (
                   <button
                     type="button"
-                    onClick={() => setUnreadCount(0)}
+                    onClick={handleMarkAllRead}
                     className="text-[11px] font-medium text-emerald-600 hover:text-emerald-700 flex items-center gap-1 cursor-pointer"
                   >
                     <CheckCheck className="w-3 h-3" />
@@ -215,45 +260,71 @@ export function AppHeader({
                 )}
               </div>
 
-              <div className="space-y-2">
-                <Link
-                  href="/resources"
-                  onClick={() => setNotificationsOpen(false)}
-                  className="flex items-start gap-2.5 p-2 rounded-xl hover:bg-muted/50 transition-colors text-left"
-                >
-                  <div className="w-7 h-7 rounded-lg bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
-                    <Calendar className="w-3.5 h-3.5" />
+              <div className="space-y-1.5 max-h-72 overflow-y-auto">
+                {notificationsList.length === 0 ? (
+                  <div className="py-6 text-center text-xs text-muted-foreground">
+                    <p>No notifications yet.</p>
+                    <p className="text-[11px] opacity-75 mt-0.5">You are completely up to date!</p>
                   </div>
-                  <div className="space-y-0.5 text-xs">
-                    <p className="font-semibold text-foreground">Renewal Reminder</p>
-                    <p className="text-muted-foreground text-[11px]">
-                      Upcoming renewals scheduled within the next 30 days.
-                    </p>
-                    <span className="text-[10px] text-muted-foreground">Today</span>
-                  </div>
-                </Link>
+                ) : (
+                  notificationsList.map((notif) => {
+                    const isUnread = notif.status === "unread";
+                    const targetHref = notif.resourceId
+                      ? `/resources/${notif.resourceId}`
+                      : "/notifications";
 
-                <div className="flex items-start gap-2.5 p-2 rounded-xl hover:bg-muted/50 transition-colors text-left">
-                  <div className="w-7 h-7 rounded-lg bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                    <ShieldCheck className="w-3.5 h-3.5" />
-                  </div>
-                  <div className="space-y-0.5 text-xs">
-                    <p className="font-semibold text-foreground">Security Status Healthy</p>
-                    <p className="text-muted-foreground text-[11px]">
-                      All active resources and SSL certificates are protected.
-                    </p>
-                    <span className="text-[10px] text-muted-foreground">1 day ago</span>
-                  </div>
-                </div>
+                    return (
+                      <Link
+                        key={notif.id}
+                        href={targetHref}
+                        onClick={() => setNotificationsOpen(false)}
+                        className={`flex items-start gap-2.5 p-2 rounded-xl transition-colors text-left ${
+                          isUnread
+                            ? "bg-emerald-50/40 dark:bg-emerald-950/20 hover:bg-emerald-50/80 dark:hover:bg-emerald-950/40"
+                            : "hover:bg-muted/50"
+                        }`}
+                      >
+                        <div
+                          className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
+                            notif.severity === "critical"
+                              ? "bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400"
+                              : notif.severity === "warning"
+                              ? "bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400"
+                              : "bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400"
+                          }`}
+                        >
+                          {notif.severity === "critical" ? (
+                            <AlertTriangle className="w-3.5 h-3.5" />
+                          ) : notif.severity === "warning" ? (
+                            <Clock className="w-3.5 h-3.5" />
+                          ) : (
+                            <Info className="w-3.5 h-3.5" />
+                          )}
+                        </div>
+                        <div className="space-y-0.5 text-xs flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-1">
+                            <p className="font-semibold text-foreground truncate">{notif.title}</p>
+                            {isUnread && (
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
+                            )}
+                          </div>
+                          <p className="text-muted-foreground text-[11px] line-clamp-2">
+                            {notif.message}
+                          </p>
+                        </div>
+                      </Link>
+                    );
+                  })
+                )}
               </div>
 
               <div className="pt-2 mt-2 border-t border-border/50 text-center">
                 <Link
-                  href="/resources"
+                  href="/notifications"
                   onClick={() => setNotificationsOpen(false)}
                   className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 transition-colors"
                 >
-                  View All Resources &rarr;
+                  View All Notifications &rarr;
                 </Link>
               </div>
             </div>

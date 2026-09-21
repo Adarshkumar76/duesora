@@ -238,3 +238,81 @@ export const resourceTags = pgTable(
   ],
 );
 
+export const notifications = pgTable("notifications", {
+  id: uuid("id").defaultRandom().primaryKey(),
+
+  workspaceId: uuid("workspace_id")
+    .notNull()
+    .references(() => workspaces.id, { onDelete: "cascade" }),
+
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+
+  resourceId: uuid("resource_id").references(() => resources.id, {
+    onDelete: "set null",
+  }),
+
+  title: varchar("title", { length: 255 }).notNull(),
+
+  message: text("message").notNull(),
+
+  type: varchar("type", { length: 50 }).notNull().default("system"),
+
+  severity: varchar("severity", { length: 20 }).notNull().default("info"),
+
+  status: varchar("status", { length: 20 }).notNull().default("unread"),
+
+  metadata: text("metadata"),
+
+  readAt: timestamp("read_at", {
+    withTimezone: true,
+  }),
+
+  createdAt: timestamp("created_at", {
+    withTimezone: true,
+  })
+    .defaultNow()
+    .notNull(),
+});
+
+export const reminderLogs = pgTable(
+  "reminder_logs",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+
+    workspaceId: uuid("workspace_id")
+      .notNull()
+      .references(() => workspaces.id, { onDelete: "cascade" }),
+
+    resourceId: uuid("resource_id")
+      .notNull()
+      .references(() => resources.id, { onDelete: "cascade" }),
+
+    channel: varchar("channel", { length: 30 }).notNull().default("in_app"),
+
+    intervalDays: integer("interval_days").notNull(),
+
+    cycleKey: varchar("cycle_key", { length: 50 }).notNull(),
+
+    recipient: varchar("recipient", { length: 255 }).notNull(),
+
+    status: varchar("status", { length: 20 }).notNull().default("sent"),
+
+    dispatchedAt: timestamp("dispatched_at", {
+      withTimezone: true,
+    })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    unique("reminder_logs_resource_channel_interval_cycle_unique").on(
+      table.resourceId,
+      table.channel,
+      table.intervalDays,
+      table.cycleKey
+    ),
+  ]
+);
+
+
