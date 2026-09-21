@@ -7,6 +7,7 @@ import {
   recordReminderLog,
 } from "./repository";
 import { sendRenewalReminderEmail } from "./email";
+import { emitWorkspaceWebhook } from "@/lib/webhooks/dispatcher";
 
 export const REMINDER_INTERVALS = [30, 14, 7, 3, 1, 0] as const;
 
@@ -272,6 +273,17 @@ export async function processWorkspaceReminders(
           }
         }
       }
+
+      // Emit outbound webhook event for dispatched reminder
+      emitWorkspaceWebhook(workspaceId, "reminder.dispatched", {
+        resourceId: res.id,
+        resourceName: res.name,
+        intervalDays: match.intervalDays,
+        daysRemaining: match.daysRemaining,
+        renewalDate: res.renewalDate,
+        amountMinor: res.amountMinor,
+        currency: res.currency,
+      }).catch(() => {});
     }
   } catch (err) {
     summary.errors.push(

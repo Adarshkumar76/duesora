@@ -43,6 +43,13 @@
       "when": 1790001055253,
       "tag": "0005_hard_vargas",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1790001821393,
+      "tag": "0006_stiff_the_phantom",
+      "breakpoints": true
     }
   ]
 }

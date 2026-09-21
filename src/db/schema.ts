@@ -315,4 +315,67 @@ export const reminderLogs = pgTable(
   ]
 );
 
+export const webhookEndpoints = pgTable("webhook_endpoints", {
+  id: uuid("id").defaultRandom().primaryKey(),
+
+  workspaceId: uuid("workspace_id")
+    .notNull()
+    .references(() => workspaces.id, { onDelete: "cascade" }),
+
+  url: varchar("url", { length: 2048 }).notNull(),
+
+  description: varchar("description", { length: 255 }),
+
+  secret: varchar("secret", { length: 255 }).notNull(),
+
+  events: text("events").notNull().default('["*"]'),
+
+  active: boolean("active").notNull().default(true),
+
+  createdAt: timestamp("created_at", {
+    withTimezone: true,
+  })
+    .defaultNow()
+    .notNull(),
+
+  updatedAt: timestamp("updated_at", {
+    withTimezone: true,
+  })
+    .defaultNow()
+    .notNull(),
+});
+
+export const webhookDeliveries = pgTable("webhook_deliveries", {
+  id: uuid("id").defaultRandom().primaryKey(),
+
+  webhookEndpointId: uuid("webhook_endpoint_id")
+    .notNull()
+    .references(() => webhookEndpoints.id, { onDelete: "cascade" }),
+
+  workspaceId: uuid("workspace_id")
+    .notNull()
+    .references(() => workspaces.id, { onDelete: "cascade" }),
+
+  event: varchar("event", { length: 100 }).notNull(),
+
+  payload: text("payload").notNull(),
+
+  statusCode: integer("status_code"),
+
+  responseBody: text("response_body"),
+
+  durationMs: integer("duration_ms"),
+
+  error: text("error"),
+
+  status: varchar("status", { length: 20 }).notNull().default("pending"),
+
+  deliveredAt: timestamp("delivered_at", {
+    withTimezone: true,
+  })
+    .defaultNow()
+    .notNull(),
+});
+
+
 

@@ -10,6 +10,7 @@ import {
 } from "./repository";
 
 import { requireWorkspaceRole } from "@/lib/auth/workspace";
+import { emitWorkspaceWebhook } from "@/lib/webhooks/dispatcher";
 
 export async function getWorkspaceResource(
   userId: string,
@@ -43,7 +44,12 @@ export async function createWorkspaceResource(
     "member"
   );
 
-  return createResource(input);
+  const resource = await createResource(input);
+
+  // Emit outbound webhook event asynchronously
+  emitWorkspaceWebhook(input.workspaceId, "resource.created", resource as unknown as Record<string, unknown>).catch(() => {});
+
+  return resource;
 }
 
 export async function deleteWorkspaceResource(
@@ -53,7 +59,13 @@ export async function deleteWorkspaceResource(
 ) {
   await requireWorkspaceRole(userId, workspaceId, "member");
 
-  return deleteResource(workspaceId, resourceId);
+  const success = await deleteResource(workspaceId, resourceId);
+
+  if (success) {
+    emitWorkspaceWebhook(workspaceId, "resource.deleted", { resourceId, deleted: true }).catch(() => {});
+  }
+
+  return success;
 }
 
 export async function updateWorkspaceResource(
@@ -64,5 +76,11 @@ export async function updateWorkspaceResource(
 ) {
   await requireWorkspaceRole(userId, workspaceId, "member");
 
-  return updateResource(workspaceId, resourceId, input);
+  const updated = await updateResource(workspaceId, resourceId, input);
+
+  if (updated) {
+    emitWorkspaceWebhook(workspaceId, "resource.updated", updated as unknown as Record<string, unknown>).catch(() => {});
+  }
+
+  return updated;
 }
