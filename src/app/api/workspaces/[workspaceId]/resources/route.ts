@@ -143,6 +143,8 @@ export async function POST(
       { status: 201 },
     );
   } catch (error) {
+    console.error("POST /api/workspaces/[workspaceId]/resources error:", error);
+
     if (error instanceof Error && error.message === "FORBIDDEN") {
       return Response.json(
         {
@@ -159,7 +161,7 @@ export async function POST(
       {
         error: {
           code: "INTERNAL_SERVER_ERROR",
-          message: "Something went wrong",
+          message: error instanceof Error ? error.message : "Something went wrong",
         },
       },
       { status: 500 },
