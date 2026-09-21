@@ -170,6 +170,7 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
             <div className="flex items-center gap-2.5">
               <ResourcesToolbar
                 resources={items}
+                workspaceId={activeWorkspace.id}
                 currentStatus={status}
                 currentTag={tag}
                 currentCategory={category}
