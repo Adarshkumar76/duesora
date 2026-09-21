@@ -6,6 +6,7 @@ import { isEmailConfigured } from "@/lib/notifications/email";
 import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import { AppHeader } from "@/components/dashboard/app-header";
 import { WebhooksManager } from "@/components/settings/webhooks-manager";
+import { WorkspaceSettingsForm } from "@/components/settings/workspace-settings-form";
 import { Building2, Mail, ShieldCheck } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -108,6 +109,15 @@ export default async function SettingsPage() {
               </span>
             </div>
           </div>
+
+          {/* Workspace General & Profile Settings */}
+          <WorkspaceSettingsForm
+            workspace={activeWorkspace}
+            user={{
+              name: session.user.name,
+              email: session.user.email,
+            }}
+          />
 
           {/* Webhooks Section */}
           <div className="pt-2">
