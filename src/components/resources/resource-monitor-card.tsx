@@ -247,6 +247,21 @@ export function ResourceMonitorCard({
           </div>
         </div>
 
+        {/* Automated Alerting Indicator */}
+        <div className="flex flex-wrap items-center justify-between text-[11px] text-muted-foreground px-1 pt-1 border-t border-border/40 gap-2">
+          <span className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span>Automated monitoring active</span>
+          </span>
+          {monitor?.lastAlertedAt ? (
+            <span className="text-amber-600 dark:text-amber-400 font-medium">
+              Alert dispatched: {formatDate(monitor.lastAlertedAt)} ({monitor.lastAlertStatus})
+            </span>
+          ) : (
+            <span className="text-muted-foreground">All checks within normal parameters</span>
+          )}
+        </div>
+
         {/* History Accordion */}
         {showHistory && logs.length > 0 && (
           <div className="pt-2 border-t border-border/50 space-y-2 animate-in fade-in-0 duration-200">

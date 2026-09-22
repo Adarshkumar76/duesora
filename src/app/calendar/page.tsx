@@ -2,7 +2,7 @@ import { auth, signOut } from "@/auth";
 import { redirect } from "next/navigation";
 import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import { AppHeader } from "@/components/dashboard/app-header";
-import { listUserWorkspaces } from "@/lib/auth/workspace";
+import { resolveActiveWorkspace } from "@/lib/auth/active-workspace";
 import { getDb } from "@/db";
 import { resources } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
@@ -18,17 +18,12 @@ export default async function CalendarPage() {
     redirect("/login");
   }
 
-  // 1. Fetch workspaces & resolve active workspace
-  const userWorkspaces = await listUserWorkspaces(session.user.id);
+  // 1. Resolve user's active workspace (via cookie or fallback)
   const sessionWorkspaceId = (session.user as { workspaceId?: string | null }).workspaceId;
-
-  const activeWorkspace =
-    userWorkspaces.find((w) => w.id === sessionWorkspaceId) ||
-    userWorkspaces[0] || {
-      id: sessionWorkspaceId || "default-workspace",
-      name: "Personal Workspace",
-      role: "owner",
-    };
+  const { activeWorkspace, userWorkspaces } = await resolveActiveWorkspace(
+    session.user.id,
+    sessionWorkspaceId
+  );
 
   // 2. Fetch resources with renewal dates
   const db = getDb();

@@ -157,7 +157,7 @@ function LoginForm() {
         <div className="mt-6 text-center text-xs text-muted-foreground">
           Don&apos;t have an account yet?{" "}
           <Link
-            href="/register"
+            href={callbackUrl !== "/dashboard" ? `/register?callbackUrl=${encodeURIComponent(callbackUrl)}` : "/register"}
             className="font-medium text-primary hover:underline underline-offset-4"
           >
             Create an account

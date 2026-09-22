@@ -51,6 +51,8 @@ export interface ResourceMonitorRecord {
   latencyMs: number | null;
   lastCheckedAt: Date | null;
   errorMessage: string | null;
+  lastAlertStatus: MonitorStatus | null;
+  lastAlertedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
 }

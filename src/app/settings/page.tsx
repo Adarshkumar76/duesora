@@ -1,12 +1,15 @@
 import { auth, signOut } from "@/auth";
 import { redirect } from "next/navigation";
-import { listUserWorkspaces } from "@/lib/auth/workspace";
+import { resolveActiveWorkspace } from "@/lib/auth/active-workspace";
+import { type WorkspaceRole } from "@/lib/auth/permissions";
+import { listWorkspaceTeam } from "@/lib/team/service";
 import { listWebhookEndpoints } from "@/lib/webhooks/repository";
 import { isEmailConfigured } from "@/lib/notifications/email";
 import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import { AppHeader } from "@/components/dashboard/app-header";
 import { WebhooksManager } from "@/components/settings/webhooks-manager";
 import { WorkspaceSettingsForm } from "@/components/settings/workspace-settings-form";
+import { TeamManagement } from "@/components/settings/team-management";
 import { Building2, Mail, ShieldCheck } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -18,19 +21,26 @@ export default async function SettingsPage() {
     redirect("/login");
   }
 
-  // 1. Fetch user workspaces & resolve active workspace
-  const userWorkspaces = await listUserWorkspaces(session.user.id);
+  // 1. Resolve user's active workspace (via cookie or fallback)
   const sessionWorkspaceId = (session.user as { workspaceId?: string | null }).workspaceId;
+  const { activeWorkspace, userWorkspaces } = await resolveActiveWorkspace(
+    session.user.id,
+    sessionWorkspaceId
+  );
 
-  const activeWorkspace =
-    userWorkspaces.find((w) => w.id === sessionWorkspaceId) ||
-    userWorkspaces[0] || {
-      id: sessionWorkspaceId || "default-workspace",
-      name: "Personal Workspace",
-      role: "owner",
-    };
+  // 2. Fetch team members & invitations
+  let teamData: Awaited<ReturnType<typeof listWorkspaceTeam>> = {
+    members: [],
+    invitations: [],
+    currentUserRole: (activeWorkspace.role as WorkspaceRole) || "viewer",
+  };
+  try {
+    teamData = await listWorkspaceTeam(activeWorkspace.id, session.user.id);
+  } catch {
+    // fallback
+  }
 
-  // 2. Fetch webhooks for active workspace
+  // 3. Fetch webhooks for active workspace
   let endpoints: Awaited<ReturnType<typeof listWebhookEndpoints>> = [];
   try {
     endpoints = await listWebhookEndpoints(activeWorkspace.id);
@@ -90,7 +100,9 @@ export default async function SettingsPage() {
               <span className="text-[11px] text-muted-foreground">
                 {activeWorkspace.role === "owner" || activeWorkspace.role === "admin"
                   ? "Full administrative permissions"
-                  : "Standard workspace member"}
+                  : activeWorkspace.role === "member"
+                  ? "Standard workspace member"
+                  : "Read-only workspace viewer"}
               </span>
             </div>
 
@@ -117,6 +129,14 @@ export default async function SettingsPage() {
               name: session.user.name,
               email: session.user.email,
             }}
+          />
+
+          {/* Team & Member Access Management */}
+          <TeamManagement
+            workspaceId={activeWorkspace.id}
+            initialMembers={teamData.members}
+            initialInvitations={teamData.invitations}
+            currentUserRole={teamData.currentUserRole}
           />
 
           {/* Webhooks Section */}

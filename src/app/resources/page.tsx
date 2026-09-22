@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import { AppHeader } from "@/components/dashboard/app-header";
-import { listUserWorkspaces } from "@/lib/auth/workspace";
+import { resolveActiveWorkspace } from "@/lib/auth/active-workspace";
 import { listWorkspaceResources } from "@/lib/resources/service";
 import { listWorkspaceTags } from "@/lib/tags/service";
 import { TagBadge } from "@/components/tags/tag-badge";
@@ -43,17 +43,12 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
   const { tab = "all", search = "", tag, category, ownerId, status, page = "1" } = await searchParams;
   const currentPage = Math.max(1, parseInt(page, 10) || 1);
 
-  // 1. Fetch user's workspaces
-  const userWorkspaces = await listUserWorkspaces(session.user.id);
+  // 1. Resolve user's active workspace (via cookie or fallback)
   const sessionWorkspaceId = (session.user as { workspaceId?: string | null }).workspaceId;
-
-  const activeWorkspace =
-    userWorkspaces.find((w) => w.id === sessionWorkspaceId) ||
-    userWorkspaces[0] || {
-      id: sessionWorkspaceId || "default-workspace",
-      name: "Personal Workspace",
-      role: "owner",
-    };
+  const { activeWorkspace, userWorkspaces } = await resolveActiveWorkspace(
+    session.user.id,
+    sessionWorkspaceId
+  );
 
   // 2. Fetch workspace tags for filter dropdown
   let availableTags: Awaited<ReturnType<typeof listWorkspaceTags>> = [];
@@ -174,15 +169,17 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
                 currentCategory={category}
                 availableTags={availableTags}
               />
-              <Link href="/resources/new">
-                <Button
-                  size="sm"
-                  className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs gap-1.5 text-xs font-medium cursor-pointer"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Add Resource</span>
-                </Button>
-              </Link>
+              {activeWorkspace.role !== "viewer" && (
+                <Link href="/resources/new">
+                  <Button
+                    size="sm"
+                    className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs gap-1.5 text-xs font-medium cursor-pointer"
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span>Add Resource</span>
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
 

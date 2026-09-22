@@ -88,11 +88,13 @@ interface ResourceData {
 interface ResourceDetailsActionsProps {
   resource: ResourceData;
   workspaceId: string;
+  canManage?: boolean;
 }
 
 export function ResourceDetailsActions({
   resource,
   workspaceId,
+  canManage = true,
 }: ResourceDetailsActionsProps) {
   const router = useRouter();
 
@@ -225,6 +227,10 @@ export function ResourceDetailsActions({
       setIsDeleting(false);
     }
   };
+
+  if (!canManage) {
+    return null;
+  }
 
   return (
     <>
