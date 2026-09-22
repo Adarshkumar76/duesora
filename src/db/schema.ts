@@ -505,3 +505,35 @@ export const workspaceInvitations = pgTable(
   ]
 );
 
+export const workspaceNotificationChannels = pgTable(
+  "workspace_notification_channels",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+
+    workspaceId: uuid("workspace_id")
+      .notNull()
+      .references(() => workspaces.id, { onDelete: "cascade" }),
+
+    provider: varchar("provider", { length: 30 }).notNull(), // 'slack' | 'discord'
+
+    name: varchar("name", { length: 100 }).notNull(),
+
+    webhookUrl: varchar("webhook_url", { length: 2048 }).notNull(),
+
+    events: text("events").notNull().default('["*"]'),
+
+    active: boolean("active").notNull().default(true),
+
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index("workspace_notification_channels_workspace_idx").on(table.workspaceId),
+  ]
+);
+

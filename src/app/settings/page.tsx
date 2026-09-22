@@ -10,6 +10,8 @@ import { AppHeader } from "@/components/dashboard/app-header";
 import { WebhooksManager } from "@/components/settings/webhooks-manager";
 import { WorkspaceSettingsForm } from "@/components/settings/workspace-settings-form";
 import { TeamManagement } from "@/components/settings/team-management";
+import { ChatIntegrations } from "@/components/settings/chat-integrations";
+import { listNotificationChannels } from "@/lib/integrations/chat/repository";
 import { Building2, Mail, ShieldCheck } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -46,6 +48,14 @@ export default async function SettingsPage() {
     endpoints = await listWebhookEndpoints(activeWorkspace.id);
   } catch {
     endpoints = [];
+  }
+
+  // 4. Fetch Slack & Discord channels
+  let chatChannels: Awaited<ReturnType<typeof listNotificationChannels>> = [];
+  try {
+    chatChannels = await listNotificationChannels(activeWorkspace.id);
+  } catch {
+    chatChannels = [];
   }
 
   const emailReady = isEmailConfigured();
@@ -139,7 +149,16 @@ export default async function SettingsPage() {
             currentUserRole={teamData.currentUserRole}
           />
 
-          {/* Webhooks Section */}
+          {/* Slack & Discord Alert Webhooks */}
+          <div className="pt-2">
+            <ChatIntegrations
+              workspaceId={activeWorkspace.id}
+              initialChannels={chatChannels}
+              currentUserRole={activeWorkspace.role}
+            />
+          </div>
+
+          {/* Custom Webhooks Section */}
           <div className="pt-2">
             <WebhooksManager
               initialEndpoints={endpoints}
