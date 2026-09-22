@@ -429,3 +429,129 @@ export async function sendMonitorAlertEmail(
   }
 }
 
+export interface SendTeamInvitationEmailOptions {
+  to: string;
+  inviterName?: string | null;
+  workspaceName: string;
+  role: string;
+  inviteToken: string;
+  expiresAt: Date;
+  appUrl?: string;
+}
+
+export function renderTeamInvitationEmailHtml(opts: SendTeamInvitationEmailOptions): string {
+  const appBaseUrl = opts.appUrl || process.env.NEXTAUTH_URL || "http://localhost:3000";
+  const inviteUrl = `${appBaseUrl}/invite/${opts.inviteToken}`;
+  const inviterText = opts.inviterName ? opts.inviterName : "A colleague";
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Invitation to join ${opts.workspaceName} on Duesora</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; color: #0f172a; margin: 0; padding: 24px; line-height: 1.5; }
+    .container { max-width: 580px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+    .header { background: #0f172a; padding: 24px 32px; color: #ffffff; }
+    .logo { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; color: #10b981; }
+    .content { padding: 32px; }
+    .greeting { font-size: 16px; margin-bottom: 16px; }
+    .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin: 20px 0; }
+    .btn { display: inline-block; background-color: #10b981; color: #ffffff; text-decoration: none; padding: 12px 28px; border-radius: 8px; font-weight: 600; font-size: 14px; margin-top: 16px; }
+    .footer { padding: 20px 32px; background: #f1f5f9; text-align: center; font-size: 12px; color: #64748b; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">Duesora</div>
+    </div>
+    <div class="content">
+      <div class="greeting">Hello!</div>
+      <p><strong>${inviterText}</strong> has invited you to join the <strong>${opts.workspaceName}</strong> workspace on Duesora as a <strong>${opts.role.toUpperCase()}</strong>.</p>
+      
+      <div class="card">
+        <p style="margin: 0; font-size: 14px; color: #475569;">
+          Collaborate on tracking IT assets, SSL certificates, recurring software licenses, and renewal budgets with real-time proactive alerts.
+        </p>
+      </div>
+
+      <div style="text-align: center; margin: 28px 0;">
+        <a href="${inviteUrl}" class="btn" style="color: #ffffff;">Accept Invitation</a>
+      </div>
+
+      <p style="font-size: 12px; color: #64748b; margin-top: 24px;">
+        Or copy and paste this link into your browser:<br />
+        <a href="${inviteUrl}" style="color: #10b981; word-break: break-all;">${inviteUrl}</a>
+      </p>
+    </div>
+    <div class="footer">
+      This invitation link will expire in 7 days. If you were not expecting this invitation, you can safely ignore this email.
+    </div>
+  </div>
+</body>
+</html>`;
+}
+
+export function renderTeamInvitationEmailText(opts: SendTeamInvitationEmailOptions): string {
+  const appBaseUrl = opts.appUrl || process.env.NEXTAUTH_URL || "http://localhost:3000";
+  const inviteUrl = `${appBaseUrl}/invite/${opts.inviteToken}`;
+  const inviterText = opts.inviterName ? opts.inviterName : "A colleague";
+
+  return `Invitation to join ${opts.workspaceName} on Duesora
+
+${inviterText} has invited you to join the ${opts.workspaceName} workspace as a ${opts.role.toUpperCase()}.
+
+Accept your invitation here:
+${inviteUrl}
+
+This invitation link will expire in 7 days.
+`;
+}
+
+export async function sendTeamInvitationEmail(
+  opts: SendTeamInvitationEmailOptions
+): Promise<SendEmailResult> {
+  const subject = `You've been invited to join ${opts.workspaceName} on Duesora`;
+  const html = renderTeamInvitationEmailHtml(opts);
+  const text = renderTeamInvitationEmailText(opts);
+
+  if (!isEmailConfigured()) {
+    return {
+      success: true,
+      simulated: true,
+      messageId: `simulated-invite-${Date.now()}`,
+    };
+  }
+
+  try {
+    const transporter = getEmailTransporter();
+    if (!transporter) {
+      return { success: false, error: "Transporter unavailable" };
+    }
+
+    const fromAddress =
+      process.env.SMTP_FROM || "Duesora <notifications@duesora.com>";
+
+    const info = await transporter.sendMail({
+      from: fromAddress,
+      to: opts.to,
+      subject,
+      text,
+      html,
+    });
+
+    return {
+      success: true,
+      messageId: info.messageId,
+    };
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : "Unknown SMTP failure";
+    return {
+      success: false,
+      error: errorMessage,
+    };
+  }
+}
+
+

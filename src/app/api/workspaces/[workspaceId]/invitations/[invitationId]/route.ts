@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { listWorkspaceTeam } from "@/lib/team/service";
+import { revokeInvitation } from "@/lib/team/service";
 
 export const dynamic = "force-dynamic";
 
 interface RouteParams {
-  params: Promise<{ workspaceId: string }>;
+  params: Promise<{ workspaceId: string; invitationId: string }>;
 }
 
-export async function GET(_request: NextRequest, { params }: RouteParams) {
+export async function DELETE(_request: NextRequest, { params }: RouteParams) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
@@ -18,14 +18,14 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const { workspaceId } = await params;
-    const teamData = await listWorkspaceTeam(workspaceId, session.user.id);
+    const { workspaceId, invitationId } = await params;
+    await revokeInvitation(workspaceId, invitationId, session.user.id);
 
-    return NextResponse.json({ data: teamData }, { status: 200 });
+    return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
     if (error instanceof Error && error.message === "FORBIDDEN") {
       return NextResponse.json(
-        { error: { code: "FORBIDDEN", message: "Access denied" } },
+        { error: { code: "FORBIDDEN", message: "Only workspace admins and owners can revoke invitations" } },
         { status: 403 }
       );
     }
@@ -34,7 +34,7 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
       {
         error: {
           code: "INTERNAL_SERVER_ERROR",
-          message: error instanceof Error ? error.message : "Failed loading workspace team",
+          message: error instanceof Error ? error.message : "Failed revoking invitation",
         },
       },
       { status: 500 }

@@ -7,7 +7,7 @@ import { KpiCards } from "@/components/dashboard/kpi-cards";
 import { RenewalsChart } from "@/components/dashboard/renewals-chart";
 import { CategoryDonut } from "@/components/dashboard/category-donut";
 import { RecentActivityTable } from "@/components/dashboard/recent-activity-table";
-import { listUserWorkspaces } from "@/lib/auth/workspace";
+import { resolveActiveWorkspace } from "@/lib/auth/active-workspace";
 import { getWorkspaceDashboardData } from "@/lib/dashboard/service";
 import { Button } from "@/components/ui/button";
 import { Plus, Coffee, Sparkles } from "lucide-react";
@@ -20,18 +20,12 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  // 1. Fetch user's workspaces
-  const userWorkspaces = await listUserWorkspaces(session.user.id);
+  // 1. Resolve user's active workspace (via cookie or fallback)
   const sessionWorkspaceId = (session.user as { workspaceId?: string | null }).workspaceId;
-
-  // Active workspace fallback: from session or first available membership
-  const activeWorkspace =
-    userWorkspaces.find((w) => w.id === sessionWorkspaceId) ||
-    userWorkspaces[0] || {
-      id: sessionWorkspaceId || "default-workspace",
-      name: "Personal Workspace",
-      role: "owner",
-    };
+  const { activeWorkspace, userWorkspaces } = await resolveActiveWorkspace(
+    session.user.id,
+    sessionWorkspaceId
+  );
 
   // 2. Fetch aggregated dashboard data for this workspace
   let dashboardData;
