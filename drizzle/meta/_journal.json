@@ -57,6 +57,13 @@
       "when": 1790009932219,
       "tag": "0007_chief_meltdown",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1790094890494,
+      "tag": "0008_tiny_fantastic_four",
+      "breakpoints": true
     }
   ]
 }

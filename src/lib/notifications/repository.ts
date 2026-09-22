@@ -8,7 +8,7 @@ export interface CreateNotificationInput {
   resourceId?: string | null;
   title: string;
   message: string;
-  type?: "renewal_upcoming" | "renewal_overdue" | "system";
+  type?: "renewal_upcoming" | "renewal_overdue" | "system" | "monitor_alert";
   severity?: "info" | "warning" | "critical";
   metadata?: Record<string, unknown> | null;
 }

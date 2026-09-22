@@ -8,6 +8,10 @@ export const WEBHOOK_SUPPORTED_EVENTS = [
   "resource.deleted",
   "reminder.dispatched",
   "endpoint.test",
+  "monitor.status_changed",
+  "monitor.ssl_expiring",
+  "monitor.dns_unhealthy",
+  "monitor.recovered",
 ] as const;
 
 export const createWebhookSchema = z.object({

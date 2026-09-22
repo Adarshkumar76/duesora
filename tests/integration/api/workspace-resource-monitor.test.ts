@@ -78,6 +78,8 @@ describe("API: /api/workspaces/[workspaceId]/resources/[resourceId]/monitor", ()
         latencyMs: 32,
         lastCheckedAt: new Date(),
         errorMessage: null,
+        lastAlertStatus: null,
+        lastAlertedAt: null,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
@@ -134,6 +136,8 @@ describe("API: /api/workspaces/[workspaceId]/resources/[resourceId]/monitor", ()
         latencyMs: 25,
         lastCheckedAt: new Date(),
         errorMessage: null,
+        lastAlertStatus: null,
+        lastAlertedAt: null,
         createdAt: new Date(),
         updatedAt: new Date(),
       });
