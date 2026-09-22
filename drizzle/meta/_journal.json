@@ -71,6 +71,13 @@
       "when": 1790095929195,
       "tag": "0009_dear_mister_sinister",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1790098836442,
+      "tag": "0010_pretty_gorilla_man",
+      "breakpoints": true
     }
   ]
 }

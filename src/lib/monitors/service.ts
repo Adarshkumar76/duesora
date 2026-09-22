@@ -13,6 +13,7 @@ import { probeDns } from "./dns";
 import { createNotification } from "@/lib/notifications/repository";
 import { sendMonitorAlertEmail } from "@/lib/notifications/email";
 import { emitWorkspaceWebhook } from "@/lib/webhooks/dispatcher";
+import { dispatchMonitorChatAlert } from "@/lib/integrations/chat/dispatcher";
 import type {
   MonitorStatus,
   FullMonitorProbeResult,
@@ -454,6 +455,20 @@ export async function dispatchMonitorAlerts({
   } else if (monitor.status === "error") {
     await emitWorkspaceWebhook(workspaceId, "monitor.dns_unhealthy", webhookPayload);
   }
+
+  // 4. Dispatch to Slack & Discord channels
+  dispatchMonitorChatAlert(workspaceId, {
+    resourceId: resource.id,
+    resourceName: resource.name,
+    hostname: monitor.hostname,
+    status: monitor.status,
+    previousStatus,
+    alertReason,
+    daysRemaining: monitor.tlsDaysRemaining,
+    issuer: monitor.tlsIssuer,
+    latencyMs: monitor.latencyMs,
+    workspaceName,
+  }).catch(() => {});
 
   // Update tracking on the monitor record
   await updateMonitorAlertTracking(monitor.id, monitor.status, new Date());

@@ -8,6 +8,7 @@ import {
 } from "./repository";
 import { sendRenewalReminderEmail } from "./email";
 import { emitWorkspaceWebhook } from "@/lib/webhooks/dispatcher";
+import { dispatchRenewalChatAlert } from "@/lib/integrations/chat/dispatcher";
 
 export const REMINDER_INTERVALS = [30, 14, 7, 3, 1, 0] as const;
 
@@ -283,6 +284,19 @@ export async function processWorkspaceReminders(
         renewalDate: res.renewalDate,
         amountMinor: res.amountMinor,
         currency: res.currency,
+      }).catch(() => {});
+
+      // Dispatch alert to Slack / Discord channels
+      dispatchRenewalChatAlert(workspaceId, {
+        resourceId: res.id,
+        resourceName: res.name,
+        resourceType: res.type,
+        provider: res.provider,
+        daysRemaining: match.daysRemaining,
+        renewalDate: res.renewalDate,
+        amountMinor: res.amountMinor,
+        currency: res.currency,
+        billingCycle: res.billingCycle,
       }).catch(() => {});
     }
   } catch (err) {
