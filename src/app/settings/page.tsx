@@ -1,12 +1,15 @@
 import { auth, signOut } from "@/auth";
 import { redirect } from "next/navigation";
 import { listUserWorkspaces } from "@/lib/auth/workspace";
+import { type WorkspaceRole } from "@/lib/auth/permissions";
+import { listWorkspaceTeam } from "@/lib/team/service";
 import { listWebhookEndpoints } from "@/lib/webhooks/repository";
 import { isEmailConfigured } from "@/lib/notifications/email";
 import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import { AppHeader } from "@/components/dashboard/app-header";
 import { WebhooksManager } from "@/components/settings/webhooks-manager";
 import { WorkspaceSettingsForm } from "@/components/settings/workspace-settings-form";
+import { TeamManagement } from "@/components/settings/team-management";
 import { Building2, Mail, ShieldCheck } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -30,7 +33,19 @@ export default async function SettingsPage() {
       role: "owner",
     };
 
-  // 2. Fetch webhooks for active workspace
+  // 2. Fetch team members & invitations
+  let teamData: Awaited<ReturnType<typeof listWorkspaceTeam>> = {
+    members: [],
+    invitations: [],
+    currentUserRole: (activeWorkspace.role as WorkspaceRole) || "viewer",
+  };
+  try {
+    teamData = await listWorkspaceTeam(activeWorkspace.id, session.user.id);
+  } catch {
+    // fallback
+  }
+
+  // 3. Fetch webhooks for active workspace
   let endpoints: Awaited<ReturnType<typeof listWebhookEndpoints>> = [];
   try {
     endpoints = await listWebhookEndpoints(activeWorkspace.id);
@@ -117,6 +132,14 @@ export default async function SettingsPage() {
               name: session.user.name,
               email: session.user.email,
             }}
+          />
+
+          {/* Team & Member Access Management */}
+          <TeamManagement
+            workspaceId={activeWorkspace.id}
+            initialMembers={teamData.members}
+            initialInvitations={teamData.invitations}
+            currentUserRole={teamData.currentUserRole}
           />
 
           {/* Webhooks Section */}

@@ -64,6 +64,13 @@
       "when": 1790094890494,
       "tag": "0008_tiny_fantastic_four",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1790095929195,
+      "tag": "0009_dear_mister_sinister",
+      "breakpoints": true
     }
   ]
 }
