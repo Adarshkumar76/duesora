@@ -20,6 +20,7 @@ import {
   Info,
   Menu,
   X,
+  Loader2,
 } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { NAV_ITEMS } from "./app-sidebar";
@@ -84,6 +85,7 @@ export function AppHeader({
     createdAt: string;
   }>>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [switchingWorkspace, setSwitchingWorkspace] = useState<string | null>(null);
   const theme = useSyncExternalStore(subscribeTheme, getThemeSnapshot, getServerThemeSnapshot);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -407,15 +409,41 @@ export function AppHeader({
                 {workspaces
                   .filter((w) => w.id !== currentWorkspace.id)
                   .map((ws) => (
-                    <div
+                    <button
                       key={ws.id}
-                      className="flex items-center justify-between px-3 py-1.5 rounded-lg hover:bg-muted/60 text-xs text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
+                      type="button"
+                      disabled={switchingWorkspace !== null}
+                      onClick={async () => {
+                        try {
+                          setSwitchingWorkspace(ws.id);
+                          const res = await fetch("/api/workspaces/switch", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ workspaceId: ws.id }),
+                          });
+                          if (res.ok) {
+                            setDropdownOpen(false);
+                            window.location.reload();
+                          }
+                        } catch (err) {
+                          console.error("Failed switching workspace:", err);
+                        } finally {
+                          setSwitchingWorkspace(null);
+                        }
+                      }}
+                      className="w-full flex items-center justify-between px-3 py-1.5 rounded-lg hover:bg-muted/60 text-xs text-muted-foreground hover:text-foreground cursor-pointer transition-colors text-left disabled:opacity-50"
                     >
                       <span className="truncate">{ws.name}</span>
-                      <span className="text-[10px] uppercase font-semibold px-1.5 py-0.5 rounded bg-muted shrink-0">
-                        {ws.role}
-                      </span>
-                    </div>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {switchingWorkspace === ws.id ? (
+                          <Loader2 className="w-3 h-3 animate-spin text-muted-foreground" />
+                        ) : (
+                          <span className="text-[10px] uppercase font-semibold px-1.5 py-0.5 rounded bg-muted">
+                            {ws.role}
+                          </span>
+                        )}
+                      </div>
+                    </button>
                   ))}
               </div>
 

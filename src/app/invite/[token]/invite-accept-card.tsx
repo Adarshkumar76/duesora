@@ -39,7 +39,7 @@ export function InviteAcceptCard({
       setTimeout(() => {
         router.push("/dashboard");
         router.refresh();
-      }, 1000);
+      }, 800);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to accept invitation");
       setLoading(false);

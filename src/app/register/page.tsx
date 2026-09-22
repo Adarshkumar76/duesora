@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
 import { Logo } from "@/components/logo";
@@ -11,8 +11,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
-export default function RegisterPage() {
+function getSafeCallbackUrl(raw: string | null): string {
+  if (!raw) return "/dashboard";
+  // Prevent open redirect (e.g. //evil.com or https://evil.com)
+  if (raw.startsWith("/") && !raw.startsWith("//") && !raw.startsWith("/\\")) {
+    return raw;
+  }
+  return "/dashboard";
+}
+
+function RegisterForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = getSafeCallbackUrl(searchParams.get("callbackUrl"));
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -70,14 +81,18 @@ export default function RegisterPage() {
         email,
         password,
         redirect: false,
-        callbackUrl: "/dashboard",
+        callbackUrl,
       });
 
       if (loginRes?.error) {
         // Fallback to login page if auto-login didn't redirect
-        router.push("/login?registered=true");
+        router.push(
+          callbackUrl !== "/dashboard"
+            ? `/login?registered=true&callbackUrl=${encodeURIComponent(callbackUrl)}`
+            : "/login?registered=true"
+        );
       } else {
-        router.push("/dashboard");
+        router.push(callbackUrl);
         router.refresh();
       }
     } catch (err) {
@@ -88,148 +103,165 @@ export default function RegisterPage() {
   };
 
   return (
-    <main className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
-      <Card className="w-full max-w-md border-border/70 shadow-2xl bg-card">
-        <CardHeader className="space-y-3 text-center pb-6">
-          <div className="flex justify-center">
-            <Link href="/" className="inline-flex items-center gap-2">
-              <Logo size={44} withGlow />
-            </Link>
+    <Card className="w-full max-w-md border-border/70 shadow-2xl bg-card">
+      <CardHeader className="space-y-3 text-center pb-6">
+        <div className="flex justify-center">
+          <Link href="/" className="inline-flex items-center gap-2">
+            <Logo size={44} withGlow />
+          </Link>
+        </div>
+        <CardTitle className="text-2xl font-bold tracking-tight">
+          Create your account
+        </CardTitle>
+        <CardDescription className="text-sm text-muted-foreground">
+          Get started with your free self-hosted Duesora workspace in seconds
+        </CardDescription>
+      </CardHeader>
+
+      <CardContent>
+        {error && (
+          <div
+            role="alert"
+            className="flex items-center gap-2.5 p-3.5 mb-5 rounded-lg text-sm bg-destructive/10 text-destructive border border-destructive/20 animate-in fade-in"
+          >
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            <span>{error}</span>
           </div>
-          <CardTitle className="text-2xl font-bold tracking-tight">
-            Create your account
-          </CardTitle>
-          <CardDescription className="text-sm text-muted-foreground">
-            Get started with your free self-hosted Duesora workspace in seconds
-          </CardDescription>
-        </CardHeader>
+        )}
 
-        <CardContent>
-          {error && (
-            <div
-              role="alert"
-              className="flex items-center gap-2.5 p-3.5 mb-5 rounded-lg text-sm bg-destructive/10 text-destructive border border-destructive/20 animate-in fade-in"
-            >
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              <span>{error}</span>
-            </div>
-          )}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="name">Full Name</Label>
+            <Input
+              id="name"
+              type="text"
+              placeholder="Alex Rivers"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              autoComplete="name"
+              disabled={loading}
+              className="h-10"
+            />
+          </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="name">Full Name</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="email">Email address</Label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="alex@company.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="email"
+              disabled={loading}
+              className="h-10"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="password">Password</Label>
+            <div className="relative">
               <Input
-                id="name"
-                type="text"
-                placeholder="Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                disabled={loading}
-                className="h-10"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="email">Work or Personal Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="name@company.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                autoComplete="email"
-                disabled={loading}
-                className="h-10"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="password">Password</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Minimum 8 characters"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  autoComplete="new-password"
-                  disabled={loading}
-                  className="h-10 pr-10"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus:outline-none"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                >
-                  {showPassword ? (
-                    <EyeOff className="w-4 h-4" />
-                  ) : (
-                    <Eye className="w-4 h-4" />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <Input
-                id="confirmPassword"
+                id="password"
                 type={showPassword ? "text" : "password"}
-                placeholder="Repeat password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="At least 8 characters"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
                 autoComplete="new-password"
                 disabled={loading}
-                className="h-10"
+                className="pr-10 h-10"
               />
+              <button
+                type="button"
+                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-muted-foreground hover:text-foreground"
+                onClick={() => setShowPassword(!showPassword)}
+                tabIndex={-1}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+                <span className="sr-only">
+                  {showPassword ? "Hide password" : "Show password"}
+                </span>
+              </button>
             </div>
-
-            <div className="flex items-start space-x-2 pt-1">
-              <input
-                type="checkbox"
-                id="terms"
-                checked={acceptedTerms}
-                onChange={(e) => setAcceptedTerms(e.target.checked)}
-                className="w-4 h-4 mt-0.5 rounded border-input text-primary focus:ring-primary focus:ring-offset-background cursor-pointer"
-                required
-              />
-              <Label htmlFor="terms" className="text-xs text-muted-foreground leading-relaxed cursor-pointer">
-                I agree to the self-hosted terms, zero-telemetry privacy principles, and project license.
-              </Label>
-            </div>
-
-            <Button
-              type="submit"
-              className="w-full h-10 font-medium mt-2"
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Creating workspace...
-                </>
-              ) : (
-                "Create Account & Workspace"
-              )}
-            </Button>
-          </form>
-
-          <div className="mt-6 text-center text-xs text-muted-foreground">
-            Already have an account?{" "}
-            <Link
-              href="/login"
-              className="font-medium text-primary hover:underline underline-offset-4"
-            >
-              Sign in
-            </Link>
           </div>
-        </CardContent>
-      </Card>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="confirmPassword">Confirm Password</Label>
+            <Input
+              id="confirmPassword"
+              type={showPassword ? "text" : "password"}
+              placeholder="Confirm your password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              autoComplete="new-password"
+              disabled={loading}
+              className="h-10"
+            />
+          </div>
+
+          <div className="flex items-start gap-2.5 pt-1">
+            <input
+              type="checkbox"
+              id="terms"
+              checked={acceptedTerms}
+              onChange={(e) => setAcceptedTerms(e.target.checked)}
+              disabled={loading}
+              className="mt-0.5 rounded border-input text-primary focus:ring-primary h-4 w-4 shrink-0"
+              required
+            />
+            <Label htmlFor="terms" className="text-xs text-muted-foreground leading-relaxed cursor-pointer">
+              I agree to the self-hosted terms, zero-telemetry privacy principles, and project license.
+            </Label>
+          </div>
+
+          <Button
+            type="submit"
+            className="w-full h-10 font-medium mt-2"
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Creating workspace...
+              </>
+            ) : (
+              "Create Account & Workspace"
+            )}
+          </Button>
+        </form>
+
+        <div className="mt-6 text-center text-xs text-muted-foreground">
+          Already have an account?{" "}
+          <Link
+            href={
+              callbackUrl !== "/dashboard"
+                ? `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`
+                : "/login"
+            }
+            className="font-medium text-primary hover:underline underline-offset-4"
+          >
+            Sign in
+          </Link>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <main className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
+      <Suspense fallback={<div className="text-sm text-muted-foreground">Loading...</div>}>
+        <RegisterForm />
+      </Suspense>
     </main>
   );
 }

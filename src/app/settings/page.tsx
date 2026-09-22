@@ -1,6 +1,6 @@
 import { auth, signOut } from "@/auth";
 import { redirect } from "next/navigation";
-import { listUserWorkspaces } from "@/lib/auth/workspace";
+import { resolveActiveWorkspace } from "@/lib/auth/active-workspace";
 import { type WorkspaceRole } from "@/lib/auth/permissions";
 import { listWorkspaceTeam } from "@/lib/team/service";
 import { listWebhookEndpoints } from "@/lib/webhooks/repository";
@@ -21,17 +21,12 @@ export default async function SettingsPage() {
     redirect("/login");
   }
 
-  // 1. Fetch user workspaces & resolve active workspace
-  const userWorkspaces = await listUserWorkspaces(session.user.id);
+  // 1. Resolve user's active workspace (via cookie or fallback)
   const sessionWorkspaceId = (session.user as { workspaceId?: string | null }).workspaceId;
-
-  const activeWorkspace =
-    userWorkspaces.find((w) => w.id === sessionWorkspaceId) ||
-    userWorkspaces[0] || {
-      id: sessionWorkspaceId || "default-workspace",
-      name: "Personal Workspace",
-      role: "owner",
-    };
+  const { activeWorkspace, userWorkspaces } = await resolveActiveWorkspace(
+    session.user.id,
+    sessionWorkspaceId
+  );
 
   // 2. Fetch team members & invitations
   let teamData: Awaited<ReturnType<typeof listWorkspaceTeam>> = {
@@ -105,7 +100,9 @@ export default async function SettingsPage() {
               <span className="text-[11px] text-muted-foreground">
                 {activeWorkspace.role === "owner" || activeWorkspace.role === "admin"
                   ? "Full administrative permissions"
-                  : "Standard workspace member"}
+                  : activeWorkspace.role === "member"
+                  ? "Standard workspace member"
+                  : "Read-only workspace viewer"}
               </span>
             </div>
 

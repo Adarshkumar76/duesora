@@ -2,7 +2,7 @@ import { auth, signOut } from "@/auth";
 import { redirect } from "next/navigation";
 import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import { AppHeader } from "@/components/dashboard/app-header";
-import { listUserWorkspaces } from "@/lib/auth/workspace";
+import { resolveActiveWorkspace } from "@/lib/auth/active-workspace";
 import { ResourceForm } from "./resource-form";
 
 export default async function NewResourcePage() {
@@ -12,17 +12,17 @@ export default async function NewResourcePage() {
     redirect("/login");
   }
 
-  // 1. Fetch user's workspaces
-  const userWorkspaces = await listUserWorkspaces(session.user.id);
+  // 1. Resolve user's active workspace (via cookie or fallback)
   const sessionWorkspaceId = (session.user as { workspaceId?: string | null }).workspaceId;
+  const { activeWorkspace, userWorkspaces } = await resolveActiveWorkspace(
+    session.user.id,
+    sessionWorkspaceId
+  );
 
-  const activeWorkspace =
-    userWorkspaces.find((w) => w.id === sessionWorkspaceId) ||
-    userWorkspaces[0] || {
-      id: sessionWorkspaceId || "default-workspace",
-      name: "Personal Workspace",
-      role: "owner",
-    };
+  // Viewers cannot create resources
+  if (activeWorkspace.role === "viewer") {
+    redirect("/resources");
+  }
 
   async function handleSignOut() {
     "use server";
@@ -50,12 +50,15 @@ export default async function NewResourcePage() {
               Add Resource
             </h1>
             <p className="text-sm text-muted-foreground">
-              Add a new resource to track and manage
+              Track a new domain, subscription, certificate, hosting, or other recurring asset for{" "}
+              <span className="font-semibold text-foreground">{activeWorkspace.name}</span>
             </p>
           </div>
 
-          {/* Form */}
-          <ResourceForm workspaceId={activeWorkspace.id} />
+          {/* Clean Form Card */}
+          <div className="rounded-2xl border border-border/80 bg-card p-6 sm:p-8 shadow-xs">
+            <ResourceForm workspaceId={activeWorkspace.id} />
+          </div>
         </main>
       </div>
     </div>

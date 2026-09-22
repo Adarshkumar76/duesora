@@ -185,6 +185,7 @@ describe("API: Workspace Team & Invitations", () => {
 
       const json = await res.json();
       expect(json.data.workspaceId).toBe("ws-1");
+      expect(res.cookies.get("duesora_active_workspace")?.value).toBe("ws-1");
     });
   });
 });

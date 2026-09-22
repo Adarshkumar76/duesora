@@ -3,7 +3,7 @@ import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import { AppHeader } from "@/components/dashboard/app-header";
-import { listUserWorkspaces } from "@/lib/auth/workspace";
+import { resolveActiveWorkspace } from "@/lib/auth/active-workspace";
 import { getWorkspaceResource } from "@/lib/resources/service";
 import { getMonitorForResource, getMonitorLogsForResource } from "@/lib/monitors/service";
 import { extractHostname } from "@/lib/monitors/tls";
@@ -39,17 +39,12 @@ export default async function ResourceDetailsPage({
 
   const { id: resourceId } = await params;
 
-  // 1. Fetch user's workspaces
-  const userWorkspaces = await listUserWorkspaces(session.user.id);
+  // 1. Resolve user's active workspace (via cookie or fallback)
   const sessionWorkspaceId = (session.user as { workspaceId?: string | null }).workspaceId;
-
-  const activeWorkspace =
-    userWorkspaces.find((w) => w.id === sessionWorkspaceId) ||
-    userWorkspaces[0] || {
-      id: sessionWorkspaceId || "default-workspace",
-      name: "Personal Workspace",
-      role: "owner",
-    };
+  const { activeWorkspace, userWorkspaces } = await resolveActiveWorkspace(
+    session.user.id,
+    sessionWorkspaceId
+  );
 
   // 2. Fetch the resource
   type ResourceEntity = NonNullable<Awaited<ReturnType<typeof getWorkspaceResource>>>;
@@ -185,6 +180,7 @@ export default async function ResourceDetailsPage({
             <ResourceDetailsActions
               resource={resource}
               workspaceId={activeWorkspace.id}
+              canManage={activeWorkspace.role !== "viewer"}
             />
           </div>
 

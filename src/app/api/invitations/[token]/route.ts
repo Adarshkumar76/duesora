@@ -52,7 +52,18 @@ export async function POST(_request: NextRequest, { params }: RouteParams) {
     const { token } = await params;
     const result = await acceptWorkspaceInvitation(token, session.user.id);
 
-    return NextResponse.json({ data: result }, { status: 200 });
+    const response = NextResponse.json({ data: result }, { status: 200 });
+    response.cookies.set({
+      name: "duesora_active_workspace",
+      value: result.workspaceId,
+      path: "/",
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+    });
+
+    return response;
   } catch (error) {
     if (error instanceof Error) {
       if (error.message === "INVITATION_NOT_FOUND") {
