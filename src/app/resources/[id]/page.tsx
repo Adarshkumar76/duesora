@@ -5,6 +5,9 @@ import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import { AppHeader } from "@/components/dashboard/app-header";
 import { listUserWorkspaces } from "@/lib/auth/workspace";
 import { getWorkspaceResource } from "@/lib/resources/service";
+import { getMonitorForResource, getMonitorLogsForResource } from "@/lib/monitors/service";
+import { extractHostname } from "@/lib/monitors/tls";
+import { ResourceMonitorCard } from "@/components/resources/resource-monitor-card";
 import { ResourceDetailsActions } from "@/components/resources/resource-details-actions";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { TagBadge } from "@/components/tags/tag-badge";
@@ -65,6 +68,14 @@ export default async function ResourceDetailsPage({
     notFound();
   }
   const r = resource;
+
+  // 3. Fetch monitor status & logs for this resource
+  const [monitor, monitorLogs] = await Promise.all([
+    getMonitorForResource(r.id, activeWorkspace.id),
+    getMonitorLogsForResource(r.id, activeWorkspace.id, 5),
+  ]);
+
+  const targetHostname = extractHostname(r.websiteUrl || r.name) || r.name;
 
   async function handleSignOut() {
     "use server";
@@ -243,6 +254,15 @@ export default async function ResourceDetailsPage({
               </div>
             </div>
           </Card>
+
+          {/* SSL / TLS & Domain Health Monitoring Card */}
+          <ResourceMonitorCard
+            initialMonitor={monitor}
+            initialLogs={monitorLogs}
+            workspaceId={activeWorkspace.id}
+            resourceId={resource.id}
+            targetHostname={targetHostname}
+          />
 
           {/* Two-Column Grid Layout matching mockup 07_resource_details_page.jpg */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

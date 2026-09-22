@@ -5,6 +5,7 @@ import {
   timestamp,
   pgEnum,
   unique,
+  index,
   text,
   integer,
   boolean,
@@ -376,6 +377,89 @@ export const webhookDeliveries = pgTable("webhook_deliveries", {
     .defaultNow()
     .notNull(),
 });
+
+export const resourceMonitors = pgTable(
+  "resource_monitors",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+
+    workspaceId: uuid("workspace_id")
+      .notNull()
+      .references(() => workspaces.id, { onDelete: "cascade" }),
+
+    resourceId: uuid("resource_id")
+      .notNull()
+      .references(() => resources.id, { onDelete: "cascade" }),
+
+    hostname: varchar("hostname", { length: 255 }).notNull(),
+
+    status: varchar("status", { length: 50 }).notNull().default("unknown"),
+
+    tlsIssuer: varchar("tls_issuer", { length: 255 }),
+    tlsSubject: varchar("tls_subject", { length: 255 }),
+    tlsValidFrom: timestamp("tls_valid_from", { withTimezone: true }),
+    tlsValidTo: timestamp("tls_valid_to", { withTimezone: true }),
+    tlsDaysRemaining: integer("tls_days_remaining"),
+    tlsProtocol: varchar("tls_protocol", { length: 50 }),
+
+    dnsNameservers: text("dns_nameservers"),
+    dnsIpv4: text("dns_ipv4"),
+
+    latencyMs: integer("latency_ms"),
+    lastCheckedAt: timestamp("last_checked_at", { withTimezone: true }),
+    errorMessage: text("error_message"),
+
+    createdAt: timestamp("created_at", {
+      withTimezone: true,
+    })
+      .defaultNow()
+      .notNull(),
+
+    updatedAt: timestamp("updated_at", {
+      withTimezone: true,
+    })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    unique("resource_monitors_resource_unique").on(table.resourceId),
+    index("resource_monitors_workspace_idx").on(table.workspaceId),
+  ],
+);
+
+export const resourceMonitorLogs = pgTable(
+  "resource_monitor_logs",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+
+    monitorId: uuid("monitor_id")
+      .notNull()
+      .references(() => resourceMonitors.id, { onDelete: "cascade" }),
+
+    resourceId: uuid("resource_id")
+      .notNull()
+      .references(() => resources.id, { onDelete: "cascade" }),
+
+    workspaceId: uuid("workspace_id")
+      .notNull()
+      .references(() => workspaces.id, { onDelete: "cascade" }),
+
+    status: varchar("status", { length: 50 }).notNull(),
+    latencyMs: integer("latency_ms"),
+    tlsDaysRemaining: integer("tls_days_remaining"),
+    message: text("message"),
+
+    checkedAt: timestamp("checked_at", {
+      withTimezone: true,
+    })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index("resource_monitor_logs_monitor_idx").on(table.monitorId),
+    index("resource_monitor_logs_resource_idx").on(table.resourceId),
+  ],
+);
 
 
 
