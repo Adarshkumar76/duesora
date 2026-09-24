@@ -12,6 +12,8 @@ import { SpendBreakdowns } from "@/components/reports/spend-breakdowns";
 import { TopExpensesTable } from "@/components/reports/top-expenses-table";
 import { RecentPriceChangesCard } from "@/components/reports/recent-price-changes-card";
 import { PrintReportButton } from "@/components/reports/print-report-button";
+import { CashflowChart } from "@/components/reports/cashflow-chart";
+import { CategoryDonut } from "@/components/reports/category-donut";
 import { FileText } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -43,6 +45,7 @@ export default async function ReportsPage() {
     cadences: [],
     currencies: [],
     topCostDrivers: [],
+    monthlyForecast: [],
   };
 
   try {
@@ -112,6 +115,12 @@ export default async function ReportsPage() {
           {/* KPI Summary Cards */}
           <ReportSummaryCards summary={reportData} />
 
+          {/* 12-Month Renewal Cashflow Forecast Chart */}
+          <CashflowChart
+            forecast={reportData.monthlyForecast}
+            currency={reportData.currency}
+          />
+
           {/* Budget Velocity & Spend Alerts */}
           {budgetStatus && (
             <BudgetProgressCard
@@ -119,6 +128,12 @@ export default async function ReportsPage() {
               workspaceId={activeWorkspace.id}
             />
           )}
+
+          {/* Category Distribution Donut / Progress */}
+          <CategoryDonut
+            categories={reportData.categories}
+            currency={reportData.currency}
+          />
 
           {/* Distribution & Breakdown Cards */}
           <SpendBreakdowns summary={reportData} />

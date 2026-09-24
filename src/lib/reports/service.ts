@@ -31,6 +31,7 @@ export async function getWorkspaceSpendReport(
       amountMinor: resources.amountMinor,
       currency: resources.currency,
       billingCycle: resources.billingCycle,
+      renewalDate: resources.renewalDate,
     })
     .from(resources)
     .where(
@@ -181,6 +182,52 @@ export async function getWorkspaceSpendReport(
   const averageAssetCostMinor =
     payingResources > 0 ? Math.round(totalAnnualRunRateMinor / payingResources) : 0;
 
+  // 12-Month Rolling Cashflow Forecast
+  const now = new Date();
+  const monthlyForecast: import("./types").MonthlyCashflowPoint[] = [];
+
+  for (let i = 0; i < 12; i++) {
+    const targetMonth = new Date(now.getFullYear(), now.getMonth() + i, 1);
+    const monthKey = `${targetMonth.getFullYear()}-${String(targetMonth.getMonth() + 1).padStart(2, "0")}`;
+    const label = targetMonth.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+
+    let projectedSpendMinor = 0;
+    let renewalCount = 0;
+
+    for (const item of rawResources) {
+      if (item.status !== "active" || !item.amountMinor || item.amountMinor <= 0) continue;
+
+      const convertedCost = convertCurrency(item.amountMinor, item.currency || "USD", targetCurrency);
+      const cycle = item.billingCycle || "yearly";
+
+      if (cycle === "monthly") {
+        projectedSpendMinor += convertedCost;
+        renewalCount++;
+      } else if (item.renewalDate) {
+        const renDate = new Date(item.renewalDate);
+        if (cycle === "quarterly") {
+          const monthDiff = (targetMonth.getFullYear() - renDate.getFullYear()) * 12 + (targetMonth.getMonth() - renDate.getMonth());
+          if (monthDiff >= 0 && monthDiff % 3 === 0) {
+            projectedSpendMinor += convertedCost;
+            renewalCount++;
+          }
+        } else if (cycle === "yearly" || cycle === "custom") {
+          if (targetMonth.getMonth() === renDate.getMonth()) {
+            projectedSpendMinor += convertedCost;
+            renewalCount++;
+          }
+        }
+      }
+    }
+
+    monthlyForecast.push({
+      monthKey,
+      label,
+      projectedSpendMinor,
+      renewalCount,
+    });
+  }
+
   return {
     totalAnnualRunRateMinor,
     totalMonthlyRunRateMinor,
@@ -192,5 +239,6 @@ export async function getWorkspaceSpendReport(
     cadences,
     currencies,
     topCostDrivers,
+    monthlyForecast,
   };
 }

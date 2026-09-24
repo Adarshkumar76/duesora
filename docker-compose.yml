@@ -1,4 +1,38 @@
 services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: duesora-web
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - APP_URL=${APP_URL:-http://localhost:3000}
+      - DATABASE_URL=postgresql://duesora:duesora@postgres:5432/duesora
+      - REDIS_URL=redis://redis:6379
+      - AUTH_SECRET=${AUTH_SECRET:-replace-with-a-long-random-secret}
+      - AUTH_TRUST_HOST=true
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY:-replace-with-a-dedicated-encryption-key}
+      - CRON_SECRET=${CRON_SECRET:-replace-with-a-secure-cron-secret}
+      - AUTH_GITHUB_ID=${AUTH_GITHUB_ID}
+      - AUTH_GITHUB_SECRET=${AUTH_GITHUB_SECRET}
+      - AUTH_GOOGLE_ID=${AUTH_GOOGLE_ID}
+      - AUTH_GOOGLE_SECRET=${AUTH_GOOGLE_SECRET}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SMTP_FROM=${SMTP_FROM}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - duesora_uploads:/app/data/uploads
+
   postgres:
     image: postgres:16-alpine
     container_name: duesora-postgres
@@ -34,3 +68,4 @@ services:
 volumes:
   duesora_postgres_data:
   duesora_redis_data:
+  duesora_uploads:

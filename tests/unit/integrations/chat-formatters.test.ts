@@ -2,6 +2,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   isValidSlackWebhookUrl,
   isValidDiscordWebhookUrl,
+  isValidNtfyUrl,
+  isValidGotifyUrl,
   createNotificationChannelSchema,
 } from "@/lib/integrations/chat/validation";
 import {
@@ -16,6 +18,18 @@ import {
   buildDiscordTestEmbed,
   sendDiscordWebhook,
 } from "@/lib/integrations/chat/discord";
+import {
+  buildNtfyRenewalPayload,
+  buildNtfyMonitorPayload,
+  buildNtfyTestPayload,
+  sendNtfyNotification,
+} from "@/lib/integrations/chat/ntfy";
+import {
+  buildGotifyRenewalPayload,
+  buildGotifyMonitorPayload,
+  buildGotifyTestPayload,
+  sendGotifyNotification,
+} from "@/lib/integrations/chat/gotify";
 
 describe("Chat Integrations Formatters & Webhook Delivery", () => {
   describe("URL Validation Helpers", () => {
@@ -33,6 +47,21 @@ describe("Chat Integrations Formatters & Webhook Delivery", () => {
       expect(isValidDiscordWebhookUrl("http://discord.com/api/webhooks/123456789/abcdef")).toBe(false);
       expect(isValidDiscordWebhookUrl("https://evil.com/api/webhooks/123456789/abcdef")).toBe(false);
       expect(isValidDiscordWebhookUrl("invalid-url")).toBe(false);
+    });
+
+    it("validates ntfy URLs correctly", () => {
+      expect(isValidNtfyUrl("https://ntfy.sh/my_topic")).toBe(true);
+      expect(isValidNtfyUrl("http://ntfy.sh/my_topic")).toBe(true);
+      expect(isValidNtfyUrl("https://ntfy.internal.company.com/alerts")).toBe(true);
+      expect(isValidNtfyUrl("https://ntfy.sh/")).toBe(false);
+      expect(isValidNtfyUrl("not-a-url")).toBe(false);
+    });
+
+    it("validates Gotify URLs correctly", () => {
+      expect(isValidGotifyUrl("https://gotify.example.com/message?token=A1B2C3D4")).toBe(true);
+      expect(isValidGotifyUrl("http://localhost:8080/message?token=xyz")).toBe(true);
+      expect(isValidGotifyUrl("https://gotify.example.com/message")).toBe(false);
+      expect(isValidGotifyUrl("not-a-url")).toBe(false);
     });
 
     it("enforces valid provider URL in createNotificationChannelSchema", () => {
@@ -169,6 +198,108 @@ describe("Chat Integrations Formatters & Webhook Delivery", () => {
     });
   });
 
+  describe("ntfy Payload Formatters", () => {
+    it("builds a rich ntfy renewal message with priority and tags", () => {
+      const payload = buildNtfyRenewalPayload({
+        resourceId: "res-123",
+        resourceName: "api.duesora.com",
+        resourceType: "domain",
+        provider: "Cloudflare",
+        daysRemaining: 1,
+        renewalDate: new Date("2026-10-01"),
+        amountMinor: 1400,
+        currency: "USD",
+        billingCycle: "yearly",
+        workspaceName: "Acme Corp",
+      });
+
+      expect(payload.title).toContain("Renewal Alert: api.duesora.com");
+      expect(payload.priority).toBe(5);
+      expect(payload.tags).toContain("rotating_light");
+      expect(payload.message).toContain("Renews: Oct 1, 2026");
+      expect(payload.actions).toHaveLength(1);
+    });
+
+    it("builds a ntfy monitor degraded payload", () => {
+      const payload = buildNtfyMonitorPayload({
+        resourceId: "res-123",
+        resourceName: "api.duesora.com",
+        hostname: "api.duesora.com",
+        status: "critical",
+        alertReason: "degraded",
+        daysRemaining: 5,
+        issuer: "Let's Encrypt",
+        latencyMs: 142,
+        workspaceName: "Acme Corp",
+      });
+
+      expect(payload.title).toContain("CRITICAL SSL Degradation");
+      expect(payload.priority).toBe(5);
+      expect(payload.tags).toContain("x");
+    });
+
+    it("builds a ntfy test message", () => {
+      const payload = buildNtfyTestPayload({
+        workspaceName: "Acme Corp",
+        channelName: "duesora-alerts",
+        provider: "ntfy",
+        testedBy: "Admin",
+      });
+
+      expect(payload.title).toContain("ntfy Alert Integration Connected");
+      expect(payload.priority).toBe(3);
+    });
+  });
+
+  describe("Gotify Payload Formatters", () => {
+    it("builds a Gotify renewal payload with markdown formatting", () => {
+      const payload = buildGotifyRenewalPayload({
+        resourceId: "res-123",
+        resourceName: "duesora-prod-cluster",
+        resourceType: "server",
+        provider: "AWS",
+        daysRemaining: 0,
+        renewalDate: new Date("2026-10-01"),
+        amountMinor: 12000,
+        currency: "USD",
+        billingCycle: "monthly",
+        workspaceName: "Acme Corp",
+      });
+
+      expect(payload.title).toContain("OVERDUE Renewal");
+      expect(payload.priority).toBe(9);
+      const extras = payload.extras as Record<string, Record<string, unknown>> | undefined;
+      expect(extras?.["client::display"]?.contentType).toBe("text/markdown");
+    });
+
+    it("builds a Gotify monitor degraded payload", () => {
+      const payload = buildGotifyMonitorPayload({
+        resourceId: "res-123",
+        resourceName: "api.duesora.com",
+        hostname: "api.duesora.com",
+        status: "critical",
+        alertReason: "degraded",
+        daysRemaining: 3,
+        latencyMs: 120,
+      });
+
+      expect(payload.title).toContain("Service Degraded");
+      expect(payload.priority).toBe(8);
+      expect(payload.message).toContain("120ms");
+    });
+
+    it("builds a Gotify test payload", () => {
+      const payload = buildGotifyTestPayload({
+        workspaceName: "Acme Corp",
+        channelName: "gotify-server",
+        provider: "gotify",
+      });
+
+      expect(payload.title).toContain("Gotify Alert Integration Connected");
+      expect(payload.priority).toBe(5);
+    });
+  });
+
   describe("Webhook Dispatch Network Delivery", () => {
     const originalFetch = global.fetch;
 
@@ -216,6 +347,36 @@ describe("Chat Integrations Formatters & Webhook Delivery", () => {
       const res = await sendDiscordWebhook("https://discord.com/api/webhooks/123/xyz", { content: "hello" });
       expect(res.success).toBe(true);
       expect(res.statusCode).toBe(204);
+    });
+
+    it("delivers ntfy notification successfully on 200 OK", async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        text: () => Promise.resolve('{"id":"123"}'),
+      } as unknown as Response);
+
+      const res = await sendNtfyNotification("https://ntfy.sh/test_topic", {
+        message: "test message",
+        title: "Test",
+      });
+      expect(res.success).toBe(true);
+      expect(res.statusCode).toBe(200);
+    });
+
+    it("delivers Gotify notification successfully on 200 OK", async () => {
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        text: () => Promise.resolve('{"id":1}'),
+      } as unknown as Response);
+
+      const res = await sendGotifyNotification("https://gotify.example.com/message?token=abc", {
+        title: "Test",
+        message: "Hello Gotify",
+      });
+      expect(res.success).toBe(true);
+      expect(res.statusCode).toBe(200);
     });
   });
 });

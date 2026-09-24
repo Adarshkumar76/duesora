@@ -1,58 +1,58 @@
 # Roadmap
 
-## v0.1 - Foundation
+## v0.1 - Foundation (Completed)
 
--   auth;
--   workspaces;
--   resource CRUD;
--   tags/categories;
--   ownership;
--   renewals;
--   recurring cost;
--   dashboard;
--   in-app + SMTP reminders;
--   webhooks;
--   CSV/JSON export/import;
--   Docker Compose.
+- [x] auth (Credentials, GitHub, Google);
+- [x] workspaces & multi-tenancy;
+- [x] resource CRUD;
+- [x] tags/categories;
+- [x] ownership assignment;
+- [x] renewal tracking & manual renewal actions;
+- [x] recurring cost calculations;
+- [x] unified dashboard;
+- [x] in-app + SMTP reminders;
+- [x] webhooks (HMAC SHA-256 signing);
+- [x] CSV/JSON export/import;
+- [x] multi-stage Dockerfile & Docker Compose.
 
-## v0.2 - Monitoring
+## v0.2 - Monitoring (Completed)
 
--   TLS monitor;
--   domain metadata monitor;
--   monitor history;
--   custom reminder policies;
--   calendar/iCal;
--   multi-currency;
--   worker health.
+- [x] TLS / SSL certificate monitor;
+- [x] domain metadata monitor;
+- [x] monitor status history & latency logs;
+- [x] custom reminder policies (days before renewal array);
+- [x] calendar / iCal export (`.ics`);
+- [x] multi-currency rates & real-time sync;
+- [x] worker & database health checks (`/api/health`).
 
-## v0.3 - Teams
+## v0.3 - Teams (Completed)
 
--   invites;
--   RBAC;
--   teams;
--   audit log;
--   bulk actions;
--   escalation;
--   additional notification adapters.
+- [x] tokenized workspace invitations;
+- [x] RBAC (Owner, Admin, Member, Viewer);
+- [x] team roster & member role management;
+- [x] comprehensive audit logging;
+- [x] bulk resource operations (tagging, ownership, deletion);
+- [x] reminder escalation policies;
+- [x] multi-channel notification adapters (Slack, Discord, Telegram, Teams, ntfy.sh, Gotify).
 
-## v0.4 - Intelligence
+## v0.4 - Intelligence (Completed)
 
--   cost history;
--   budgets;
--   price-change alerts;
--   document extraction with confirmation;
--   usage/seat adapters;
--   analytics.
+- [x] resource cost history & rate change tracking;
+- [x] workspace budgets & spend thresholds;
+- [x] price-change alerts & notifications;
+- [x] document & invoice attachments;
+- [x] resource dependency mapping & blast radius;
+- [x] developer workspace API keys (`due_live_...`);
+- [x] visual spend analytics & 12-month renewal cashflow forecasting.
 
-## v1.0 - Stable self-hosted platform
+## v1.0 - Stable self-hosted platform (In Progress)
 
--   stable API;
--   upgrade guarantees;
--   backup/restore tooling;
--   2FA/OIDC;
--   plugin architecture;
--   i18n;
--   security review;
--   mature operator documentation.
+- [x] stable workspace API & developer keys;
+- [x] multi-stage Alpine Docker container;
+- [ ] automated backup / restore CLI tooling;
+- [ ] 2FA / SSO OIDC;
+- [ ] plugin architecture;
+- [ ] i18n localization;
+- [ ] third-party security audit.
 
 Roadmap items are intentions, not promised dates.

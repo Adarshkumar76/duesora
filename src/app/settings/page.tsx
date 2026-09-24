@@ -21,6 +21,8 @@ import { EmailSettings } from "@/components/settings/email-settings";
 import { ReminderSettings } from "@/components/settings/reminder-settings";
 import { CronStatusCard } from "@/components/settings/cron-status-card";
 import { WorkspaceDangerZone } from "@/components/settings/workspace-danger-zone";
+import { ApiKeysManager } from "@/components/settings/api-keys-manager";
+import { listWorkspaceApiKeys } from "@/lib/auth/api-key";
 import { Building2, Mail, ShieldCheck } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -79,6 +81,16 @@ export default async function SettingsPage() {
         page: 1,
         pageSize: 20,
       });
+    } catch {
+      // fallback
+    }
+  }
+
+  // 6. Fetch developer API keys
+  let apiKeysList: Awaited<ReturnType<typeof listWorkspaceApiKeys>> = [];
+  if (activeWorkspace.role === "owner" || activeWorkspace.role === "admin") {
+    try {
+      apiKeysList = await listWorkspaceApiKeys(session.user.id, activeWorkspace.id);
     } catch {
       // fallback
     }
@@ -256,6 +268,17 @@ export default async function SettingsPage() {
               userRole={activeWorkspace.role}
             />
           </div>
+
+          {/* Developer Workspace API Keys */}
+          {(activeWorkspace.role === "owner" || activeWorkspace.role === "admin") && (
+            <div className="pt-2" id="api-keys">
+              <ApiKeysManager
+                workspaceId={activeWorkspace.id}
+                initialKeys={apiKeysList}
+                userRole={activeWorkspace.role}
+              />
+            </div>
+          )}
 
           {/* Workspace Audit & Compliance Log (Admins, Owners, Members) */}
           {canViewAudit && (

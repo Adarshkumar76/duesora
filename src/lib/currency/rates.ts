@@ -104,3 +104,18 @@ export function normalizeRecurringCost(
       };
   }
 }
+
+/**
+ * Formats a minor unit amount into a human-readable currency string (e.g. 1400 -> "$14.00").
+ */
+export function formatCurrencyMinor(
+  amountMinor: number | null | undefined,
+  currency: string = "USD"
+): string {
+  if (amountMinor === null || amountMinor === undefined || isNaN(amountMinor)) {
+    return "—";
+  }
+  const curr = currency.toUpperCase();
+  const symbol = CURRENCY_SYMBOLS[curr] || curr + " ";
+  return `${symbol}${(amountMinor / 100).toFixed(2)}`;
+}

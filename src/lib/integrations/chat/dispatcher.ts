@@ -27,6 +27,20 @@ import {
   buildTeamsPriceIncreaseMessage,
   sendTeamsWebhook,
 } from "./teams";
+import {
+  buildNtfyRenewalMessage,
+  buildNtfyMonitorMessage,
+  buildNtfyTestMessage,
+  buildNtfyPriceIncreaseMessage,
+  sendNtfyNotification,
+} from "./ntfy";
+import {
+  buildGotifyRenewalMessage,
+  buildGotifyMonitorMessage,
+  buildGotifyTestMessage,
+  buildGotifyPriceIncreaseMessage,
+  sendGotifyNotification,
+} from "./gotify";
 import type {
   ChatProvider,
   ChatEventType,
@@ -61,6 +75,10 @@ function buildRenewalPayload(
       return buildTelegramRenewalMessage(data);
     case "teams":
       return buildTeamsRenewalMessage(data);
+    case "ntfy":
+      return buildNtfyRenewalMessage(data);
+    case "gotify":
+      return buildGotifyRenewalMessage(data);
   }
 }
 
@@ -80,6 +98,10 @@ function buildMonitorPayload(
       return buildTelegramMonitorMessage(data);
     case "teams":
       return buildTeamsMonitorMessage(data);
+    case "ntfy":
+      return buildNtfyMonitorMessage(data);
+    case "gotify":
+      return buildGotifyMonitorMessage(data);
   }
 }
 
@@ -99,6 +121,10 @@ function buildTestPayload(
       return buildTelegramTestMessage(data);
     case "teams":
       return buildTeamsTestMessage(data);
+    case "ntfy":
+      return buildNtfyTestMessage(data);
+    case "gotify":
+      return buildGotifyTestMessage(data);
   }
 }
 
@@ -118,6 +144,10 @@ function buildPriceChangePayload(
       return buildTelegramPriceIncreaseMessage(data);
     case "teams":
       return buildTeamsPriceIncreaseMessage(data);
+    case "ntfy":
+      return buildNtfyPriceIncreaseMessage(data);
+    case "gotify":
+      return buildGotifyPriceIncreaseMessage(data);
   }
 }
 
@@ -142,6 +172,12 @@ async function dispatchToChannel(
       break;
     case "teams":
       result = await sendTeamsWebhook(channel.webhookUrl, payload);
+      break;
+    case "ntfy":
+      result = await sendNtfyNotification(channel.webhookUrl, payload);
+      break;
+    case "gotify":
+      result = await sendGotifyNotification(channel.webhookUrl, payload);
       break;
     default:
       result = { success: false, error: `Unsupported chat provider: ${channel.provider}` };

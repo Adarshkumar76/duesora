@@ -13,8 +13,11 @@ import { ResourceMonitorCard } from "@/components/resources/resource-monitor-car
 import { ResourceCostHistoryCard } from "@/components/resources/resource-cost-history-card";
 import { ResourceDocumentsCard } from "@/components/resources/resource-documents-card";
 import { RenewalDecisionCard } from "@/components/resources/renewal-decision-card";
+import { ResourceDependenciesCard } from "@/components/resources/resource-dependencies-card";
 import { ResourceDetailsActions } from "@/components/resources/resource-details-actions";
 import { VendorLogo } from "@/components/resources/vendor-logo";
+import { listResourceDependencies } from "@/lib/resources/dependencies";
+import { listWorkspaceResources } from "@/lib/resources/service";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { TagBadge } from "@/components/tags/tag-badge";
 import {
@@ -64,12 +67,14 @@ export default async function ResourceDetailsPage({
   }
   const r = resource;
 
-  // 3. Fetch monitor status, logs, cost history, and attached documents for this resource
-  const [monitor, monitorLogs, costHistory, attachedDocuments] = await Promise.all([
+  // 3. Fetch monitor status, logs, cost history, attached documents, and dependencies for this resource
+  const [monitor, monitorLogs, costHistory, attachedDocuments, dependencies, workspaceResourcesList] = await Promise.all([
     getMonitorForResource(r.id, activeWorkspace.id),
     getMonitorLogsForResource(r.id, activeWorkspace.id, 5),
     listResourceCostHistory(session.user.id, activeWorkspace.id, r.id).catch(() => []),
     listResourceDocuments(session.user.id, activeWorkspace.id, r.id).catch(() => []),
+    listResourceDependencies(activeWorkspace.id, r.id).catch(() => ({ dependsOn: [], dependents: [] })),
+    listWorkspaceResources(session.user.id, activeWorkspace.id, { pageSize: 100 }).catch(() => ({ items: [] })),
   ]);
 
   const targetHostname = extractHostname(r.websiteUrl || r.name) || r.name;
@@ -383,6 +388,20 @@ export default async function ResourceDetailsPage({
                 resourceId={resource.id}
                 initialDocuments={attachedDocuments}
                 canManage={activeWorkspace.role !== "viewer"}
+              />
+
+              {/* Card 4: Service Dependencies & Blast Radius */}
+              <ResourceDependenciesCard
+                workspaceId={activeWorkspace.id}
+                resourceId={resource.id}
+                initialDependsOn={dependencies.dependsOn}
+                initialDependents={dependencies.dependents}
+                allWorkspaceResources={workspaceResourcesList.items.map((i) => ({
+                  id: i.id,
+                  name: i.name,
+                  type: i.type,
+                }))}
+                userRole={activeWorkspace.role}
               />
             </div>
 

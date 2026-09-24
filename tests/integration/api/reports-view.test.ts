@@ -90,6 +90,7 @@ describe("Reports Page (App Router)", () => {
           shareOfTotalPct: 60.0,
         },
       ],
+      monthlyForecast: [],
     });
 
     const jsx = await ReportsPage();

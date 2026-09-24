@@ -1,4 +1,4 @@
-export type ChatProvider = "slack" | "discord" | "telegram" | "teams";
+export type ChatProvider = "slack" | "discord" | "telegram" | "teams" | "ntfy" | "gotify";
 
 export type ChatEventType =
   | "reminder.upcoming"
