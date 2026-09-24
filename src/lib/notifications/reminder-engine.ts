@@ -1,5 +1,5 @@
 import { getDb } from "@/db";
-import { resources, users, memberships } from "@/db/schema";
+import { resources, users, memberships, workspaces } from "@/db/schema";
 import { and, eq, isNotNull } from "drizzle-orm";
 import {
   createNotification,
@@ -23,6 +23,7 @@ export interface ReminderMatch {
 export interface ReminderEngineOptions {
   escalationDays?: number; // Days remaining threshold to trigger admin escalation (default: 3)
   enableEscalation?: boolean; // Whether admin escalation policy is enabled (default: true)
+  reminderDays?: number[]; // Custom reminder intervals
 }
 
 export interface EngineRunSummary {
@@ -40,7 +41,8 @@ export interface EngineRunSummary {
  */
 export function calculateReminderMatch(
   renewalDate: Date,
-  nowDate: Date = new Date()
+  nowDate: Date = new Date(),
+  configuredIntervals: number[] = [30, 14, 7, 3, 1, 0]
 ): ReminderMatch | null {
   const renewalMs = new Date(renewalDate).getTime();
   const nowMs = nowDate.getTime();
@@ -49,57 +51,30 @@ export function calculateReminderMatch(
   const diffDays = Math.ceil((renewalMs - nowMs) / (1000 * 60 * 60 * 24));
 
   if (diffDays <= 0) {
-    return {
-      intervalDays: 0,
-      severity: "critical",
-      type: "renewal_overdue",
-      daysRemaining: diffDays,
-    };
+    if (configuredIntervals.includes(0)) {
+      return {
+        intervalDays: 0,
+        severity: "critical",
+        type: "renewal_overdue",
+        daysRemaining: diffDays,
+      };
+    }
+    return null;
   }
 
-  if (diffDays <= 1) {
-    return {
-      intervalDays: 1,
-      severity: "critical",
-      type: "renewal_upcoming",
-      daysRemaining: diffDays,
-    };
-  }
-
-  if (diffDays <= 3) {
-    return {
-      intervalDays: 3,
-      severity: "warning",
-      type: "renewal_upcoming",
-      daysRemaining: diffDays,
-    };
-  }
-
-  if (diffDays <= 7) {
-    return {
-      intervalDays: 7,
-      severity: "warning",
-      type: "renewal_upcoming",
-      daysRemaining: diffDays,
-    };
-  }
-
-  if (diffDays <= 14) {
-    return {
-      intervalDays: 14,
-      severity: "info",
-      type: "renewal_upcoming",
-      daysRemaining: diffDays,
-    };
-  }
-
-  if (diffDays <= 30) {
-    return {
-      intervalDays: 30,
-      severity: "info",
-      type: "renewal_upcoming",
-      daysRemaining: diffDays,
-    };
+  // Sort configured intervals ascending to match the nearest upcoming horizon
+  const positiveIntervals = configuredIntervals.filter((i) => i > 0).sort((a, b) => a - b);
+  for (const interval of positiveIntervals) {
+    if (diffDays <= interval) {
+      const severity: "info" | "warning" | "critical" =
+        interval <= 1 ? "critical" : interval <= 7 ? "warning" : "info";
+      return {
+        intervalDays: interval,
+        severity,
+        type: "renewal_upcoming",
+        daysRemaining: diffDays,
+      };
+    }
   }
 
   return null;
@@ -133,9 +108,11 @@ export async function processWorkspaceReminders(
         resource: resources,
         ownerName: users.name,
         ownerEmail: users.email,
+        reminderDays: workspaces.reminderDays,
       })
       .from(resources)
       .leftJoin(users, eq(resources.ownerId, users.id))
+      .leftJoin(workspaces, eq(resources.workspaceId, workspaces.id))
       .where(
         and(
           eq(resources.workspaceId, workspaceId),
@@ -145,6 +122,19 @@ export async function processWorkspaceReminders(
       );
 
     summary.scannedCount = candidateResources.length;
+
+    // Determine configured reminder intervals (options or workspace settings or default)
+    let configuredIntervals: number[] = options?.reminderDays || [30, 14, 7, 3, 1, 0];
+    if (!options?.reminderDays && candidateResources[0]?.reminderDays) {
+      try {
+        const parsed = JSON.parse(candidateResources[0].reminderDays);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          configuredIntervals = parsed;
+        }
+      } catch {
+        // use default
+      }
+    }
 
     // 2. Fetch workspace admins & owners as default fallback recipients
     const workspaceAdmins = await db
@@ -162,7 +152,7 @@ export async function processWorkspaceReminders(
       const res = item.resource;
       if (!res.renewalDate) continue;
 
-      const match = calculateReminderMatch(res.renewalDate, now);
+      const match = calculateReminderMatch(res.renewalDate, now, configuredIntervals);
       if (!match) {
         summary.skippedCount++;
         continue;

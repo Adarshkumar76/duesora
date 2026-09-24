@@ -11,6 +11,7 @@ import { BudgetProgressCard } from "@/components/dashboard/budget-progress-card"
 import { SpendBreakdowns } from "@/components/reports/spend-breakdowns";
 import { TopExpensesTable } from "@/components/reports/top-expenses-table";
 import { RecentPriceChangesCard } from "@/components/reports/recent-price-changes-card";
+import { PrintReportButton } from "@/components/reports/print-report-button";
 import { FileText } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -102,6 +103,9 @@ export default async function ReportsPage() {
               <p className="text-sm text-muted-foreground">
                 Comprehensive cost analysis, category distributions, cadence allocation, and exportable financial summaries.
               </p>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <PrintReportButton />
             </div>
           </div>
 

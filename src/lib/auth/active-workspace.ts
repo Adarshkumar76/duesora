@@ -11,6 +11,7 @@ export interface ActiveWorkspace {
   type: string;
   defaultCurrency: string;
   timezone: string;
+  reminderDays?: string | null;
   role: WorkspaceRole;
   joinedAt: Date | string | null;
 }
@@ -34,6 +35,7 @@ export async function resolveActiveWorkspace(
     type: w.type || "team",
     defaultCurrency: w.defaultCurrency || "USD",
     timezone: w.timezone || "UTC",
+    reminderDays: w.reminderDays || "[30,14,7,3,1,0]",
   }));
 
   if (userWorkspaces.length === 0) {
@@ -44,6 +46,7 @@ export async function resolveActiveWorkspace(
       type: "personal",
       defaultCurrency: "USD",
       timezone: "UTC",
+      reminderDays: "[30,14,7,3,1,0]",
       role: "owner",
       joinedAt: new Date(),
     };

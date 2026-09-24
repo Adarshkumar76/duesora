@@ -18,6 +18,7 @@ import { getWorkspaceBudget, getWorkspaceBudgetStatus } from "@/lib/budgets/serv
 import { BudgetSettings } from "@/components/settings/budget-settings";
 import { CurrencyExchangeSettings } from "@/components/settings/currency-exchange-settings";
 import { EmailSettings } from "@/components/settings/email-settings";
+import { ReminderSettings } from "@/components/settings/reminder-settings";
 import { CronStatusCard } from "@/components/settings/cron-status-card";
 import { Building2, Mail, ShieldCheck } from "lucide-react";
 
@@ -92,6 +93,18 @@ export default async function SettingsPage() {
     budgetStatus = await getWorkspaceBudgetStatus(session.user.id, activeWorkspace.id);
   } catch {
     // fallback
+  }
+
+  let parsedReminderDays = [30, 14, 7, 3, 1, 0];
+  if (activeWorkspace.reminderDays) {
+    try {
+      const parsed = JSON.parse(activeWorkspace.reminderDays);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        parsedReminderDays = parsed;
+      }
+    } catch {
+      // fallback
+    }
   }
 
   async function handleSignOut() {
@@ -198,6 +211,15 @@ export default async function SettingsPage() {
             initialInvitations={teamData.invitations}
             currentUserRole={teamData.currentUserRole}
           />
+
+          {/* Renewal Alert Lead Times & Notification Horizons */}
+          <div className="pt-2" id="reminders">
+            <ReminderSettings
+              workspaceId={activeWorkspace.id}
+              userRole={activeWorkspace.role}
+              initialReminderDays={parsedReminderDays}
+            />
+          </div>
 
           {/* Email Alerts & Delivery Settings */}
           <div className="pt-2" id="email">

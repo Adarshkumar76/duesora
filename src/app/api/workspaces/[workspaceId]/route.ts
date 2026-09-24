@@ -10,6 +10,7 @@ const updateWorkspaceSchema = z.object({
   name: z.string().min(1).max(100).optional(),
   defaultCurrency: z.enum(["USD", "EUR", "GBP", "INR"]).optional(),
   timezone: z.string().max(100).optional(),
+  reminderDays: z.array(z.number().int().min(0).max(365)).optional(),
 });
 
 interface RouteParams {
@@ -45,6 +46,11 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     if (parsed.data.name !== undefined) updateData.name = parsed.data.name.trim();
     if (parsed.data.defaultCurrency !== undefined) updateData.defaultCurrency = parsed.data.defaultCurrency;
     if (parsed.data.timezone !== undefined) updateData.timezone = parsed.data.timezone.trim();
+    if (parsed.data.reminderDays !== undefined) {
+      updateData.reminderDays = JSON.stringify(
+        Array.from(new Set(parsed.data.reminderDays)).sort((a, b) => b - a)
+      );
+    }
 
     const db = getDb();
     const [updated] = await db

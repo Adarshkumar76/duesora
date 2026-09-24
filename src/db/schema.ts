@@ -90,6 +90,10 @@ export const workspaces = pgTable("workspaces", {
     .notNull()
     .default("Asia/Kolkata"),
 
+  reminderDays: text("reminder_days")
+    .notNull()
+    .default("[30,14,7,3,1,0]"),
+
   createdAt: timestamp("created_at", {
     withTimezone: true,
   })
