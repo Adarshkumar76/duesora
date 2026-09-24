@@ -1,10 +1,7 @@
-import { eq } from "drizzle-orm";
 import { getDb } from "@/db";
 import { exchangeRates } from "@/db/exchange-rates-schema";
 import {
   BASE_RATES_TO_USD,
-  SUPPORTED_CURRENCIES,
-  type SupportedCurrency,
   FX_CURRENCIES,
   type FxCurrency,
 } from "./rates";

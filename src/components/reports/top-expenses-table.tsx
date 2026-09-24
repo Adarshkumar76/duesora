@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { Download, FileSpreadsheet, FileJson, ArrowRight, Award } from "lucide-react";
+import { FileSpreadsheet, FileJson, ArrowRight, Award } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CURRENCY_SYMBOLS } from "@/lib/currency/rates";
 import type { CostDriverItem } from "@/lib/reports/types";

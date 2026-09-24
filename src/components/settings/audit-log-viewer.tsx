@@ -5,16 +5,12 @@ import {
   ShieldAlert,
   Search,
   User,
-  Clock,
-  Layers,
   FileText,
   UserCheck,
-  UserMinus,
   RefreshCw,
   PlusCircle,
   Trash2,
   Edit,
-  ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { AuditLogEntry } from "@/lib/audit/types";
@@ -34,7 +30,7 @@ export function AuditLogViewer({
   totalCount,
   currentPage,
   totalPages,
-  currentUserRole,
+  currentUserRole: _currentUserRole,
 }: AuditLogViewerProps) {
   const [logs, setLogs] = useState<AuditLogEntry[]>(initialLogs);
   const [search, setSearch] = useState("");

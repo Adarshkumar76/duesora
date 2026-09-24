@@ -5,8 +5,6 @@ import Link from "next/link";
 import {
   Wallet,
   AlertTriangle,
-  CheckCircle2,
-  TrendingUp,
   ArrowRight,
   ShieldAlert,
   Sliders,
@@ -21,7 +19,7 @@ interface BudgetProgressCardProps {
 
 export function BudgetProgressCard({
   status,
-  workspaceId,
+  workspaceId: _workspaceId,
 }: BudgetProgressCardProps) {
   const [viewMode, setViewMode] = useState<"monthly" | "annual">("monthly");
 

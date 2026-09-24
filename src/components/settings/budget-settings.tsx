@@ -7,13 +7,11 @@ import { Button } from "@/components/ui/button";
 import {
   Wallet,
   Coins,
-  TrendingUp,
   AlertTriangle,
   CheckCircle2,
   AlertCircle,
   Loader2,
   BellRing,
-  Percent,
 } from "lucide-react";
 import type { WorkspaceBudget, WorkspaceBudgetStatus } from "@/lib/budgets/types";
 import { CURRENCY_SYMBOLS } from "@/lib/currency/rates";

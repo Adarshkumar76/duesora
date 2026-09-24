@@ -61,7 +61,7 @@ export async function POST(
       return NextResponse.json({ error: { message: "Missing workspaceId" } }, { status: 400 });
     }
 
-    const membership = await requireWorkspaceRole(session.user.id, workspaceId, "member");
+    await requireWorkspaceRole(session.user.id, workspaceId, "member");
     const recipientEmail = session.user.email;
 
     if (!recipientEmail) {

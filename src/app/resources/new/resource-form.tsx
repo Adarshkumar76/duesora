@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Loader2, Globe, Shield, CreditCard, Server, Cloud, KeyRound, HelpCircle, Check } from "lucide-react";
+import { Calendar, Loader2 } from "lucide-react";
 import { TagInput } from "@/components/tags/tag-input";
 import { getResourceTypeConfig } from "@/lib/resources/form-config";
 

@@ -3,7 +3,6 @@ import {
   calculateNextRenewalDate,
   determineUrgencyBucket,
   renewWorkspaceResource,
-  listWorkspaceRenewals,
 } from "@/lib/renewals/service";
 import { requireWorkspaceRole } from "@/lib/auth/workspace";
 import { getDb } from "@/db";

@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { TrendingUp, TrendingDown, ArrowRight, ShieldAlert, Sparkles, ExternalLink } from "lucide-react";
+import { TrendingUp, TrendingDown, ArrowRight, Sparkles, ExternalLink } from "lucide-react";
 import { CURRENCY_SYMBOLS } from "@/lib/currency/rates";
 import type { WorkspacePriceHikeItem } from "@/lib/resources/cost-history";
 

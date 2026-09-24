@@ -1,9 +1,8 @@
-import { NextRequest } from "next/server";
 import { getEffectiveExchangeRates } from "@/lib/currency/sync";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(_request: NextRequest) {
+export async function GET(_request?: Request) {
   try {
     const { rates, lastSyncedAt, source } = await getEffectiveExchangeRates();
 

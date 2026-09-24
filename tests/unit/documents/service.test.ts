@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   uploadResourceDocument,
   listResourceDocuments,
-  getResourceDocumentFile,
   deleteResourceDocument,
 } from "@/lib/documents/service";
 import * as authWorkspace from "@/lib/auth/workspace";

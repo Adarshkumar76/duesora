@@ -10,7 +10,6 @@ import {
   Ban,
   Handshake,
   Clock,
-  Calendar,
   User,
   Edit3,
   Loader2,
@@ -305,7 +304,7 @@ export function RenewalDecisionCard({
 
             {!notes && !noticeDays && !deadline && decision === "none" && (
               <p className="text-xs text-muted-foreground italic">
-                No formal renewal governance decision recorded. Click "Update Decision" to review, approve, or mark to cancel.
+                No formal renewal governance decision recorded. Click &ldquo;Update Decision&rdquo; to review, approve, or mark to cancel.
               </p>
             )}
           </div>

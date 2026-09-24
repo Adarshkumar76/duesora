@@ -18,6 +18,7 @@ import { getWorkspaceBudget, getWorkspaceBudgetStatus } from "@/lib/budgets/serv
 import { BudgetSettings } from "@/components/settings/budget-settings";
 import { CurrencyExchangeSettings } from "@/components/settings/currency-exchange-settings";
 import { EmailSettings } from "@/components/settings/email-settings";
+import { CronStatusCard } from "@/components/settings/cron-status-card";
 import { Building2, Mail, ShieldCheck } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -213,6 +214,14 @@ export default async function SettingsPage() {
               workspaceId={activeWorkspace.id}
               initialChannels={chatChannels}
               currentUserRole={activeWorkspace.role}
+            />
+          </div>
+
+          {/* Automated Background Jobs & Cron Schedule */}
+          <div className="pt-2">
+            <CronStatusCard
+              workspaceId={activeWorkspace.id}
+              userRole={activeWorkspace.role}
             />
           </div>
 

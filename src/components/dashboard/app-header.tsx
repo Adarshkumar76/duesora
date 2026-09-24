@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useSyncExternalStore } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import {
   Search,
@@ -69,7 +69,6 @@ export function AppHeader({
   workspaces = [],
   onSignOut,
 }: AppHeaderProps) {
-  const router = useRouter();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -85,21 +84,17 @@ export function AppHeader({
     status: string;
     createdAt: string;
   }>>([]);
-  const [searchQuery, setSearchQuery] = useState("");
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [switchingWorkspace, setSwitchingWorkspace] = useState<string | null>(null);
   const theme = useSyncExternalStore(subscribeTheme, getThemeSnapshot, getServerThemeSnapshot);
+  const isMac = useSyncExternalStore(
+    () => () => {},
+    () => (typeof window !== "undefined" ? /Mac|iPhone|iPod|iPad/i.test(navigator.userAgent) : false),
+    () => false
+  );
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
-
-  const [isMac, setIsMac] = useState(false);
-
-  useEffect(() => {
-    if (typeof window !== "undefined" && /Mac|iPhone|iPod|iPad/i.test(navigator.userAgent)) {
-      setIsMac(true);
-    }
-  }, []);
 
   // Global Cmd+K / Ctrl+K / Win+K / Esc keyboard shortcut
   useEffect(() => {
@@ -216,15 +211,6 @@ export function AppHeader({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/resources?search=${encodeURIComponent(searchQuery.trim())}`);
-    } else {
-      router.push("/resources");
-    }
-  };
 
   const userName = user.name || "Adarsh Kumar";
   const userInitials = userName

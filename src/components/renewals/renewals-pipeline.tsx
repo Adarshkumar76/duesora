@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -15,7 +15,6 @@ import {
   Sparkles,
   Ban,
   Handshake,
-  BellRing,
   Filter,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -39,20 +38,17 @@ export function RenewalsPipeline({
   const searchParams = useSearchParams();
 
   const [items, setItems] = useState<RenewalItem[]>(initialItems);
+  const [prevInitialItems, setPrevInitialItems] = useState(initialItems);
   const [renewingId, setRenewingId] = useState<string | null>(null);
   const [updatingDecisionId, setUpdatingDecisionId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
   const [statusMessage, setStatusMessage] = useState<{ text: string; error?: boolean } | null>(null);
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Update items if initialItems changes (e.g. on navigation)
-  useEffect(() => {
+  // Sync state if initialItems changes (e.g. on navigation) using standard React pattern
+  if (prevInitialItems !== initialItems) {
+    setPrevInitialItems(initialItems);
     setItems(initialItems);
-  }, [initialItems]);
+  }
 
   const canEdit = userRole === "owner" || userRole === "admin" || userRole === "member";
 

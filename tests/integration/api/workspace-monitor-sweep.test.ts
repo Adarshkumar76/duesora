@@ -21,7 +21,7 @@ describe("POST /api/workspaces/[workspaceId]/resources/monitor", () => {
 
   it("returns 401 if unauthenticated", async () => {
     const { auth } = await import("@/auth");
-    vi.mocked(auth).mockResolvedValueOnce(null as any);
+    vi.mocked(auth).mockResolvedValueOnce(null as never);
 
     const req = new NextRequest("http://localhost:3000/api/workspaces/ws-1/resources/monitor", {
       method: "POST",
@@ -37,7 +37,7 @@ describe("POST /api/workspaces/[workspaceId]/resources/monitor", () => {
 
     vi.mocked(auth).mockResolvedValueOnce({
       user: { id: "user-1", email: "user@example.com" },
-    } as any);
+    } as never);
 
     vi.mocked(requireWorkspaceRole).mockRejectedValueOnce(new Error("FORBIDDEN"));
 
@@ -56,12 +56,12 @@ describe("POST /api/workspaces/[workspaceId]/resources/monitor", () => {
 
     vi.mocked(auth).mockResolvedValueOnce({
       user: { id: "user-1", email: "user@example.com" },
-    } as any);
+    } as never);
 
     vi.mocked(requireWorkspaceRole).mockResolvedValueOnce({
       workspace: { id: "ws-1", name: "Acme Corp" },
       role: "admin",
-    } as any);
+    } as never);
 
     vi.mocked(runAutomatedMonitoringJob).mockResolvedValueOnce({
       scannedCount: 5,

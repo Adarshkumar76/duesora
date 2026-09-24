@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -20,8 +20,10 @@ import {
   Server,
   Activity,
   Loader2,
+  UploadCloud,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ImportModal } from "@/components/resources/import-modal";
 import type { DomainItem } from "@/lib/domains/types";
 import type { MonitorStatus } from "@/lib/monitors/types";
 
@@ -51,11 +53,7 @@ export function DomainsTable({
   const [sweepSummary, setSweepSummary] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
   const [checkMessage, setCheckMessage] = useState<{ id: string; text: string; error?: boolean } | null>(null);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
   const canEdit = userRole === "owner" || userRole === "admin" || userRole === "member";
 
@@ -312,27 +310,40 @@ export function DomainsTable({
 
           {/* Sweep All Action */}
           {canEdit && (
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              disabled={isCheckingAll}
-              onClick={handleCheckAll}
-              className="rounded-xl border-border/80 shadow-2xs gap-1.5 text-xs font-semibold hover:bg-muted/70 cursor-pointer h-8"
-              title="Run health checks on all workspace domains & SSL certificates"
-            >
-              {isCheckingAll ? (
-                <>
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-600 dark:text-emerald-400" />
-                  <span>Checking All...</span>
-                </>
-              ) : (
-                <>
-                  <Activity className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                  <span>Check All</span>
-                </>
-              )}
-            </Button>
+            <>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={isCheckingAll}
+                onClick={handleCheckAll}
+                className="rounded-xl border-border/80 shadow-2xs gap-1.5 text-xs font-semibold hover:bg-muted/70 cursor-pointer h-8"
+                title="Run health checks on all workspace domains & SSL certificates"
+              >
+                {isCheckingAll ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin text-emerald-600 dark:text-emerald-400" />
+                    <span>Checking All...</span>
+                  </>
+                ) : (
+                  <>
+                    <Activity className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                    <span>Check All</span>
+                  </>
+                )}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setIsImportModalOpen(true)}
+                className="rounded-xl border-border/80 shadow-2xs gap-1.5 text-xs font-semibold hover:bg-muted/70 cursor-pointer h-8"
+                title="Import domains via CSV"
+              >
+                <UploadCloud className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                <span>Import Domains</span>
+              </Button>
+            </>
           )}
         </div>
       </div>
@@ -483,12 +494,10 @@ export function DomainsTable({
                               {item.monitor.lastCheckedAt && (
                                 <span suppressHydrationWarning>
                                   Checked{" "}
-                                  {mounted
-                                    ? new Date(item.monitor.lastCheckedAt).toLocaleTimeString([], {
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                      })
-                                    : "recently"}
+                                  {new Date(item.monitor.lastCheckedAt).toLocaleTimeString([], {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })}
                                 </span>
                               )}
                             </div>
@@ -612,7 +621,7 @@ export function DomainsTable({
             <span>
               Page {currentPage} of {totalPages} ({totalCount} total)
             </span>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <Button
                 variant="outline"
                 size="sm"
@@ -622,6 +631,24 @@ export function DomainsTable({
               >
                 Previous
               </Button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter((p) => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
+                .map((p, idx, arr) => (
+                  <span key={p} className="flex items-center">
+                    {idx > 0 && p - arr[idx - 1] > 1 && <span className="px-1 text-muted-foreground/50">...</span>}
+                    <button
+                      type="button"
+                      onClick={() => updateParam("page", String(p))}
+                      className={`h-7 w-7 text-xs rounded-lg font-medium transition-colors cursor-pointer ${
+                        currentPage === p
+                          ? "bg-emerald-600 text-white font-semibold"
+                          : "text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  </span>
+                ))}
               <Button
                 variant="outline"
                 size="sm"
@@ -635,6 +662,14 @@ export function DomainsTable({
           </div>
         )}
       </div>
+
+      {/* Import Modal */}
+      <ImportModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        workspaceId={workspaceId}
+        presetType="domain"
+      />
     </div>
   );
 }

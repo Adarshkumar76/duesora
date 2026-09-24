@@ -1,4 +1,4 @@
-import { and, eq, or, ilike, isNotNull, asc, desc } from "drizzle-orm";
+import { and, eq, or, ilike, isNotNull, asc } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { getDb } from "@/db";
 import { resources, users } from "@/db/schema";

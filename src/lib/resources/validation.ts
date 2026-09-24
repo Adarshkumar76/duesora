@@ -20,7 +20,7 @@ export function normalizeWebsiteUrl(raw: unknown): string | null {
   const trimmed = sanitizeString(raw);
   if (!trimmed) return null;
 
-  let target = trimmed;
+  const target = trimmed;
   // If it already has a protocol:
   if (/^[a-zA-Z][a-zA-Z\d+\-.]*:\/\//i.test(target)) {
     try {

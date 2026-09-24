@@ -189,7 +189,7 @@ export async function sendTelegramWebhook(
     const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
     // Extract chat_id from query params if specified (e.g. ?chat_id=123456)
-    let targetUrl = webhookUrl;
+    const targetUrl = webhookUrl;
     const bodyPayload = { ...payload };
 
     try {

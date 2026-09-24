@@ -1,6 +1,6 @@
 import { eq, and } from "drizzle-orm";
 import { getDb } from "@/db";
-import { resources, users } from "@/db/schema";
+import { resources } from "@/db/schema";
 import { requireWorkspaceRole } from "@/lib/auth/workspace";
 import { recordAuditEvent } from "@/lib/audit/service";
 import { emitWorkspaceWebhook } from "@/lib/webhooks/dispatcher";

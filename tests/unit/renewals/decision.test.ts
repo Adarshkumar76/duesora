@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   calculateCancellationDeadline,
   updateRenewalDecision,
-  ALLOWED_RENEWAL_DECISIONS,
 } from "@/lib/renewals/decision";
 import { requireWorkspaceRole } from "@/lib/auth/workspace";
 import { recordAuditEvent } from "@/lib/audit/service";

@@ -1,4 +1,4 @@
-import { eq, and, ne } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { getDb } from "@/db";
 import { workspaces, resources } from "@/db/schema";
 import { workspaceBudgets } from "@/db/budget-schema";

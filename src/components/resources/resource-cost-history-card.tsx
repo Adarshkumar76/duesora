@@ -13,7 +13,7 @@ interface ResourceCostHistoryCardProps {
 
 export function ResourceCostHistoryCard({
   history,
-  currentCurrency = "USD",
+  currentCurrency: _currentCurrency = "USD",
 }: ResourceCostHistoryCardProps) {
   function formatCost(minor: number | null | undefined, cycle: string | null | undefined, curr: string) {
     if (minor === null || minor === undefined) return "Free / Unset";

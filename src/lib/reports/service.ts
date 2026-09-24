@@ -1,4 +1,4 @@
-import { and, eq, ne, isNotNull } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
 import { getDb } from "@/db";
 import { resources } from "@/db/schema";
 import { requireWorkspaceRole } from "@/lib/auth/workspace";

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
   Search,
@@ -17,11 +17,8 @@ import {
   Plus,
   ArrowRight,
   Sun,
-  Moon,
-  ExternalLink,
   Loader2,
   X,
-  Command,
 } from "lucide-react";
 
 interface SearchResourceItem {
@@ -125,14 +122,23 @@ export function CommandPalette({ isOpen, onClose, workspaceId }: CommandPaletteP
         );
         if (res.ok) {
           const json = await res.json();
-          const items: SearchResourceItem[] = (json.data?.items || []).map((r: any) => ({
-            id: r.id,
-            name: r.name,
-            type: r.type,
-            provider: r.provider,
-            renewalDate: r.renewalDate,
-            status: r.status,
-          }));
+          const items: SearchResourceItem[] = (json.data?.items || []).map(
+            (r: {
+              id: string;
+              name: string;
+              type: string;
+              provider?: string | null;
+              renewalDate?: string | null;
+              status: string;
+            }) => ({
+              id: r.id,
+              name: r.name,
+              type: r.type,
+              provider: r.provider || null,
+              renewalDate: r.renewalDate || null,
+              status: r.status,
+            })
+          );
           setResults(items);
         }
       } catch {
@@ -159,15 +165,17 @@ export function CommandPalette({ isOpen, onClose, workspaceId }: CommandPaletteP
     : quickActions;
 
   // Search-all item when user types a query
-  const searchAllItem = query.trim()
-    ? {
-        type: "search-all" as const,
-        item: {
-          title: `Search all resources for "${query.trim()}"`,
-          query: query.trim(),
-        },
-      }
-    : null;
+  const searchAllItem = useMemo(() => {
+    const trimmed = query.trim();
+    if (!trimmed) return null;
+    return {
+      type: "search-all" as const,
+      item: {
+        title: `Search all resources for "${trimmed}"`,
+        query: trimmed,
+      },
+    };
+  }, [query]);
 
   // Flattened list for keyboard navigation
   type FlatItem =
@@ -176,12 +184,15 @@ export function CommandPalette({ isOpen, onClose, workspaceId }: CommandPaletteP
     | { type: "nav"; item: (typeof staticNavigation)[0] }
     | { type: "action"; item: (typeof quickActions)[0] };
 
-  const flatItems: FlatItem[] = [
-    ...(searchAllItem ? [searchAllItem] : []),
-    ...results.map((r) => ({ type: "resource" as const, item: r })),
-    ...filteredNav.map((n) => ({ type: "nav" as const, item: n })),
-    ...filteredActions.map((a) => ({ type: "action" as const, item: a })),
-  ];
+  const flatItems: FlatItem[] = useMemo(
+    () => [
+      ...(searchAllItem ? [searchAllItem] : []),
+      ...results.map((r) => ({ type: "resource" as const, item: r })),
+      ...filteredNav.map((n) => ({ type: "nav" as const, item: n })),
+      ...filteredActions.map((a) => ({ type: "action" as const, item: a })),
+    ],
+    [searchAllItem, results, filteredNav, filteredActions]
+  );
 
   const handleSelect = useCallback(
     (index: number) => {

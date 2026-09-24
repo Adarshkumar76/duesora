@@ -23,7 +23,7 @@ describe("API: /api/workspaces/[workspaceId]/notifications/test-email", () => {
   describe("GET /api/workspaces/[workspaceId]/notifications/test-email", () => {
     it("returns 401 if unauthenticated", async () => {
       const { auth } = await import("@/auth");
-      vi.mocked(auth).mockResolvedValueOnce(null as any);
+      vi.mocked(auth).mockResolvedValueOnce(null as never);
 
       const req = new NextRequest("http://localhost:3000/api/workspaces/ws-1/notifications/test-email");
       const res = await GET(req, { params: Promise.resolve({ workspaceId: "ws-1" }) });
@@ -37,12 +37,12 @@ describe("API: /api/workspaces/[workspaceId]/notifications/test-email", () => {
 
       vi.mocked(auth).mockResolvedValueOnce({
         user: { id: "user-1", email: "admin@duesora.com" },
-      } as any);
+      } as never);
 
       vi.mocked(requireWorkspaceRole).mockResolvedValueOnce({
         workspace: { id: "ws-1", name: "Duesora HQ" },
         role: "viewer",
-      } as any);
+      } as never);
 
       vi.mocked(isEmailConfigured).mockReturnValueOnce(true);
 
@@ -60,7 +60,7 @@ describe("API: /api/workspaces/[workspaceId]/notifications/test-email", () => {
   describe("POST /api/workspaces/[workspaceId]/notifications/test-email", () => {
     it("returns 401 if unauthenticated", async () => {
       const { auth } = await import("@/auth");
-      vi.mocked(auth).mockResolvedValueOnce(null as any);
+      vi.mocked(auth).mockResolvedValueOnce(null as never);
 
       const req = new NextRequest("http://localhost:3000/api/workspaces/ws-1/notifications/test-email", {
         method: "POST",
@@ -76,12 +76,12 @@ describe("API: /api/workspaces/[workspaceId]/notifications/test-email", () => {
 
       vi.mocked(auth).mockResolvedValueOnce({
         user: { id: "user-1", name: "Adarsh", email: "admin@duesora.com" },
-      } as any);
+      } as never);
 
       vi.mocked(requireWorkspaceRole).mockResolvedValueOnce({
         workspace: { id: "ws-1", name: "Duesora HQ" },
         role: "member",
-      } as any);
+      } as never);
 
       vi.mocked(isEmailConfigured).mockReturnValueOnce(false);
       vi.mocked(sendRenewalReminderEmail).mockResolvedValueOnce({

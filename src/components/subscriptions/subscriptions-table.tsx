@@ -14,8 +14,10 @@ import {
   ArrowRight,
   User,
   Clock,
+  UploadCloud,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ImportModal } from "@/components/resources/import-modal";
 import { CURRENCY_SYMBOLS } from "@/lib/currency/rates";
 import type { SubscriptionItem } from "@/lib/subscriptions/types";
 
@@ -42,6 +44,7 @@ export function SubscriptionsTable({
   const searchParams = useSearchParams();
 
   const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const canEdit = userRole === "owner" || userRole === "admin" || userRole === "member";
 
   function updateParam(key: string, value: string | null) {
@@ -206,6 +209,32 @@ export function SubscriptionsTable({
               </button>
             ))}
           </div>
+
+          {/* Action Buttons */}
+          {canEdit && (
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setIsImportModalOpen(true)}
+                className="rounded-xl border-border/80 shadow-2xs gap-1.5 text-xs font-semibold hover:bg-muted/70 cursor-pointer h-8"
+              >
+                <UploadCloud className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                <span>Import Subscriptions</span>
+              </Button>
+
+              <Link href="/resources/new?type=subscription">
+                <Button
+                  size="sm"
+                  className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs gap-1.5 text-xs font-semibold cursor-pointer h-8"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add Subscription</span>
+                </Button>
+              </Link>
+            </div>
+          )}
         </div>
       </div>
 
@@ -403,26 +432,45 @@ export function SubscriptionsTable({
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="p-4 border-t border-border/60 flex items-center justify-between text-xs text-muted-foreground">
+          <div className="p-4 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
             <span>
-              Page {currentPage} of {totalPages} ({totalCount} total)
+              Page <strong className="font-semibold text-foreground">{currentPage}</strong> of{" "}
+              <strong className="font-semibold text-foreground">{totalPages}</strong> ({totalCount} total)
             </span>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <Button
                 variant="outline"
                 size="sm"
                 disabled={currentPage <= 1}
                 onClick={() => updateParam("page", String(currentPage - 1))}
-                className="h-7 text-xs rounded-lg cursor-pointer"
+                className="h-7 px-2.5 text-xs rounded-lg cursor-pointer"
               >
                 Previous
               </Button>
+
+              {totalPages <= 7 ? (
+                Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => updateParam("page", String(p))}
+                    className={`h-7 w-7 rounded-lg text-xs font-semibold cursor-pointer transition-colors ${
+                      p === currentPage
+                        ? "bg-foreground text-background"
+                        : "bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {p}
+                  </button>
+                ))
+              ) : null}
+
               <Button
                 variant="outline"
                 size="sm"
                 disabled={currentPage >= totalPages}
                 onClick={() => updateParam("page", String(currentPage + 1))}
-                className="h-7 text-xs rounded-lg cursor-pointer"
+                className="h-7 px-2.5 text-xs rounded-lg cursor-pointer"
               >
                 Next
               </Button>
@@ -430,6 +478,14 @@ export function SubscriptionsTable({
           </div>
         )}
       </div>
+
+      {/* Contextual CSV/JSON Importer */}
+      <ImportModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        workspaceId={workspaceId}
+        presetType="subscription"
+      />
     </div>
   );
 }
