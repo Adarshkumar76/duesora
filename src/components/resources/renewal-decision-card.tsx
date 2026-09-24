@@ -333,7 +333,7 @@ export function RenewalDecisionCard({
                 </label>
                 {renewalDate && (
                   <span className="text-[11px] text-muted-foreground" suppressHydrationWarning>
-                    Renewal: {new Date(renewalDate).toLocaleDateString()}
+                    Renewal: {new Date(renewalDate).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" })}
                   </span>
                 )}
               </div>

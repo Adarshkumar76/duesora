@@ -12,6 +12,18 @@ interface ApiKeysManagerProps {
   userRole?: string;
 }
 
+function formatSafeDate(date: Date | string | null | undefined): string {
+  if (!date) return "";
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC",
+  });
+}
+
 export function ApiKeysManager({
   workspaceId,
   initialKeys,
@@ -155,16 +167,25 @@ export function ApiKeysManager({
                       </span>
                       {k.expiresAt ? (
                         new Date(k.expiresAt) < new Date() ? (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-destructive/10 text-destructive border border-destructive/20">
-                            Expired ({new Date(k.expiresAt).toLocaleDateString()})
+                          <span
+                            suppressHydrationWarning
+                            className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-destructive/10 text-destructive border border-destructive/20"
+                          >
+                            Expired ({formatSafeDate(k.expiresAt)})
                           </span>
                         ) : (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                            Expires: {new Date(k.expiresAt).toLocaleDateString()}
+                          <span
+                            suppressHydrationWarning
+                            className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
+                          >
+                            Expires: {formatSafeDate(k.expiresAt)}
                           </span>
                         )
                       ) : (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-muted text-muted-foreground border border-border/60">
+                        <span
+                          suppressHydrationWarning
+                          className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-muted text-muted-foreground border border-border/60"
+                        >
                           Never expires
                         </span>
                       )}
@@ -172,11 +193,11 @@ export function ApiKeysManager({
                     <div className="flex items-center gap-3 text-[11px] text-muted-foreground font-mono">
                       <span>Prefix: {k.keyPrefix}...</span>
                       <span>•</span>
-                      <span>Created: {new Date(k.createdAt).toLocaleDateString()}</span>
+                      <span suppressHydrationWarning>Created: {formatSafeDate(k.createdAt)}</span>
                       {k.lastUsedAt && (
                         <>
                           <span>•</span>
-                          <span>Last used: {new Date(k.lastUsedAt).toLocaleDateString()}</span>
+                          <span suppressHydrationWarning>Last used: {formatSafeDate(k.lastUsedAt)}</span>
                         </>
                       )}
                     </div>
