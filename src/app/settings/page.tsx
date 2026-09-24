@@ -20,6 +20,7 @@ import { CurrencyExchangeSettings } from "@/components/settings/currency-exchang
 import { EmailSettings } from "@/components/settings/email-settings";
 import { ReminderSettings } from "@/components/settings/reminder-settings";
 import { CronStatusCard } from "@/components/settings/cron-status-card";
+import { WorkspaceDangerZone } from "@/components/settings/workspace-danger-zone";
 import { Building2, Mail, ShieldCheck } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -269,6 +270,15 @@ export default async function SettingsPage() {
               />
             </div>
           )}
+
+          {/* Workspace Danger Zone: Delete Workspace / Leave Workspace */}
+          <div className="pt-4" id="danger-zone">
+            <WorkspaceDangerZone
+              workspaceId={activeWorkspace.id}
+              workspaceName={activeWorkspace.name}
+              userRole={activeWorkspace.role}
+            />
+          </div>
         </main>
       </div>
     </div>

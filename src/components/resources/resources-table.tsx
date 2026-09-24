@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TagBadge } from "@/components/tags/tag-badge";
+import { VendorLogo } from "@/components/resources/vendor-logo";
 
 export interface ResourceRowItem {
   id: string;
@@ -318,14 +319,22 @@ export function ResourcesTable({
 
                   {/* Name & Tags */}
                   <td className="py-4 px-6 font-medium text-foreground">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <Link
-                          href={`/resources/${item.id}`}
-                          className="hover:text-emerald-600 dark:hover:text-emerald-400 hover:underline transition-colors"
-                        >
-                          {item.name}
-                        </Link>
+                    <div className="flex items-center gap-3">
+                      <VendorLogo
+                        name={item.name}
+                        type={item.type}
+                        domain={item.websiteUrl}
+                        className="w-7 h-7 rounded-lg shrink-0"
+                        size={15}
+                      />
+                      <div className="space-y-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Link
+                            href={`/resources/${item.id}`}
+                            className="hover:text-emerald-600 dark:hover:text-emerald-400 hover:underline transition-colors truncate"
+                          >
+                            {item.name}
+                          </Link>
                         {item.category && (
                           <span className="text-[11px] font-medium px-1.5 py-0.5 rounded-md bg-secondary text-secondary-foreground">
                             {item.category}
@@ -350,7 +359,8 @@ export function ResourcesTable({
                         </div>
                       )}
                     </div>
-                  </td>
+                  </div>
+                </td>
 
                   {/* Type Pill */}
                   <td className="py-4 px-6">

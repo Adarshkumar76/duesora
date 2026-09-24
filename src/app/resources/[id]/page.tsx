@@ -14,15 +14,10 @@ import { ResourceCostHistoryCard } from "@/components/resources/resource-cost-hi
 import { ResourceDocumentsCard } from "@/components/resources/resource-documents-card";
 import { RenewalDecisionCard } from "@/components/resources/renewal-decision-card";
 import { ResourceDetailsActions } from "@/components/resources/resource-details-actions";
+import { VendorLogo } from "@/components/resources/vendor-logo";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { TagBadge } from "@/components/tags/tag-badge";
 import {
-  Globe,
-  RefreshCw,
-  Shield,
-  Server,
-  Code,
-  FileText,
   Clock,
   ArrowLeft,
   User,
@@ -128,15 +123,6 @@ export default async function ResourceDetailsPage({
     return "Other";
   }
 
-  function getTypeIcon(type: string) {
-    if (type === "domain") return <Globe className="w-5 h-5 text-emerald-600" />;
-    if (type === "subscription") return <RefreshCw className="w-5 h-5 text-emerald-600" />;
-    if (type === "ssl_certificate") return <Shield className="w-5 h-5 text-emerald-600" />;
-    if (type === "hosting" || type === "cloud_service") return <Server className="w-5 h-5 text-emerald-600" />;
-    if (type === "software_license") return <Code className="w-5 h-5 text-emerald-600" />;
-    return <FileText className="w-5 h-5 text-emerald-600" />;
-  }
-
   const now = new Date();
   const thirtyDaysLater = new Date();
   thirtyDaysLater.setDate(now.getDate() + 30);
@@ -196,9 +182,13 @@ export default async function ResourceDetailsPage({
             {/* Header: Icon, Name & Status */}
             <div className="p-6 border-b border-border/60 flex items-center justify-between flex-wrap gap-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/60 flex items-center justify-center shrink-0">
-                  {getTypeIcon(resource.type)}
-                </div>
+                <VendorLogo
+                  name={resource.name}
+                  type={resource.type}
+                  domain={resource.websiteUrl}
+                  className="w-10 h-10 rounded-xl"
+                  size={20}
+                />
                 <div className="flex items-center gap-2.5 flex-wrap">
                   <h2 className="text-xl sm:text-2xl font-bold text-foreground">
                     {resource.name}

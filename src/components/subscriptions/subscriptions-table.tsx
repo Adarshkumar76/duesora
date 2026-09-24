@@ -5,9 +5,6 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   CreditCard,
-  Cloud,
-  Server,
-  Key,
   ExternalLink,
   Search,
   Plus,
@@ -18,6 +15,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ImportModal } from "@/components/resources/import-modal";
+import { VendorLogo } from "@/components/resources/vendor-logo";
 import { CURRENCY_SYMBOLS } from "@/lib/currency/rates";
 import type { SubscriptionItem } from "@/lib/subscriptions/types";
 
@@ -65,19 +63,6 @@ export function SubscriptionsTable({
 
   const currentType = searchParams.get("type") || "all";
   const currentCycle = searchParams.get("cycle") || "all";
-
-  function renderTypeIcon(type: string) {
-    switch (type) {
-      case "cloud_service":
-        return <Cloud className="w-4 h-4 text-blue-600 dark:text-blue-400" />;
-      case "hosting":
-        return <Server className="w-4 h-4 text-purple-600 dark:text-purple-400" />;
-      case "software_license":
-        return <Key className="w-4 h-4 text-amber-600 dark:text-amber-400" />;
-      default:
-        return <CreditCard className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />;
-    }
-  }
 
   function formatTypeLabel(type: string) {
     switch (type) {
@@ -262,9 +247,13 @@ export function SubscriptionsTable({
                     {/* Subscription & Vendor */}
                     <td className="py-3 px-4">
                       <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 rounded-xl bg-muted/80 flex items-center justify-center shrink-0 mt-0.5">
-                          {renderTypeIcon(item.type)}
-                        </div>
+                        <VendorLogo
+                          name={item.name}
+                          type={item.type}
+                          domain={item.websiteUrl}
+                          className="w-8 h-8 rounded-xl mt-0.5"
+                          size={16}
+                        />
                         <div>
                           <div className="flex items-center gap-1.5">
                             <Link
