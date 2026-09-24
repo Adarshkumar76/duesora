@@ -5,9 +5,14 @@ import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import { AppHeader } from "@/components/dashboard/app-header";
 import { resolveActiveWorkspace } from "@/lib/auth/active-workspace";
 import { getWorkspaceResource } from "@/lib/resources/service";
+import { listResourceCostHistory } from "@/lib/resources/cost-history";
+import { listResourceDocuments } from "@/lib/documents/service";
 import { getMonitorForResource, getMonitorLogsForResource } from "@/lib/monitors/service";
 import { extractHostname } from "@/lib/monitors/tls";
 import { ResourceMonitorCard } from "@/components/resources/resource-monitor-card";
+import { ResourceCostHistoryCard } from "@/components/resources/resource-cost-history-card";
+import { ResourceDocumentsCard } from "@/components/resources/resource-documents-card";
+import { RenewalDecisionCard } from "@/components/resources/renewal-decision-card";
 import { ResourceDetailsActions } from "@/components/resources/resource-details-actions";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { TagBadge } from "@/components/tags/tag-badge";
@@ -64,10 +69,12 @@ export default async function ResourceDetailsPage({
   }
   const r = resource;
 
-  // 3. Fetch monitor status & logs for this resource
-  const [monitor, monitorLogs] = await Promise.all([
+  // 3. Fetch monitor status, logs, cost history, and attached documents for this resource
+  const [monitor, monitorLogs, costHistory, attachedDocuments] = await Promise.all([
     getMonitorForResource(r.id, activeWorkspace.id),
     getMonitorLogsForResource(r.id, activeWorkspace.id, 5),
+    listResourceCostHistory(session.user.id, activeWorkspace.id, r.id).catch(() => []),
+    listResourceDocuments(session.user.id, activeWorkspace.id, r.id).catch(() => []),
   ]);
 
   const targetHostname = extractHostname(r.websiteUrl || r.name) || r.name;
@@ -379,6 +386,14 @@ export default async function ResourceDetailsPage({
                   </p>
                 </CardContent>
               </Card>
+
+              {/* Card 3: Contracts & License Document Attachments */}
+              <ResourceDocumentsCard
+                workspaceId={activeWorkspace.id}
+                resourceId={resource.id}
+                initialDocuments={attachedDocuments}
+                canManage={activeWorkspace.role !== "viewer"}
+              />
             </div>
 
             {/* Right Column (Span 5) */}
@@ -414,7 +429,27 @@ export default async function ResourceDetailsPage({
                 </CardContent>
               </Card>
 
-              {/* Card 4: Recent Activity Timeline matching mockup */}
+              {/* Renewal Governance & Decision Card */}
+              <RenewalDecisionCard
+                resourceId={resource.id}
+                workspaceId={activeWorkspace.id}
+                initialDecision={resource.renewalDecision}
+                initialNotes={resource.decisionNotes}
+                initialNoticeDays={resource.cancellationNoticeDays}
+                initialDeadline={resource.cancellationDeadline}
+                decidedByName={null}
+                decidedAt={resource.decidedAt}
+                renewalDate={resource.renewalDate}
+                userRole={activeWorkspace.role}
+              />
+
+              {/* Card 4: Cost Evolution & Rate Shifts History */}
+              <ResourceCostHistoryCard
+                history={costHistory}
+                currentCurrency={resource.currency}
+              />
+
+              {/* Card 5: Recent Activity Timeline matching mockup */}
               <Card className="rounded-2xl border border-border/80 bg-card shadow-xs">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base font-bold text-foreground flex items-center gap-2">

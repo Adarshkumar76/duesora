@@ -216,6 +216,7 @@ describe("API: Workspace Notifications & Reminders", () => {
         scannedCount: 10,
         dispatchedInAppCount: 2,
         dispatchedEmailCount: 2,
+        escalatedCount: 0,
         skippedCount: 8,
         errors: [],
       });

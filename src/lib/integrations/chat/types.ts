@@ -1,11 +1,29 @@
-export type ChatProvider = "slack" | "discord";
+export type ChatProvider = "slack" | "discord" | "telegram" | "teams";
 
 export type ChatEventType =
   | "reminder.upcoming"
   | "reminder.overdue"
   | "monitor.degraded"
   | "monitor.recovered"
+  | "resource.price_changed"
   | "test";
+
+export interface PriceChangeAlertData {
+  resourceId: string;
+  resourceName: string;
+  resourceType?: string | null;
+  provider?: string | null;
+  previousAmountMinor?: number | null;
+  newAmountMinor: number;
+  currency: string;
+  previousBillingCycle?: string | null;
+  newBillingCycle?: string | null;
+  changePercentage: number;
+  changeReason?: string | null;
+  changedByName?: string | null;
+  workspaceName?: string;
+  appUrl?: string;
+}
 
 export interface RenewalAlertData {
   resourceId: string;
@@ -19,6 +37,7 @@ export interface RenewalAlertData {
   billingCycle?: string | null;
   workspaceName?: string;
   appUrl?: string;
+  isEscalated?: boolean;
 }
 
 export interface MonitorAlertData {

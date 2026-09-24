@@ -5,6 +5,7 @@ export const ALLOWED_CHAT_EVENTS = [
   "reminder.overdue",
   "monitor.degraded",
   "monitor.recovered",
+  "resource.price_changed",
 ] as const;
 
 export function isValidSlackWebhookUrl(url: string): boolean {
@@ -33,10 +34,40 @@ export function isValidDiscordWebhookUrl(url: string): boolean {
   }
 }
 
+export function isValidTelegramWebhookUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== "https:") return false;
+    if (parsed.hostname === "api.telegram.org") {
+      return parsed.pathname.startsWith("/bot");
+    }
+    // Allow custom secure webhook relays/proxies
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function isValidTeamsWebhookUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== "https:") return false;
+    const host = parsed.hostname.toLowerCase();
+    return (
+      host.endsWith(".office.com") ||
+      host.endsWith(".office365.com") ||
+      host.endsWith(".logic.azure.com") ||
+      host.endsWith(".microsoft.com")
+    );
+  } catch {
+    return false;
+  }
+}
+
 export const createNotificationChannelSchema = z
   .object({
-    provider: z.enum(["slack", "discord"], {
-      message: "Provider must be 'slack' or 'discord'",
+    provider: z.enum(["slack", "discord", "telegram", "teams"], {
+      message: "Provider must be 'slack', 'discord', 'telegram', or 'teams'",
     }),
     name: z.string().trim().min(1, "Name is required").max(100, "Name must be <= 100 characters"),
     webhookUrl: z.string().trim().url("Must be a valid URL"),
@@ -60,6 +91,24 @@ export const createNotificationChannelSchema = z
         code: z.ZodIssueCode.custom,
         path: ["webhookUrl"],
         message: "Invalid Discord Webhook URL. It must start with https://discord.com/api/webhooks/",
+      });
+    }
+
+    if (data.provider === "telegram" && !isValidTelegramWebhookUrl(data.webhookUrl)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["webhookUrl"],
+        message:
+          "Invalid Telegram Webhook URL. It must be an HTTPS URL (e.g. https://api.telegram.org/bot<TOKEN>/sendMessage?chat_id=<ID>)",
+      });
+    }
+
+    if (data.provider === "teams" && !isValidTeamsWebhookUrl(data.webhookUrl)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["webhookUrl"],
+        message:
+          "Invalid Microsoft Teams Webhook URL. It must be a valid HTTPS webhook ending in .office.com, .logic.azure.com, or .microsoft.com",
       });
     }
   });

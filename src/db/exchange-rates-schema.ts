@@ -1,0 +1,1 @@
+export { exchangeRates } from "./schema";

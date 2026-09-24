@@ -1,10 +1,12 @@
-import type { RenewalAlertData, MonitorAlertData, TestAlertData } from "./types";
+import type { RenewalAlertData, MonitorAlertData, TestAlertData, PriceChangeAlertData } from "./types";
+import { CURRENCY_SYMBOLS } from "@/lib/currency/rates";
 
 const TIMEOUT_MS = 5000;
 
 export function buildSlackRenewalMessage(data: RenewalAlertData): Record<string, unknown> {
   const isOverdue = data.daysRemaining <= 0;
-  const statusEmoji = isOverdue ? "🚨" : data.daysRemaining <= 7 ? "⚠️" : "🔔";
+  const isEscalated = Boolean(data.isEscalated);
+  const statusEmoji = isEscalated || isOverdue ? "🚨" : data.daysRemaining <= 7 ? "⚠️" : "🔔";
   const statusLabel = isOverdue
     ? "EXPIRED / OVERDUE"
     : data.daysRemaining === 1
@@ -28,15 +30,16 @@ export function buildSlackRenewalMessage(data: RenewalAlertData): Record<string,
 
   const appUrl = data.appUrl || "http://localhost:3000";
   const resourceLink = `${appUrl}/resources/${data.resourceId}`;
+  const titlePrefix = isEscalated ? "[ESCALATION] " : "";
 
   return {
-    text: `${statusEmoji} Renewal Alert: ${data.resourceName} (${statusLabel})`,
+    text: `${statusEmoji} ${titlePrefix}Renewal Alert: ${data.resourceName} (${statusLabel})`,
     blocks: [
       {
         type: "header",
         text: {
           type: "plain_text",
-          text: `${statusEmoji} ${isOverdue ? "Renewal Overdue" : "Upcoming Renewal"}: ${data.resourceName}`,
+          text: `${statusEmoji} ${titlePrefix}${isOverdue ? "Renewal Overdue" : "Upcoming Renewal"}: ${data.resourceName}`,
           emoji: true,
         },
       },
@@ -199,6 +202,78 @@ export function buildSlackTestMessage(data: TestAlertData): Record<string, unkno
           {
             type: "mrkdwn",
             text: `Sent by ${data.testedBy || "Workspace Administrator"} • Duesora Team Alerts`,
+          },
+        ],
+      },
+    ],
+  };
+}
+
+export function buildSlackPriceIncreaseMessage(data: PriceChangeAlertData): Record<string, unknown> {
+  const isHike = data.changePercentage > 0;
+  const emoji = isHike ? "📈" : "📉";
+  const directionLabel = isHike ? "Price Increase Alert" : "Price Adjustment";
+  const deltaLabel = isHike ? `+${data.changePercentage}%` : `${data.changePercentage}%`;
+
+  const curr = (data.currency || "USD").toUpperCase();
+  const symbol = CURRENCY_SYMBOLS[curr] || curr;
+
+  const prevStr =
+    data.previousAmountMinor !== null && data.previousAmountMinor !== undefined
+      ? `${symbol}${(data.previousAmountMinor / 100).toFixed(2)}${
+          data.previousBillingCycle ? ` / ${data.previousBillingCycle}` : ""
+        }`
+      : "Free / Unset";
+  const newStr = `${symbol}${(data.newAmountMinor / 100).toFixed(2)}${
+    data.newBillingCycle ? ` / ${data.newBillingCycle}` : ""
+  }`;
+
+  const appUrl = data.appUrl || "http://localhost:3000";
+  const resourceLink = `${appUrl}/resources/${data.resourceId}`;
+
+  return {
+    text: `${emoji} ${directionLabel}: ${data.resourceName} (${deltaLabel})`,
+    blocks: [
+      {
+        type: "header",
+        text: {
+          type: "plain_text",
+          text: `${emoji} ${directionLabel}: ${data.resourceName}`,
+          emoji: true,
+        },
+      },
+      {
+        type: "section",
+        fields: [
+          { type: "mrkdwn", text: `*Resource:*\n${data.resourceName}` },
+          { type: "mrkdwn", text: `*Rate Shift:*\n*${deltaLabel}*` },
+          { type: "mrkdwn", text: `*Previous Cost:*\n${prevStr}` },
+          { type: "mrkdwn", text: `*New Cost:*\n${newStr}` },
+        ],
+      },
+      ...(data.changeReason
+        ? [
+            {
+              type: "context",
+              elements: [
+                {
+                  type: "mrkdwn",
+                  text: `*Reason:* ${data.changeReason}${
+                    data.changedByName ? ` • Updated by ${data.changedByName}` : ""
+                  }`,
+                },
+              ],
+            },
+          ]
+        : []),
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "button",
+            text: { type: "plain_text", text: "View Cost History" },
+            url: resourceLink,
+            style: isHike ? "danger" : "primary",
           },
         ],
       },

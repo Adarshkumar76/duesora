@@ -121,6 +121,7 @@ describe("API: /api/cron/all", () => {
       scannedCount: 5,
       dispatchedInAppCount: 1,
       dispatchedEmailCount: 1,
+      escalatedCount: 0,
       skippedCount: 3,
       errors: [],
     });

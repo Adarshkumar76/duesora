@@ -1,10 +1,12 @@
-import type { RenewalAlertData, MonitorAlertData, TestAlertData } from "./types";
+import type { RenewalAlertData, MonitorAlertData, TestAlertData, PriceChangeAlertData } from "./types";
+import { CURRENCY_SYMBOLS } from "@/lib/currency/rates";
 
 const TIMEOUT_MS = 5000;
 
 export function buildDiscordRenewalEmbed(data: RenewalAlertData): Record<string, unknown> {
   const isOverdue = data.daysRemaining <= 0;
-  const color = isOverdue ? 0xef4444 : data.daysRemaining <= 7 ? 0xf59e0b : 0x10b981;
+  const isEscalated = Boolean(data.isEscalated);
+  const color = isEscalated || isOverdue ? 0xef4444 : data.daysRemaining <= 7 ? 0xf59e0b : 0x10b981;
   const statusLabel = isOverdue
     ? "EXPIRED / OVERDUE"
     : data.daysRemaining === 1
@@ -28,12 +30,13 @@ export function buildDiscordRenewalEmbed(data: RenewalAlertData): Record<string,
 
   const appUrl = data.appUrl || "http://localhost:3000";
   const resourceLink = `${appUrl}/resources/${data.resourceId}`;
+  const titlePrefix = isEscalated ? "🚨 [ESCALATION] " : isOverdue ? "🚨 " : "🔔 ";
 
   return {
     username: "Duesora Alerts",
     embeds: [
       {
-        title: `${isOverdue ? "🚨 Renewal Overdue" : "🔔 Upcoming Renewal"}: ${data.resourceName}`,
+        title: `${titlePrefix}${isOverdue ? "Renewal Overdue" : "Upcoming Renewal"}: ${data.resourceName}`,
         url: resourceLink,
         color,
         fields: [
@@ -102,6 +105,59 @@ export function buildDiscordTestEmbed(data: TestAlertData): Record<string, unkno
         ],
         footer: {
           text: "Duesora Team Alerts",
+        },
+        timestamp: new Date().toISOString(),
+      },
+    ],
+  };
+}
+
+export function buildDiscordPriceIncreaseEmbed(data: PriceChangeAlertData): Record<string, unknown> {
+  const isHike = data.changePercentage > 0;
+  const color = isHike ? 0xef4444 : 0x10b981;
+  const deltaLabel = isHike ? `+${data.changePercentage}%` : `${data.changePercentage}%`;
+  const directionTitle = isHike ? "📈 Price Increase Alert" : "📉 Price Adjustment";
+
+  const curr = (data.currency || "USD").toUpperCase();
+  const symbol = CURRENCY_SYMBOLS[curr] || curr;
+
+  const prevStr =
+    data.previousAmountMinor !== null && data.previousAmountMinor !== undefined
+      ? `${symbol}${(data.previousAmountMinor / 100).toFixed(2)}${
+          data.previousBillingCycle ? ` / ${data.previousBillingCycle}` : ""
+        }`
+      : "Free / Unset";
+  const newStr = `${symbol}${(data.newAmountMinor / 100).toFixed(2)}${
+    data.newBillingCycle ? ` / ${data.newBillingCycle}` : ""
+  }`;
+
+  const appUrl = data.appUrl || "http://localhost:3000";
+  const resourceLink = `${appUrl}/resources/${data.resourceId}`;
+
+  return {
+    username: "Duesora Cost Intelligence",
+    embeds: [
+      {
+        title: `${directionTitle}: ${data.resourceName} (${deltaLabel})`,
+        url: resourceLink,
+        color,
+        description: data.changeReason
+          ? `**Reason:** ${data.changeReason}`
+          : "A price shift was recorded on this resource.",
+        fields: [
+          { name: "Resource", value: data.resourceName, inline: true },
+          { name: "Rate Shift", value: `**${deltaLabel}**`, inline: true },
+          { name: "Asset Type", value: data.resourceType || "Asset", inline: true },
+          { name: "Previous Cost", value: prevStr, inline: true },
+          { name: "New Cost", value: `**${newStr}**`, inline: true },
+          {
+            name: "Updated By",
+            value: data.changedByName || "Workspace Administrator",
+            inline: true,
+          },
+        ],
+        footer: {
+          text: `Duesora Cost Alerts • ${data.workspaceName || "Workspace"}`,
         },
         timestamp: new Date().toISOString(),
       },

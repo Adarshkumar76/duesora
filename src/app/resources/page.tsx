@@ -6,11 +6,12 @@ import { AppHeader } from "@/components/dashboard/app-header";
 import { resolveActiveWorkspace } from "@/lib/auth/active-workspace";
 import { listWorkspaceResources } from "@/lib/resources/service";
 import { listWorkspaceTags } from "@/lib/tags/service";
-import { TagBadge } from "@/components/tags/tag-badge";
+import { listWorkspaceTeam, type TeamMemberItem } from "@/lib/team/service";
 import { Button } from "@/components/ui/button";
-import { Plus, MoreHorizontal, FolderKanban, SearchX } from "lucide-react";
+import { Plus, FolderKanban, SearchX } from "lucide-react";
 import { ResourcesToolbar } from "@/components/resources/resources-toolbar";
 import { ResourcesPagination } from "@/components/resources/resources-pagination";
+import { ResourcesTable } from "@/components/resources/resources-table";
 
 interface ResourcesPageProps {
   searchParams: Promise<{
@@ -44,7 +45,7 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
   const currentPage = Math.max(1, parseInt(page, 10) || 1);
 
   // 1. Resolve user's active workspace (via cookie or fallback)
-  const sessionWorkspaceId = (session.user as { workspaceId?: string | null }).workspaceId;
+  const sessionWorkspaceId = (session?.user as { workspaceId?: string | null } | undefined)?.workspaceId;
   const { activeWorkspace, userWorkspaces } = await resolveActiveWorkspace(
     session.user.id,
     sessionWorkspaceId
@@ -56,6 +57,20 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
     availableTags = await listWorkspaceTags(session.user.id, activeWorkspace.id);
   } catch {
     availableTags = [];
+  }
+
+  // 3. Fetch workspace team members for bulk owner assignment
+  let teamMembers: Array<{ id: string; name: string | null; email: string; role: string }> = [];
+  try {
+    const teamOverview = await listWorkspaceTeam(activeWorkspace.id, session.user.id);
+    teamMembers = teamOverview.members.map((m: TeamMemberItem) => ({
+      id: m.id,
+      name: m.name,
+      email: m.email,
+      role: m.role,
+    }));
+  } catch {
+    teamMembers = [];
   }
 
   // 3. Fetch resources from database (no mock fallback!)
@@ -86,50 +101,6 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
   const items = resourceData.items;
   const totalCount = resourceData.pagination.total;
   const totalPages = Math.max(1, resourceData.pagination.totalPages);
-
-  function formatTypePill(type: string) {
-    if (type === "domain") return "Domain";
-    if (type === "subscription") return "Subscription";
-    if (type === "ssl_certificate") return "Certificate";
-    if (type === "hosting") return "Hosting";
-    if (type === "cloud_service") return "Server";
-    if (type === "software_license") return "Software";
-    return "Other";
-  }
-
-  function formatAmount(item: (typeof items)[0]) {
-    if (item.amountMinor === 0) return "Free";
-    if (!item.amountMinor && item.amountMinor !== 0) return "—";
-
-    const symbol =
-      item.currency === "INR"
-        ? "₹"
-        : item.currency === "EUR"
-        ? "€"
-        : item.currency === "GBP"
-        ? "£"
-        : "$";
-
-    const amountFormatted = (item.amountMinor / 100).toFixed(2);
-    const suffix =
-      item.billingCycle === "monthly"
-        ? " / mo"
-        : item.billingCycle === "quarterly"
-        ? " / qtr"
-        : item.billingCycle === "yearly"
-        ? " / yr"
-        : "";
-    return `${symbol}${amountFormatted}${suffix}`;
-  }
-
-  function formatDate(d?: Date | string | null) {
-    if (!d) return "—";
-    return new Date(d).toLocaleDateString("en-US", {
-      month: "short",
-      day: "2-digit",
-      year: "numeric",
-    });
-  }
 
   const isFiltered = Boolean(search || (status && status !== "all") || (tab && tab !== "all"));
 
@@ -215,117 +186,13 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
           <div className="rounded-2xl border border-border/80 bg-card shadow-xs overflow-hidden">
             {items.length > 0 ? (
               <>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-sm">
-                    <thead className="bg-muted/40 border-b border-border/60 text-xs font-semibold text-muted-foreground">
-                      <tr>
-                        <th className="py-3.5 px-6">Name</th>
-                        <th className="py-3.5 px-6">Type</th>
-                        <th className="py-3.5 px-6">Provider / Owner</th>
-                        <th className="py-3.5 px-6">Status</th>
-                        <th className="py-3.5 px-6">Next Renewal</th>
-                        <th className="py-3.5 px-6">Amount</th>
-                        <th className="py-3.5 px-6 text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border/40">
-                      {items.map((item) => (
-                        <tr key={item.id} className="hover:bg-muted/20 transition-colors">
-                          {/* Name & Tags */}
-                          <td className="py-4 px-6 font-medium text-foreground">
-                            <div className="space-y-1">
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <Link
-                                  href={`/resources/${item.id}`}
-                                  className="hover:text-emerald-600 dark:hover:text-emerald-400 hover:underline transition-colors"
-                                >
-                                  {item.name}
-                                </Link>
-                                {item.category && (
-                                  <span className="text-[11px] font-medium px-1.5 py-0.5 rounded-md bg-secondary text-secondary-foreground">
-                                    {item.category}
-                                  </span>
-                                )}
-                              </div>
-                              {item.tags && item.tags.length > 0 && (
-                                <div className="flex items-center gap-1 flex-wrap pt-0.5">
-                                  {item.tags.slice(0, 3).map((t) => (
-                                    <TagBadge
-                                      key={t.id}
-                                      name={t.name}
-                                      colorToken={t.colorToken}
-                                      className="text-[10px] px-1.5 py-0"
-                                    />
-                                  ))}
-                                  {item.tags.length > 3 && (
-                                    <span className="text-[10px] text-muted-foreground font-medium">
-                                      +{item.tags.length - 3}
-                                    </span>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                          </td>
-
-                          {/* Type Pill */}
-                          <td className="py-4 px-6">
-                            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                              {formatTypePill(item.type)}
-                            </span>
-                          </td>
-
-                          {/* Provider & Owner */}
-                          <td className="py-4 px-6 text-foreground font-normal">
-                            <div>{item.provider || "—"}</div>
-                            {item.owner && (
-                              <div className="text-xs text-muted-foreground truncate max-w-[150px]">
-                                {item.owner.name || item.owner.email}
-                              </div>
-                            )}
-                          </td>
-
-                          {/* Status */}
-                          <td className="py-4 px-6">
-                            {item.status === "active" ? (
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100/80 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300/40">
-                                Active
-                              </span>
-                            ) : item.status === "expired" ? (
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100/80 dark:bg-red-950/60 text-red-800 dark:text-red-300 border border-red-300/40">
-                                Expired
-                              </span>
-                            ) : (
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300/40">
-                                Inactive
-                              </span>
-                            )}
-                          </td>
-
-                          {/* Next Renewal */}
-                          <td className="py-4 px-6 text-muted-foreground text-xs sm:text-sm">
-                            {formatDate(item.renewalDate)}
-                          </td>
-
-                          {/* Amount */}
-                          <td className="py-4 px-6 font-semibold text-foreground">
-                            {formatAmount(item)}
-                          </td>
-
-                          {/* Actions Menu */}
-                          <td className="py-4 px-6 text-right">
-                            <Link
-                              href={`/resources/${item.id}`}
-                              aria-label={`View details for ${item.name}`}
-                              className="inline-flex p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors cursor-pointer"
-                            >
-                              <MoreHorizontal className="w-4 h-4" />
-                            </Link>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                <ResourcesTable
+                  items={items}
+                  workspaceId={activeWorkspace.id}
+                  userRole={activeWorkspace.role}
+                  availableTags={availableTags}
+                  teamMembers={teamMembers}
+                />
 
                 {/* Pagination Footer */}
                 <ResourcesPagination

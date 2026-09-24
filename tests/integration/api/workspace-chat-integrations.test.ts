@@ -142,6 +142,65 @@ describe("API: Workspace Chat Integrations (Slack & Discord)", () => {
       expect(json.data.id).toBe("ch-new");
       expect(json.data.provider).toBe("discord");
     });
+
+    it("creates Telegram and Microsoft Teams channels successfully", async () => {
+      vi.mocked(auth).mockResolvedValue({ user: { id: "user-1" } } as never);
+      vi.mocked(requireWorkspaceRole).mockResolvedValue({} as never);
+
+      vi.mocked(createNotificationChannel).mockResolvedValueOnce({
+        id: "ch-tg",
+        workspaceId: "ws-1",
+        provider: "telegram",
+        name: "@duesora_bot",
+        webhookUrl: "https://api.telegram.org/bot12345:TOKEN/sendMessage?chat_id=999",
+        events: ["reminder.upcoming"],
+        active: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      const tgReq = new NextRequest("http://localhost:3000/api/workspaces/ws-1/integrations", {
+        method: "POST",
+        body: JSON.stringify({
+          provider: "telegram",
+          name: "@duesora_bot",
+          webhookUrl: "https://api.telegram.org/bot12345:TOKEN/sendMessage?chat_id=999",
+          events: ["reminder.upcoming"],
+        }),
+      });
+
+      const tgRes = await postChannel(tgReq, { params: Promise.resolve({ workspaceId: "ws-1" }) });
+      expect(tgRes.status).toBe(201);
+      const tgJson = await tgRes.json();
+      expect(tgJson.data.provider).toBe("telegram");
+
+      vi.mocked(createNotificationChannel).mockResolvedValueOnce({
+        id: "ch-teams",
+        workspaceId: "ws-1",
+        provider: "teams",
+        name: "IT Ops",
+        webhookUrl: "https://outlook.office.com/webhook/abc/IncomingWebhook/def",
+        events: ["*"],
+        active: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      const teamsReq = new NextRequest("http://localhost:3000/api/workspaces/ws-1/integrations", {
+        method: "POST",
+        body: JSON.stringify({
+          provider: "teams",
+          name: "IT Ops",
+          webhookUrl: "https://outlook.office.com/webhook/abc/IncomingWebhook/def",
+          events: ["*"],
+        }),
+      });
+
+      const teamsRes = await postChannel(teamsReq, { params: Promise.resolve({ workspaceId: "ws-1" }) });
+      expect(teamsRes.status).toBe(201);
+      const teamsJson = await teamsRes.json();
+      expect(teamsJson.data.provider).toBe("teams");
+    });
   });
 
   describe("PATCH & DELETE /api/workspaces/[workspaceId]/integrations/[channelId]", () => {

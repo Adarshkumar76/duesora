@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Calendar, Loader2 } from "lucide-react";
+import { Calendar, Loader2, Globe, Shield, CreditCard, Server, Cloud, KeyRound, HelpCircle, Check } from "lucide-react";
 import { TagInput } from "@/components/tags/tag-input";
+import { getResourceTypeConfig } from "@/lib/resources/form-config";
 
 function getTodayDateString(): string {
   const now = new Date();
@@ -80,6 +81,8 @@ export function ResourceForm({ workspaceId }: ResourceFormProps) {
   // Form Fields
   const [name, setName] = useState("");
   const [type, setType] = useState("domain");
+  const [websiteUrl, setWebsiteUrl] = useState("");
+  const [isUrlCustomized, setIsUrlCustomized] = useState(false);
   const [category, setCategory] = useState("");
   const [ownerId, setOwnerId] = useState<string>("");
   const [tags, setTags] = useState<string[]>([]);
@@ -92,6 +95,8 @@ export function ResourceForm({ workspaceId }: ResourceFormProps) {
   const [autoRenew, setAutoRenew] = useState(true);
   const dateInputRef = useRef<HTMLInputElement>(null);
 
+  const config = getResourceTypeConfig(type);
+
   // Members
   const [members, setMembers] = useState<WorkspaceMember[]>([]);
 
@@ -101,7 +106,12 @@ export function ResourceForm({ workspaceId }: ResourceFormProps) {
       .then((res) => (res.ok ? res.json() : null))
       .then((json) => {
         if (json?.data) {
-          setMembers(json.data);
+          const list = Array.isArray(json.data)
+            ? json.data
+            : Array.isArray(json.data.members)
+            ? json.data.members
+            : [];
+          setMembers(list);
         }
       })
       .catch(() => {});
@@ -117,13 +127,14 @@ export function ResourceForm({ workspaceId }: ResourceFormProps) {
       const amountMinor = !isNaN(parsedAmount) ? Math.round(parsedAmount * 100) : null;
 
       const payload = {
-        name,
+        name: name.trim(),
         type,
         category: category.trim() || null,
         ownerId: ownerId || null,
         tags,
-        provider: provider || null,
-        description: description || null,
+        provider: provider.trim() || null,
+        websiteUrl: websiteUrl.trim() || null,
+        description: description.trim() || null,
         amountMinor,
         currency,
         billingCycle,
@@ -173,44 +184,122 @@ export function ResourceForm({ workspaceId }: ResourceFormProps) {
         {/* Column 1: Resource Information */}
         <Card className="rounded-2xl border border-border/80 bg-card shadow-xs">
           <CardHeader className="pb-4">
-            <CardTitle className="text-base font-bold text-foreground">
-              Resource Information
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base font-bold text-foreground">
+                Resource Information
+              </CardTitle>
+              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                {config.typeLabel}
+              </span>
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Resource Name */}
+            {/* Resource Type */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-foreground">
-                Resource Name
+                Resource Type
               </label>
+              <select
+                value={type}
+                onChange={(e) => {
+                  const newType = e.target.value;
+                  setType(newType);
+                  const newConfig = getResourceTypeConfig(newType);
+                  if (newConfig.isDomainOrCert && !isUrlCustomized && name.trim()) {
+                    setWebsiteUrl(name.trim());
+                  }
+                }}
+                className="w-full px-3.5 py-2 text-sm bg-background border border-border/70 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all text-foreground cursor-pointer font-medium"
+              >
+                <option value="domain">Domain (DNS, SSL, Registrar)</option>
+                <option value="subscription">Subscription (SaaS, Services)</option>
+                <option value="ssl_certificate">SSL Certificate (TLS/HTTPS)</option>
+                <option value="hosting">Hosting (Servers, VPS)</option>
+                <option value="cloud_service">Cloud Service (AWS, GCP, Azure)</option>
+                <option value="software_license">Software License</option>
+                <option value="custom">Other / Custom</option>
+              </select>
+            </div>
+
+            {/* Resource Name */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-foreground">
+                  {config.nameLabel} <span className="text-rose-500">*</span>
+                </label>
+              </div>
               <input
                 type="text"
                 required
                 value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. duesora.com or AWS Production"
+                onChange={(e) => {
+                  const newName = e.target.value;
+                  setName(newName);
+                  if (config.isDomainOrCert && !isUrlCustomized) {
+                    setWebsiteUrl(newName.trim());
+                  }
+                }}
+                placeholder={config.namePlaceholder}
                 className="w-full px-3.5 py-2 text-sm bg-background border border-border/70 rounded-xl placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
               />
+              {config.nameHelp && (
+                <p className="text-[11px] text-muted-foreground">{config.nameHelp}</p>
+              )}
             </div>
 
-            {/* Resource Type */}
+            {/* Website URL / Target Hostname */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold text-foreground">
+                  {config.urlLabel}
+                </label>
+                {config.urlRequiredForHealthChecks && (
+                  <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                    Health Check Target
+                  </span>
+                )}
+              </div>
+              <input
+                type="text"
+                value={websiteUrl}
+                onChange={(e) => {
+                  setIsUrlCustomized(true);
+                  setWebsiteUrl(e.target.value);
+                }}
+                placeholder={config.urlPlaceholder}
+                className="w-full px-3.5 py-2 text-sm bg-background border border-border/70 rounded-xl placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
+              />
+              <div className="flex items-center justify-between gap-2 pt-0.5">
+                <p className="text-[11px] text-muted-foreground">
+                  {config.urlHelper}
+                </p>
+                {name.trim() && websiteUrl !== name.trim() && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setWebsiteUrl(name.trim());
+                      setIsUrlCustomized(true);
+                    }}
+                    className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 hover:underline shrink-0 cursor-pointer"
+                  >
+                    Use &quot;{name.trim()}&quot;
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Provider */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-foreground">
-                Type
+                {config.providerLabel}
               </label>
-              <select
-                value={type}
-                onChange={(e) => setType(e.target.value)}
-                className="w-full px-3.5 py-2 text-sm bg-background border border-border/70 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all text-foreground cursor-pointer"
-              >
-                <option value="domain">Domain</option>
-                <option value="subscription">Subscription</option>
-                <option value="ssl_certificate">SSL Certificate</option>
-                <option value="hosting">Hosting</option>
-                <option value="cloud_service">Cloud Service</option>
-                <option value="software_license">Software License</option>
-                <option value="custom">Other</option>
-              </select>
+              <input
+                type="text"
+                value={provider}
+                onChange={(e) => setProvider(e.target.value)}
+                placeholder={config.providerPlaceholder}
+                className="w-full px-3.5 py-2 text-sm bg-background border border-border/70 rounded-xl placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
+              />
             </div>
 
             {/* Category */}
@@ -222,7 +311,7 @@ export function ResourceForm({ workspaceId }: ResourceFormProps) {
                 type="text"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                placeholder="e.g. Infrastructure, SaaS, Dev Tools, Marketing"
+                placeholder={config.categoryPlaceholder}
                 className="w-full px-3.5 py-2 text-sm bg-background border border-border/70 rounded-xl placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
               />
             </div>
@@ -238,26 +327,12 @@ export function ResourceForm({ workspaceId }: ResourceFormProps) {
                 className="w-full px-3.5 py-2 text-sm bg-background border border-border/70 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all text-foreground cursor-pointer"
               >
                 <option value="">Unassigned</option>
-                {members.map((member) => (
+                {(Array.isArray(members) ? members : []).map((member) => (
                   <option key={member.id} value={member.id}>
                     {member.name || member.email} ({member.email})
                   </option>
                 ))}
               </select>
-            </div>
-
-            {/* Provider */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-foreground">
-                Provider
-              </label>
-              <input
-                type="text"
-                value={provider}
-                onChange={(e) => setProvider(e.target.value)}
-                placeholder="e.g. GoDaddy, AWS, Stripe"
-                className="w-full px-3.5 py-2 text-sm bg-background border border-border/70 rounded-xl placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
-              />
             </div>
 
             {/* Tags */}
@@ -276,7 +351,7 @@ export function ResourceForm({ workspaceId }: ResourceFormProps) {
             {/* Description */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-foreground">
-                Description
+                Description / Notes
               </label>
               <textarea
                 rows={3}
@@ -301,7 +376,7 @@ export function ResourceForm({ workspaceId }: ResourceFormProps) {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-foreground">
-                  Amount
+                  {config.costLabel || "Amount"}
                 </label>
                 <div className="relative">
                   <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium">

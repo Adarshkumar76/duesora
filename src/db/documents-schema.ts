@@ -1,0 +1,1 @@
+export { resourceDocuments } from "./schema";

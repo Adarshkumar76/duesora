@@ -9,6 +9,7 @@ import {
 import { sendRenewalReminderEmail } from "./email";
 import { emitWorkspaceWebhook } from "@/lib/webhooks/dispatcher";
 import { dispatchRenewalChatAlert } from "@/lib/integrations/chat/dispatcher";
+import { recordAuditEvent } from "@/lib/audit/service";
 
 export const REMINDER_INTERVALS = [30, 14, 7, 3, 1, 0] as const;
 
@@ -19,11 +20,17 @@ export interface ReminderMatch {
   daysRemaining: number;
 }
 
+export interface ReminderEngineOptions {
+  escalationDays?: number; // Days remaining threshold to trigger admin escalation (default: 3)
+  enableEscalation?: boolean; // Whether admin escalation policy is enabled (default: true)
+}
+
 export interface EngineRunSummary {
   workspaceId: string;
   scannedCount: number;
   dispatchedInAppCount: number;
   dispatchedEmailCount: number;
+  escalatedCount: number;
   skippedCount: number;
   errors: string[];
 }
@@ -103,7 +110,8 @@ export function calculateReminderMatch(
  * both in-app and SMTP email notifications with cycle-based deduplication.
  */
 export async function processWorkspaceReminders(
-  workspaceId: string
+  workspaceId: string,
+  options?: ReminderEngineOptions
 ): Promise<EngineRunSummary> {
   const db = getDb();
   const now = new Date();
@@ -113,6 +121,7 @@ export async function processWorkspaceReminders(
     scannedCount: 0,
     dispatchedInAppCount: 0,
     dispatchedEmailCount: 0,
+    escalatedCount: 0,
     skippedCount: 0,
     errors: [],
   };
@@ -272,6 +281,171 @@ export async function processWorkspaceReminders(
               `Failed email dispatch for resource ${res.id}: ${err instanceof Error ? err.message : "Unknown error"}`
             );
           }
+        }
+      }
+
+      // --- Escalation Policy: If renewal is critical (<= escalationDays, default 3) ---
+      const escalationThreshold = options?.escalationDays ?? 3;
+      const isEscalationEnabled = options?.enableEscalation !== false;
+      const isCriticalWindow = match.daysRemaining <= escalationThreshold;
+
+      if (isEscalationEnabled && isCriticalWindow) {
+        // Target all workspace Admins and Owners
+        const adminTargets = workspaceAdmins.filter(
+          (m) => m.role === "owner" || m.role === "admin"
+        );
+
+        let didEscalateAny = false;
+
+        for (const admin of adminTargets) {
+          // 1. Escalated In-App Notification
+          const alreadyEscalatedInApp = await hasReminderBeenDispatched(
+            res.id,
+            "escalation_in_app",
+            match.intervalDays,
+            cycleKey
+          );
+
+          if (!alreadyEscalatedInApp) {
+            try {
+              const escalationTitle =
+                match.daysRemaining <= 0
+                  ? `🚨 [ESCALATION] OVERDUE: "${res.name}" renewal missed`
+                  : `⚠️ [ESCALATION] Urgent: "${res.name}" renews in ${match.daysRemaining} day${match.daysRemaining === 1 ? "" : "s"}`;
+
+              const ownerInfo = item.ownerName || item.ownerEmail || "Unassigned";
+              const escalationMsg = `Action required: "${res.name}" (${res.type}) ${daysText}. Assigned owner: ${ownerInfo}. Escalated to workspace administration.`;
+
+              await createNotification({
+                workspaceId,
+                userId: admin.id,
+                resourceId: res.id,
+                title: escalationTitle,
+                message: escalationMsg,
+                type: match.type,
+                severity: "critical",
+                metadata: {
+                  intervalDays: match.intervalDays,
+                  daysRemaining: match.daysRemaining,
+                  renewalDate: res.renewalDate,
+                  amountMinor: res.amountMinor,
+                  currency: res.currency,
+                  isEscalation: true,
+                  assignedOwnerId: res.ownerId || null,
+                  assignedOwnerName: item.ownerName || null,
+                },
+              });
+
+              await recordReminderLog({
+                workspaceId,
+                resourceId: res.id,
+                channel: "escalation_in_app",
+                intervalDays: match.intervalDays,
+                cycleKey,
+                recipient: admin.id,
+                status: "sent",
+              });
+
+              summary.dispatchedInAppCount++;
+              summary.escalatedCount++;
+              didEscalateAny = true;
+            } catch (err) {
+              summary.errors.push(
+                `Failed escalation in-app dispatch for resource ${res.id} to admin ${admin.id}: ${err instanceof Error ? err.message : "Unknown error"}`
+              );
+            }
+          }
+
+          // 2. Escalated Email Notification
+          const alreadyEscalatedEmail = await hasReminderBeenDispatched(
+            res.id,
+            "escalation_email",
+            match.intervalDays,
+            cycleKey
+          );
+
+          if (!alreadyEscalatedEmail) {
+            try {
+              const emailResult = await sendRenewalReminderEmail({
+                to: admin.email,
+                recipientName: admin.name,
+                resourceName: res.name,
+                resourceType: res.type,
+                provider: res.provider,
+                daysRemaining: match.daysRemaining,
+                renewalDate: res.renewalDate,
+                amountMinor: res.amountMinor,
+                currency: res.currency,
+                billingCycle: res.billingCycle,
+                resourceId: res.id,
+                isEscalated: true,
+                escalatedReason: `This renewal is ${match.daysRemaining <= 0 ? "overdue" : `due in ${match.daysRemaining} day(s)`} and has been escalated to workspace administration (Assigned owner: ${item.ownerName || item.ownerEmail || "Unassigned"}).`,
+              });
+
+              await recordReminderLog({
+                workspaceId,
+                resourceId: res.id,
+                channel: "escalation_email",
+                intervalDays: match.intervalDays,
+                cycleKey,
+                recipient: admin.email,
+                status: emailResult.success ? "sent" : "failed",
+              });
+
+              if (emailResult.success) {
+                summary.dispatchedEmailCount++;
+              }
+            } catch (err) {
+              summary.errors.push(
+                `Failed escalation email dispatch for resource ${res.id} to admin ${admin.email}: ${err instanceof Error ? err.message : "Unknown error"}`
+              );
+            }
+          }
+        }
+
+        if (didEscalateAny) {
+          // Record Audit Event for Governance & Compliance
+          await recordAuditEvent({
+            workspaceId,
+            action: "reminder.escalated",
+            entityType: "resource",
+            entityId: res.id,
+            entityName: res.name,
+            details: {
+              daysRemaining: match.daysRemaining,
+              intervalDays: match.intervalDays,
+              ownerId: res.ownerId || null,
+              ownerEmail: item.ownerEmail || null,
+              adminsEscalatedCount: adminTargets.length,
+            },
+          });
+
+          // Dispatch escalation webhook
+          emitWorkspaceWebhook(workspaceId, "reminder.escalated", {
+            resourceId: res.id,
+            resourceName: res.name,
+            intervalDays: match.intervalDays,
+            daysRemaining: match.daysRemaining,
+            renewalDate: res.renewalDate,
+            amountMinor: res.amountMinor,
+            currency: res.currency,
+            assignedOwner: item.ownerEmail || null,
+            adminsEscalatedCount: adminTargets.length,
+          }).catch(() => {});
+
+          // Dispatch escalation alert to Slack/Discord
+          dispatchRenewalChatAlert(workspaceId, {
+            resourceId: res.id,
+            resourceName: res.name,
+            resourceType: res.type,
+            provider: res.provider,
+            daysRemaining: match.daysRemaining,
+            renewalDate: res.renewalDate,
+            amountMinor: res.amountMinor,
+            currency: res.currency,
+            billingCycle: res.billingCycle,
+            isEscalated: true,
+          }).catch(() => {});
         }
       }
 

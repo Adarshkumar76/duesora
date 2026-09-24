@@ -12,6 +12,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { TagInput } from "@/components/tags/tag-input";
+import { getResourceTypeConfig } from "@/lib/resources/form-config";
 
 function calculatePresetDate(offsetType: "today" | "1m" | "3m" | "6m" | "1y" | "2y"): string {
   const d = new Date();
@@ -125,7 +126,9 @@ export function ResourceDetailsActions({
   );
   const [autoRenew, setAutoRenew] = useState(resource.autoRenew ?? true);
   const [description, setDescription] = useState(resource.description || "");
+  const [changeReason, setChangeReason] = useState("");
   const dateInputRef = useRef<HTMLInputElement>(null);
+  const config = getResourceTypeConfig(type);
 
   // Members
   const [members, setMembers] = useState<WorkspaceMember[]>([]);
@@ -136,7 +139,12 @@ export function ResourceDetailsActions({
       .then((res) => (res.ok ? res.json() : null))
       .then((json) => {
         if (json?.data) {
-          setMembers(json.data);
+          const list = Array.isArray(json.data)
+            ? json.data
+            : Array.isArray(json.data.members)
+            ? json.data.members
+            : [];
+          setMembers(list);
         }
       })
       .catch(() => {});
@@ -178,6 +186,7 @@ export function ResourceDetailsActions({
         renewalDate: renewalDate ? new Date(renewalDate).toISOString() : null,
         autoRenew,
         description: description.trim() || null,
+        changeReason: changeReason.trim() || undefined,
       };
 
       const res = await fetch(
@@ -285,38 +294,47 @@ export function ResourceDetailsActions({
 
             <form onSubmit={handleEditSubmit} className="space-y-4 pt-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Resource Type */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-foreground">
+                      Resource Type
+                    </label>
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                      {config.typeLabel}
+                    </span>
+                  </div>
+                  <select
+                    value={type}
+                    onChange={(e) => setType(e.target.value)}
+                    className="w-full px-3.5 py-2 text-sm bg-background border border-border/70 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 cursor-pointer font-medium"
+                  >
+                    <option value="domain">Domain (DNS, SSL, Registrar)</option>
+                    <option value="subscription">Subscription (SaaS, Services)</option>
+                    <option value="ssl_certificate">SSL Certificate (TLS/HTTPS)</option>
+                    <option value="hosting">Hosting (Servers, VPS)</option>
+                    <option value="cloud_service">Cloud Service (AWS, GCP, Azure)</option>
+                    <option value="software_license">Software License</option>
+                    <option value="custom">Other / Custom</option>
+                  </select>
+                </div>
+
                 {/* Resource Name */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-foreground">
-                    Resource Name
+                    {config.nameLabel} <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="text"
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
+                    placeholder={config.namePlaceholder}
                     className="w-full px-3.5 py-2 text-sm bg-background border border-border/70 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600"
                   />
-                </div>
-
-                {/* Resource Type */}
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-foreground">
-                    Type
-                  </label>
-                  <select
-                    value={type}
-                    onChange={(e) => setType(e.target.value)}
-                    className="w-full px-3.5 py-2 text-sm bg-background border border-border/70 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 cursor-pointer"
-                  >
-                    <option value="domain">Domain</option>
-                    <option value="subscription">Subscription</option>
-                    <option value="ssl_certificate">SSL Certificate</option>
-                    <option value="hosting">Hosting</option>
-                    <option value="cloud_service">Cloud Service</option>
-                    <option value="software_license">Software License</option>
-                    <option value="custom">Other</option>
-                  </select>
+                  {config.nameHelp && (
+                    <p className="text-[11px] text-muted-foreground">{config.nameHelp}</p>
+                  )}
                 </div>
 
                 {/* Category */}
@@ -328,7 +346,7 @@ export function ResourceDetailsActions({
                     type="text"
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    placeholder="e.g. Infrastructure, SaaS, Dev Tools"
+                    placeholder={config.categoryPlaceholder}
                     className="w-full px-3.5 py-2 text-sm bg-background border border-border/70 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600"
                   />
                 </div>
@@ -344,7 +362,7 @@ export function ResourceDetailsActions({
                     className="w-full px-3.5 py-2 text-sm bg-background border border-border/70 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 cursor-pointer"
                   >
                     <option value="">Unassigned</option>
-                    {members.map((member) => (
+                    {(Array.isArray(members) ? members : []).map((member) => (
                       <option key={member.id} value={member.id}>
                         {member.name || member.email} ({member.email})
                       </option>
@@ -355,13 +373,13 @@ export function ResourceDetailsActions({
                 {/* Provider */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-foreground">
-                    Provider / Registrar
+                    {config.providerLabel}
                   </label>
                   <input
                     type="text"
                     value={provider}
                     onChange={(e) => setProvider(e.target.value)}
-                    placeholder="e.g. GoDaddy, AWS, Google"
+                    placeholder={config.providerPlaceholder}
                     className="w-full px-3.5 py-2 text-sm bg-background border border-border/70 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600"
                   />
                 </div>
@@ -398,7 +416,7 @@ export function ResourceDetailsActions({
                 {/* Amount */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-foreground">
-                    Amount
+                    {config.costLabel || "Amount"}
                   </label>
                   <div className="relative">
                     <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-muted-foreground font-medium">
@@ -449,6 +467,20 @@ export function ResourceDetailsActions({
                     <option value="one_time">One-time</option>
                     <option value="lifetime">Lifetime</option>
                   </select>
+                </div>
+
+                {/* Price Revision / Rate Shift Reason */}
+                <div className="space-y-1.5 sm:col-span-2">
+                  <label className="text-xs font-semibold text-foreground">
+                    Adjustment Reason <span className="text-muted-foreground font-normal">(Optional — recorded in cost history)</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={changeReason}
+                    onChange={(e) => setChangeReason(e.target.value)}
+                    placeholder="e.g. Annual renewal increase, Tier upgrade, Plan indexation"
+                    className="w-full px-3.5 py-2 text-sm bg-background border border-border/70 rounded-xl placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all"
+                  />
                 </div>
 
                 {/* Next Renewal Date */}
@@ -563,18 +595,39 @@ export function ResourceDetailsActions({
                 })()}
               </div>
 
-              {/* Website URL / Nameservers */}
+              {/* Website URL / Target Hostname */}
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-foreground">
-                  Website URL or Host Nameserver
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-foreground">
+                    {config.urlLabel}
+                  </label>
+                  {config.urlRequiredForHealthChecks && (
+                    <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                      Health Check Target
+                    </span>
+                  )}
+                </div>
                 <input
                   type="text"
                   value={websiteUrl}
                   onChange={(e) => setWebsiteUrl(e.target.value)}
-                  placeholder="https://duesora.com or ns1.godaddy.com"
+                  placeholder={config.urlPlaceholder}
                   className="w-full px-3.5 py-2 text-sm bg-background border border-border/70 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600"
                 />
+                <div className="flex items-center justify-between gap-2 pt-0.5">
+                  <p className="text-[11px] text-muted-foreground">
+                    {config.urlHelper}
+                  </p>
+                  {name.trim() && websiteUrl !== name.trim() && (
+                    <button
+                      type="button"
+                      onClick={() => setWebsiteUrl(name.trim())}
+                      className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 hover:underline shrink-0 cursor-pointer"
+                    >
+                      Use &quot;{name.trim()}&quot;
+                    </button>
+                  )}
+                </div>
               </div>
 
               {/* Auto Renew Checkbox */}

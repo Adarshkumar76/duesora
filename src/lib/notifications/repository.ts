@@ -241,7 +241,7 @@ export async function hasReminderBeenDispatched(
 export async function recordReminderLog(data: {
   workspaceId: string;
   resourceId: string;
-  channel: "in_app" | "email" | "webhook";
+  channel: "in_app" | "email" | "webhook" | "escalation_in_app" | "escalation_email" | string;
   intervalDays: number;
   cycleKey: string;
   recipient: string;

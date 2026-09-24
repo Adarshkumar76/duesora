@@ -40,6 +40,22 @@ function DiscordIcon({ className = "w-5 h-5" }: { className?: string }) {
   );
 }
 
+function TelegramIcon({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 0 0-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .37z" />
+    </svg>
+  );
+}
+
+function TeamsIcon({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M16.5 6a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm3.5 1.5h-5c-.83 0-1.5.67-1.5 1.5v4.5c0 .28.22.5.5.5h6c.28 0 .5-.22.5-.5V9c0-.83-.67-1.5-1.5-1.5zM9.5 7A3.5 3.5 0 1 0 9.5 0a3.5 3.5 0 0 0 0 7zm-5.5 2C2.9 9 2 9.9 2 11v8c0 .55.45 1 1 1h8c.55 0 1-.45 1-1v-8c0-1.1-.9-2-2-2H4zm5 3H6.5v6H5v-6H3.5V11H9v1z" />
+    </svg>
+  );
+}
+
 const EVENT_OPTIONS = [
   { id: "reminder.upcoming", label: "Upcoming Renewals", description: "30d, 14d, 7d, 3d, 1d reminder alerts" },
   { id: "reminder.overdue", label: "Overdue Renewals", description: "Expired domains, licenses, or contracts" },
@@ -76,7 +92,20 @@ export function ChatIntegrations({
 
   const openAddModal = (provider: ChatProvider) => {
     setModalProvider(provider);
-    setName(provider === "slack" ? "#alerts" : "#devops");
+    switch (provider) {
+      case "slack":
+        setName("#alerts");
+        break;
+      case "discord":
+        setName("#devops");
+        break;
+      case "telegram":
+        setName("@duesora_alerts_bot");
+        break;
+      case "teams":
+        setName("IT Ops Alerts");
+        break;
+    }
     setWebhookUrl("");
     setSelectedEvents([
       "reminder.upcoming",
@@ -126,7 +155,7 @@ export function ChatIntegrations({
       setModalOpen(false);
       setFeedback({
         type: "success",
-        message: `${modalProvider === "slack" ? "Slack" : "Discord"} channel added successfully!`,
+        message: `${modalProvider.toUpperCase()} channel added successfully!`,
       });
     } catch (err) {
       setFeedback({
@@ -153,24 +182,24 @@ export function ChatIntegrations({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           provider: modalProvider,
+          channelName: name || "Test Channel",
           webhookUrl,
-          name,
         }),
       });
 
       const json = await res.json();
       if (!res.ok) {
-        throw new Error(json.error?.message || "Delivery failed");
+        throw new Error(json.error?.message || "Test dispatch rejected");
       }
 
       setFeedback({
         type: "success",
-        message: `Test alert received by ${modalProvider === "slack" ? "Slack" : "Discord"}! Check your channel.`,
+        message: "Test message sent successfully! Check your chat channel.",
       });
     } catch (err) {
       setFeedback({
         type: "error",
-        message: err instanceof Error ? err.message : "Test alert failed",
+        message: err instanceof Error ? err.message : "Test notification failed",
       });
     } finally {
       setModalTesting(false);
@@ -182,25 +211,23 @@ export function ChatIntegrations({
     setFeedback(null);
 
     try {
-      const res = await fetch(`/api/workspaces/${workspaceId}/integrations/test`, {
+      const res = await fetch(`/api/workspaces/${workspaceId}/integrations/${channelId}/test`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ channelId }),
       });
 
       const json = await res.json();
       if (!res.ok) {
-        throw new Error(json.error?.message || "Test alert failed");
+        throw new Error(json.error?.message || "Test message failed to deliver");
       }
 
       setFeedback({
         type: "success",
-        message: json.data?.message || "Test alert delivered successfully!",
+        message: "Live test alert dispatched successfully to channel!",
       });
     } catch (err) {
       setFeedback({
         type: "error",
-        message: err instanceof Error ? err.message : "Failed sending test alert",
+        message: err instanceof Error ? err.message : "Failed to send test alert",
       });
     } finally {
       setTestingId(null);
@@ -211,76 +238,66 @@ export function ChatIntegrations({
     if (!isAdmin) return;
 
     try {
-      const res = await fetch(
-        `/api/workspaces/${workspaceId}/integrations/${channel.id}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ active: !channel.active }),
-        }
-      );
+      const nextActive = !channel.active;
+      const res = await fetch(`/api/workspaces/${workspaceId}/integrations/${channel.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ active: nextActive }),
+      });
 
-      if (res.ok) {
-        setChannels(
-          channels.map((c) =>
-            c.id === channel.id ? { ...c, active: !c.active } : c
-          )
-        );
-      }
+      if (!res.ok) throw new Error("Failed to toggle status");
+
+      setChannels(
+        channels.map((c) => (c.id === channel.id ? { ...c, active: nextActive } : c))
+      );
     } catch (err) {
-      console.error("Failed toggling channel active:", err);
+      setFeedback({
+        type: "error",
+        message: err instanceof Error ? err.message : "Failed to update channel",
+      });
     }
   };
 
   const handleDeleteChannel = async (channelId: string) => {
     if (!isAdmin) return;
-    if (!window.confirm("Are you sure you want to remove this alert integration?")) {
-      return;
-    }
+    if (!confirm("Are you sure you want to disconnect this chat integration?")) return;
 
     try {
-      const res = await fetch(
-        `/api/workspaces/${workspaceId}/integrations/${channelId}`,
-        {
-          method: "DELETE",
-        }
-      );
+      const res = await fetch(`/api/workspaces/${workspaceId}/integrations/${channelId}`, {
+        method: "DELETE",
+      });
 
-      if (res.ok) {
-        setChannels(channels.filter((c) => c.id !== channelId));
-        setFeedback({
-          type: "success",
-          message: "Integration channel removed successfully",
-        });
-      }
+      if (!res.ok) throw new Error("Failed to delete channel");
+
+      setChannels(channels.filter((c) => c.id !== channelId));
+      setFeedback({ type: "success", message: "Channel integration removed." });
     } catch (err) {
-      console.error("Failed deleting channel:", err);
+      setFeedback({
+        type: "error",
+        message: err instanceof Error ? err.message : "Failed removing channel",
+      });
     }
   };
 
   const slackCount = channels.filter((c) => c.provider === "slack").length;
   const discordCount = channels.filter((c) => c.provider === "discord").length;
+  const telegramCount = channels.filter((c) => c.provider === "telegram").length;
+  const teamsCount = channels.filter((c) => c.provider === "teams").length;
 
   return (
     <div className="space-y-6">
-      {/* Top Section Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-            <MessageSquare className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-            <span>Team Chat Alerts & Webhooks</span>
-          </h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Post rich notifications directly to Slack or Discord when renewals approach or SSL certificates degrade.
-          </p>
-        </div>
+      {/* Header */}
+      <div>
+        <h2 className="text-lg font-bold text-foreground">Chat & Team Integrations</h2>
+        <p className="text-xs text-muted-foreground mt-0.5">
+          Dispatch instant notifications to Slack, Discord, Telegram, and Microsoft Teams when renewals are due or SSL certificates degrade.
+        </p>
       </div>
 
       {/* Global Feedback Banner */}
       {feedback && (
         <div
-          role="alert"
-          className={`flex items-center justify-between p-3.5 rounded-xl text-xs font-medium border animate-in fade-in ${
+          className={`flex items-center justify-between p-3.5 rounded-xl border text-xs font-semibold animate-in fade-in duration-200 ${
             feedback.type === "success"
               ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
               : "bg-destructive/10 text-destructive border-destructive/20"
@@ -304,31 +321,33 @@ export function ChatIntegrations({
         </div>
       )}
 
-      {/* Provider Quick Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Provider Quick Cards Grid (Slack, Discord, Telegram, Teams) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Slack Card */}
-        <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-2xs hover:border-border transition-colors">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#4A154B]/10 dark:bg-[#4A154B]/25 text-[#4A154B] dark:text-[#E01E5A] flex items-center justify-center shrink-0">
-                <SlackIcon className="w-5 h-5" />
+        <div className="rounded-2xl border border-border/80 bg-card p-4.5 space-y-3.5 shadow-2xs hover:border-border transition-colors flex flex-col justify-between">
+          <div className="space-y-3">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-[#4A154B]/10 dark:bg-[#4A154B]/25 text-[#4A154B] dark:text-[#E01E5A] flex items-center justify-center shrink-0">
+                  <SlackIcon className="w-4.5 h-4.5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-foreground">Slack</h3>
+                  <p className="text-[11px] text-muted-foreground">
+                    {slackCount > 0 ? `${slackCount} webhook${slackCount > 1 ? "s" : ""}` : "Not connected"}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-sm font-bold text-foreground">Slack</h3>
-                <p className="text-xs text-muted-foreground">
-                  {slackCount > 0 ? `${slackCount} webhook${slackCount > 1 ? "s" : ""} connected` : "Not connected"}
-                </p>
-              </div>
+              {slackCount > 0 && (
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                  Active
+                </span>
+              )}
             </div>
-            {slackCount > 0 && (
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                Active
-              </span>
-            )}
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Native Block Kit cards with due dates and management buttons.
+            </p>
           </div>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            Posts native Slack Block Kit cards with due dates, spend values, and 1-click management buttons.
-          </p>
           <Button
             type="button"
             size="sm"
@@ -337,33 +356,35 @@ export function ChatIntegrations({
             className="w-full rounded-xl bg-[#4A154B] hover:bg-[#3d113e] text-white shadow-xs gap-1.5 text-xs font-semibold cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>Connect Slack Channel</span>
+            <span>Connect Slack</span>
           </Button>
         </div>
 
         {/* Discord Card */}
-        <div className="rounded-2xl border border-border/80 bg-card p-5 space-y-4 shadow-2xs hover:border-border transition-colors">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#5865F2]/10 dark:bg-[#5865F2]/25 text-[#5865F2] flex items-center justify-center shrink-0">
-                <DiscordIcon className="w-5 h-5" />
+        <div className="rounded-2xl border border-border/80 bg-card p-4.5 space-y-3.5 shadow-2xs hover:border-border transition-colors flex flex-col justify-between">
+          <div className="space-y-3">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-[#5865F2]/10 dark:bg-[#5865F2]/25 text-[#5865F2] flex items-center justify-center shrink-0">
+                  <DiscordIcon className="w-4.5 h-4.5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-foreground">Discord</h3>
+                  <p className="text-[11px] text-muted-foreground">
+                    {discordCount > 0 ? `${discordCount} webhook${discordCount > 1 ? "s" : ""}` : "Not connected"}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-sm font-bold text-foreground">Discord</h3>
-                <p className="text-xs text-muted-foreground">
-                  {discordCount > 0 ? `${discordCount} webhook${discordCount > 1 ? "s" : ""} connected` : "Not connected"}
-                </p>
-              </div>
+              {discordCount > 0 && (
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                  Active
+                </span>
+              )}
             </div>
-            {discordCount > 0 && (
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                Active
-              </span>
-            )}
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Color-coded Discord Embeds with severity indicators and links.
+            </p>
           </div>
-          <p className="text-xs text-muted-foreground leading-relaxed">
-            Sends rich Discord Embeds with color-coded severity (green, amber, red) and direct links.
-          </p>
           <Button
             type="button"
             size="sm"
@@ -372,7 +393,81 @@ export function ChatIntegrations({
             className="w-full rounded-xl bg-[#5865F2] hover:bg-[#4752c4] text-white shadow-xs gap-1.5 text-xs font-semibold cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>Connect Discord Webhook</span>
+            <span>Connect Discord</span>
+          </Button>
+        </div>
+
+        {/* Telegram Card */}
+        <div className="rounded-2xl border border-border/80 bg-card p-4.5 space-y-3.5 shadow-2xs hover:border-border transition-colors flex flex-col justify-between">
+          <div className="space-y-3">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-[#229ED9]/10 dark:bg-[#229ED9]/25 text-[#229ED9] flex items-center justify-center shrink-0">
+                  <TelegramIcon className="w-4.5 h-4.5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-foreground">Telegram</h3>
+                  <p className="text-[11px] text-muted-foreground">
+                    {telegramCount > 0 ? `${telegramCount} bot${telegramCount > 1 ? "s" : ""}` : "Not connected"}
+                  </p>
+                </div>
+              </div>
+              {telegramCount > 0 && (
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                  Active
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Delivers instant alerts to Telegram groups or channels via Bot API.
+            </p>
+          </div>
+          <Button
+            type="button"
+            size="sm"
+            onClick={() => openAddModal("telegram")}
+            disabled={!isAdmin}
+            className="w-full rounded-xl bg-[#229ED9] hover:bg-[#1b81b2] text-white shadow-xs gap-1.5 text-xs font-semibold cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Connect Telegram</span>
+          </Button>
+        </div>
+
+        {/* Microsoft Teams Card */}
+        <div className="rounded-2xl border border-border/80 bg-card p-4.5 space-y-3.5 shadow-2xs hover:border-border transition-colors flex flex-col justify-between">
+          <div className="space-y-3">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-[#464EB8]/10 dark:bg-[#464EB8]/25 text-[#464EB8] flex items-center justify-center shrink-0">
+                  <TeamsIcon className="w-4.5 h-4.5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-foreground">MS Teams</h3>
+                  <p className="text-[11px] text-muted-foreground">
+                    {teamsCount > 0 ? `${teamsCount} channel${teamsCount > 1 ? "s" : ""}` : "Not connected"}
+                  </p>
+                </div>
+              </div>
+              {teamsCount > 0 && (
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                  Active
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Sends actionable Office 365 Connector cards with severity badges.
+            </p>
+          </div>
+          <Button
+            type="button"
+            size="sm"
+            onClick={() => openAddModal("teams")}
+            disabled={!isAdmin}
+            className="w-full rounded-xl bg-[#464EB8] hover:bg-[#383e93] text-white shadow-xs gap-1.5 text-xs font-semibold cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Connect Teams</span>
           </Button>
         </div>
       </div>
@@ -393,7 +488,7 @@ export function ChatIntegrations({
             <MessageSquare className="w-8 h-8 text-muted-foreground mx-auto stroke-1 opacity-50" />
             <p className="text-sm font-medium text-foreground">No chat webhooks connected</p>
             <p className="text-xs text-muted-foreground max-w-sm mx-auto">
-              Add a Slack or Discord webhook to receive automatic alerts when renewal dates approach or SSL certificates need attention.
+              Connect a Slack, Discord, Telegram, or MS Teams channel above to receive automated renewal reminders and uptime alerts.
             </p>
           </div>
         ) : (
@@ -411,6 +506,25 @@ export function ChatIntegrations({
               <tbody className="divide-y divide-border/40">
                 {channels.map((channel) => {
                   const isSlack = channel.provider === "slack";
+                  const isDiscord = channel.provider === "discord";
+                  const isTelegram = channel.provider === "telegram";
+
+                  const badgeClass = isSlack
+                    ? "bg-[#4A154B]/10 text-[#4A154B] dark:text-[#E01E5A] border border-[#4A154B]/20"
+                    : isDiscord
+                    ? "bg-[#5865F2]/10 text-[#5865F2] border border-[#5865F2]/20"
+                    : isTelegram
+                    ? "bg-[#229ED9]/10 text-[#229ED9] border border-[#229ED9]/20"
+                    : "bg-[#464EB8]/10 text-[#464EB8] border border-[#464EB8]/20";
+
+                  const IconComp = isSlack
+                    ? SlackIcon
+                    : isDiscord
+                    ? DiscordIcon
+                    : isTelegram
+                    ? TelegramIcon
+                    : TeamsIcon;
+
                   return (
                     <tr key={channel.id} className="hover:bg-muted/20 transition-colors">
                       <td className="py-3.5 px-4 font-semibold text-foreground">
@@ -421,13 +535,9 @@ export function ChatIntegrations({
 
                       <td className="py-3.5 px-4">
                         <span
-                          className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md font-semibold text-[10px] ${
-                            isSlack
-                              ? "bg-[#4A154B]/10 text-[#4A154B] dark:text-[#E01E5A] border border-[#4A154B]/20"
-                              : "bg-[#5865F2]/10 text-[#5865F2] border border-[#5865F2]/20"
-                          }`}
+                          className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md font-semibold text-[10px] ${badgeClass}`}
                         >
-                          {isSlack ? <SlackIcon className="w-3 h-3" /> : <DiscordIcon className="w-3 h-3" />}
+                          <IconComp className="w-3 h-3" />
                           <span className="capitalize">{channel.provider}</span>
                         </span>
                       </td>
@@ -517,17 +627,25 @@ export function ChatIntegrations({
                   className={`w-8 h-8 rounded-xl flex items-center justify-center ${
                     modalProvider === "slack"
                       ? "bg-[#4A154B]/10 text-[#4A154B] dark:text-[#E01E5A]"
-                      : "bg-[#5865F2]/10 text-[#5865F2]"
+                      : modalProvider === "discord"
+                      ? "bg-[#5865F2]/10 text-[#5865F2]"
+                      : modalProvider === "telegram"
+                      ? "bg-[#229ED9]/10 text-[#229ED9]"
+                      : "bg-[#464EB8]/10 text-[#464EB8]"
                   }`}
                 >
                   {modalProvider === "slack" ? (
                     <SlackIcon className="w-4 h-4" />
-                  ) : (
+                  ) : modalProvider === "discord" ? (
                     <DiscordIcon className="w-4 h-4" />
+                  ) : modalProvider === "telegram" ? (
+                    <TelegramIcon className="w-4 h-4" />
+                  ) : (
+                    <TeamsIcon className="w-4 h-4" />
                   )}
                 </div>
                 <h3 className="text-base font-bold text-foreground">
-                  Connect {modalProvider === "slack" ? "Slack" : "Discord"} Alerts
+                  Connect {modalProvider.toUpperCase()} Channel
                 </h3>
               </div>
               <button
@@ -550,7 +668,15 @@ export function ChatIntegrations({
                   id="channelName"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder={modalProvider === "slack" ? "#alerts" : "#devops-feed"}
+                  placeholder={
+                    modalProvider === "slack"
+                      ? "#alerts"
+                      : modalProvider === "discord"
+                      ? "#devops"
+                      : modalProvider === "telegram"
+                      ? "@alerts_channel"
+                      : "IT Alerts"
+                  }
                   required
                   className="h-10 text-xs"
                 />
@@ -562,7 +688,7 @@ export function ChatIntegrations({
               {/* Webhook URL */}
               <div className="space-y-1.5">
                 <Label htmlFor="webhookUrl" className="text-xs font-semibold">
-                  Webhook URL
+                  Webhook URL / Bot Endpoint
                 </Label>
                 <Input
                   id="webhookUrl"
@@ -572,7 +698,11 @@ export function ChatIntegrations({
                   placeholder={
                     modalProvider === "slack"
                       ? "https://hooks.slack.com/services/T00/B00/XXXX"
-                      : "https://discord.com/api/webhooks/0000/XXXX"
+                      : modalProvider === "discord"
+                      ? "https://discord.com/api/webhooks/0000/XXXX"
+                      : modalProvider === "telegram"
+                      ? "https://api.telegram.org/bot<TOKEN>/sendMessage?chat_id=<ID>"
+                      : "https://outlook.office.com/webhook/..."
                   }
                   required
                   className="h-10 text-xs font-mono"
@@ -580,17 +710,17 @@ export function ChatIntegrations({
                 <p className="text-[11px] text-muted-foreground leading-relaxed">
                   {modalProvider === "slack" ? (
                     <>
-                      Create an Incoming Webhook in your Slack App or Integrations directory.{" "}
+                      Create an Incoming Webhook in your Slack App.{" "}
                       <a
                         href="https://api.slack.com/messaging/webhooks"
                         target="_blank"
                         rel="noreferrer"
                         className="text-primary hover:underline inline-flex items-center gap-0.5"
                       >
-                        Slack Webhook Guide <ExternalLink className="w-2.5 h-2.5" />
+                        Slack Guide <ExternalLink className="w-2.5 h-2.5" />
                       </a>
                     </>
-                  ) : (
+                  ) : modalProvider === "discord" ? (
                     <>
                       In Discord channel settings, go to <strong>Integrations &gt; Webhooks &gt; New Webhook</strong>.{" "}
                       <a
@@ -599,7 +729,31 @@ export function ChatIntegrations({
                         rel="noreferrer"
                         className="text-primary hover:underline inline-flex items-center gap-0.5"
                       >
-                        Discord Webhook Guide <ExternalLink className="w-2.5 h-2.5" />
+                        Discord Guide <ExternalLink className="w-2.5 h-2.5" />
+                      </a>
+                    </>
+                  ) : modalProvider === "telegram" ? (
+                    <>
+                      Create a bot via <strong>@BotFather</strong> and provide the <code>sendMessage</code> URL with <code>?chat_id=&lt;YOUR_CHAT_ID&gt;</code>.{" "}
+                      <a
+                        href="https://core.telegram.org/bots#how-do-bots-work"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-primary hover:underline inline-flex items-center gap-0.5"
+                      >
+                        Telegram Guide <ExternalLink className="w-2.5 h-2.5" />
+                      </a>
+                    </>
+                  ) : (
+                    <>
+                      In Microsoft Teams channel, add an <strong>Incoming Webhook</strong> connector or Power Automate workflow.{" "}
+                      <a
+                        href="https://learn.microsoft.com/en-us/microsoftteams/platform/webhooks-and-connectors/how-to/add-incoming-webhook"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-primary hover:underline inline-flex items-center gap-0.5"
+                      >
+                        Teams Guide <ExternalLink className="w-2.5 h-2.5" />
                       </a>
                     </>
                   )}

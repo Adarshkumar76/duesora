@@ -7,22 +7,22 @@ import {
   getMonitorLogsForResource,
   probeAndSaveResource,
 } from "@/lib/monitors/service";
+import { resolveResourceRouteParams } from "@/lib/api/route-params";
 
-interface RouteParams {
-  params: Promise<{
-    workspaceId: string;
-    resourceId: string;
-  }>;
-}
-
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(request: NextRequest, context?: unknown) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: { message: "Unauthorized" } }, { status: 401 });
     }
 
-    const { workspaceId, resourceId } = await params;
+    const { workspaceId, resourceId } = await resolveResourceRouteParams(request, context);
+    if (!workspaceId || !resourceId) {
+      return NextResponse.json(
+        { error: { message: "Missing required workspaceId or resourceId" } },
+        { status: 400 }
+      );
+    }
     await requireWorkspaceRole(session.user.id, workspaceId, "viewer");
 
     const [monitor, logs] = await Promise.all([
@@ -43,14 +43,21 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
   }
 }
 
-export async function POST(request: NextRequest, { params }: RouteParams) {
+export async function POST(request: NextRequest, context?: unknown) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: { message: "Unauthorized" } }, { status: 401 });
     }
 
-    const { workspaceId, resourceId } = await params;
+    const { workspaceId, resourceId } = await resolveResourceRouteParams(request, context);
+    if (!workspaceId || !resourceId) {
+      return NextResponse.json(
+        { error: { message: "Missing required workspaceId or resourceId" } },
+        { status: 400 }
+      );
+    }
+
     await requireWorkspaceRole(session.user.id, workspaceId, "member");
 
     const resource = await getResourceById(workspaceId, resourceId);

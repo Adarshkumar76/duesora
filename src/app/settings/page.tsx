@@ -12,6 +12,12 @@ import { WorkspaceSettingsForm } from "@/components/settings/workspace-settings-
 import { TeamManagement } from "@/components/settings/team-management";
 import { ChatIntegrations } from "@/components/settings/chat-integrations";
 import { listNotificationChannels } from "@/lib/integrations/chat/repository";
+import { listWorkspaceAuditLogs } from "@/lib/audit/service";
+import { AuditLogViewer } from "@/components/settings/audit-log-viewer";
+import { getWorkspaceBudget, getWorkspaceBudgetStatus } from "@/lib/budgets/service";
+import { BudgetSettings } from "@/components/settings/budget-settings";
+import { CurrencyExchangeSettings } from "@/components/settings/currency-exchange-settings";
+import { EmailSettings } from "@/components/settings/email-settings";
 import { Building2, Mail, ShieldCheck } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -24,7 +30,7 @@ export default async function SettingsPage() {
   }
 
   // 1. Resolve user's active workspace (via cookie or fallback)
-  const sessionWorkspaceId = (session.user as { workspaceId?: string | null }).workspaceId;
+  const sessionWorkspaceId = (session?.user as { workspaceId?: string | null } | undefined)?.workspaceId;
   const { activeWorkspace, userWorkspaces } = await resolveActiveWorkspace(
     session.user.id,
     sessionWorkspaceId
@@ -58,7 +64,34 @@ export default async function SettingsPage() {
     chatChannels = [];
   }
 
+  // 5. Fetch audit logs (for Admins, Owners, and Members)
+  let auditData: Awaited<ReturnType<typeof listWorkspaceAuditLogs>> = {
+    items: [],
+    pagination: { page: 1, pageSize: 20, total: 0, totalPages: 1 },
+  };
+  const canViewAudit = activeWorkspace.role !== "viewer";
+  if (canViewAudit) {
+    try {
+      auditData = await listWorkspaceAuditLogs(session.user.id, activeWorkspace.id, {
+        page: 1,
+        pageSize: 20,
+      });
+    } catch {
+      // fallback
+    }
+  }
+
   const emailReady = isEmailConfigured();
+
+  // 6. Fetch workspace budget & status
+  let budgetConfig = null;
+  let budgetStatus = null;
+  try {
+    budgetConfig = await getWorkspaceBudget(session.user.id, activeWorkspace.id);
+    budgetStatus = await getWorkspaceBudgetStatus(session.user.id, activeWorkspace.id);
+  } catch {
+    // fallback
+  }
 
   async function handleSignOut() {
     "use server";
@@ -141,6 +174,22 @@ export default async function SettingsPage() {
             }}
           />
 
+          {/* Workspace Budget Ceilings & Spend Warnings */}
+          <div className="pt-2" id="budget">
+            <BudgetSettings
+              workspaceId={activeWorkspace.id}
+              initialBudget={budgetConfig}
+              initialStatus={budgetStatus}
+              currentUserRole={activeWorkspace.role}
+              defaultCurrency={activeWorkspace.defaultCurrency || "USD"}
+            />
+          </div>
+
+          {/* Real-time Exchange Rates & Live FX Currency Sync */}
+          <div className="pt-2" id="currency">
+            <CurrencyExchangeSettings />
+          </div>
+
           {/* Team & Member Access Management */}
           <TeamManagement
             workspaceId={activeWorkspace.id}
@@ -148,6 +197,15 @@ export default async function SettingsPage() {
             initialInvitations={teamData.invitations}
             currentUserRole={teamData.currentUserRole}
           />
+
+          {/* Email Alerts & Delivery Settings */}
+          <div className="pt-2" id="email">
+            <EmailSettings
+              workspaceId={activeWorkspace.id}
+              userRole={activeWorkspace.role}
+              currentUserEmail={session.user.email}
+            />
+          </div>
 
           {/* Slack & Discord Alert Webhooks */}
           <div className="pt-2">
@@ -166,6 +224,20 @@ export default async function SettingsPage() {
               userRole={activeWorkspace.role}
             />
           </div>
+
+          {/* Workspace Audit & Compliance Log (Admins, Owners, Members) */}
+          {canViewAudit && (
+            <div className="pt-2">
+              <AuditLogViewer
+                workspaceId={activeWorkspace.id}
+                initialLogs={auditData.items}
+                totalCount={auditData.pagination.total}
+                currentPage={auditData.pagination.page}
+                totalPages={auditData.pagination.totalPages}
+                currentUserRole={activeWorkspace.role}
+              />
+            </div>
+          )}
         </main>
       </div>
     </div>

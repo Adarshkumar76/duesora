@@ -195,7 +195,7 @@ export function ResourceMonitorCard({
                   : "—"}
               </span>
               {monitor?.tlsValidTo && (
-                <span className="text-[11px] text-muted-foreground truncate">
+                <span suppressHydrationWarning className="text-[11px] text-muted-foreground truncate">
                   ({formatDate(monitor.tlsValidTo)})
                 </span>
               )}
@@ -220,7 +220,10 @@ export function ResourceMonitorCard({
                 </span>
               )}
             </div>
-            <span className="text-[11px] text-muted-foreground block truncate">
+            <span
+              suppressHydrationWarning
+              className="text-[11px] text-muted-foreground block truncate"
+            >
               {monitor?.lastCheckedAt
                 ? `Last checked: ${new Date(monitor.lastCheckedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
                 : "Not checked recently"}
@@ -254,7 +257,7 @@ export function ResourceMonitorCard({
             <span>Automated monitoring active</span>
           </span>
           {monitor?.lastAlertedAt ? (
-            <span className="text-amber-600 dark:text-amber-400 font-medium">
+            <span suppressHydrationWarning className="text-amber-600 dark:text-amber-400 font-medium">
               Alert dispatched: {formatDate(monitor.lastAlertedAt)} ({monitor.lastAlertStatus})
             </span>
           ) : (
@@ -291,7 +294,7 @@ export function ResourceMonitorCard({
 
                     <div className="flex items-center gap-3 text-muted-foreground shrink-0 text-[11px]">
                       {log.latencyMs !== null && <span>{log.latencyMs}ms</span>}
-                      <span>{new Date(log.checkedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+                      <span suppressHydrationWarning>{new Date(log.checkedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
                     </div>
                   </div>
                 );
