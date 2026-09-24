@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 import { and, eq } from "drizzle-orm";
 import { getDb } from "@/db";
-import { apiKeys } from "@/db/schema";
+import { apiKeys } from "@/db/api-keys-schema";
 import { requireWorkspaceRole } from "@/lib/auth/workspace";
 
 export function hashApiKey(rawKey: string): string {

@@ -732,76 +732,8 @@ export const exchangeRates = pgTable("exchange_rates", {
     .notNull(),
 });
 
-export const resourceDependencies = pgTable(
-  "resource_dependencies",
-  {
-    id: uuid("id").defaultRandom().primaryKey(),
-
-    workspaceId: uuid("workspace_id")
-      .notNull()
-      .references(() => workspaces.id, { onDelete: "cascade" }),
-
-    resourceId: uuid("resource_id")
-      .notNull()
-      .references(() => resources.id, { onDelete: "cascade" }),
-
-    dependsOnResourceId: uuid("depends_on_resource_id")
-      .notNull()
-      .references(() => resources.id, { onDelete: "cascade" }),
-
-    notes: varchar("notes", { length: 255 }),
-
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .defaultNow()
-      .notNull(),
-  },
-  (table) => [
-    index("resource_dependencies_workspace_idx").on(table.workspaceId),
-    index("resource_dependencies_resource_idx").on(table.resourceId),
-    index("resource_dependencies_depends_on_idx").on(table.dependsOnResourceId),
-    unique("resource_dependencies_unique").on(
-      table.resourceId,
-      table.dependsOnResourceId
-    ),
-  ]
-);
-
-export const apiKeys = pgTable(
-  "api_keys",
-  {
-    id: uuid("id").defaultRandom().primaryKey(),
-
-    workspaceId: uuid("workspace_id")
-      .notNull()
-      .references(() => workspaces.id, { onDelete: "cascade" }),
-
-    userId: uuid("user_id")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-
-    name: varchar("name", { length: 100 }).notNull(),
-
-    keyPrefix: varchar("key_prefix", { length: 16 }).notNull(),
-
-    keyHash: varchar("key_hash", { length: 64 }).notNull(),
-
-    permissions: varchar("permissions", { length: 20 })
-      .notNull()
-      .default("read"),
-
-    lastUsedAt: timestamp("last_used_at", { withTimezone: true }),
-
-    expiresAt: timestamp("expires_at", { withTimezone: true }),
-
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .defaultNow()
-      .notNull(),
-  },
-  (table) => [
-    index("api_keys_workspace_idx").on(table.workspaceId),
-    index("api_keys_hash_idx").on(table.keyHash),
-  ]
-);
+export { resourceDependencies } from "./dependencies-schema";
+export { apiKeys } from "./api-keys-schema";
 
 
 

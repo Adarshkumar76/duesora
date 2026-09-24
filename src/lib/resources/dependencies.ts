@@ -1,6 +1,7 @@
 import { and, eq } from "drizzle-orm";
 import { getDb } from "@/db";
-import { resourceDependencies, resources } from "@/db/schema";
+import { resourceDependencies } from "@/db/dependencies-schema";
+import { resources } from "@/db/schema";
 import { requireWorkspaceRole } from "@/lib/auth/workspace";
 
 export interface ResourceDependencyItem {
