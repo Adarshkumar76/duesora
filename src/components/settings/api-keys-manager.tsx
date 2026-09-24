@@ -23,6 +23,7 @@ export function ApiKeysManager({
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [newKeyName, setNewKeyName] = useState("");
   const [newKeyPermission, setNewKeyPermission] = useState("read");
+  const [newKeyExpiry, setNewKeyExpiry] = useState("never");
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,6 +45,7 @@ export function ApiKeysManager({
         body: JSON.stringify({
           name: newKeyName.trim(),
           permissions: newKeyPermission,
+          expiry: newKeyExpiry,
         }),
       });
 
@@ -57,6 +59,7 @@ export function ApiKeysManager({
       setIsCreateModalOpen(false);
       setNewKeyName("");
       setNewKeyPermission("read");
+      setNewKeyExpiry("never");
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Failed to create API key");
     } finally {
@@ -150,6 +153,21 @@ export function ApiKeysManager({
                         <Shield className="w-2.5 h-2.5" />
                         {k.permissions === "read_write" ? "Read & Write" : "Read-only"}
                       </span>
+                      {k.expiresAt ? (
+                        new Date(k.expiresAt) < new Date() ? (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-destructive/10 text-destructive border border-destructive/20">
+                            Expired ({new Date(k.expiresAt).toLocaleDateString()})
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                            Expires: {new Date(k.expiresAt).toLocaleDateString()}
+                          </span>
+                        )
+                      ) : (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-muted text-muted-foreground border border-border/60">
+                          Never expires
+                        </span>
+                      )}
                     </div>
                     <div className="flex items-center gap-3 text-[11px] text-muted-foreground font-mono">
                       <span>Prefix: {k.keyPrefix}...</span>
@@ -231,6 +249,24 @@ export function ApiKeysManager({
                   <option value="read">Read Only (Query resources & renewals)</option>
                   <option value="read_write">Read & Write (Create and renew resources)</option>
                 </select>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-foreground">Expiration</label>
+                <select
+                  value={newKeyExpiry}
+                  onChange={(e) => setNewKeyExpiry(e.target.value)}
+                  className="w-full px-3.5 py-2 text-xs bg-background border border-border/70 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-primary/20 focus:border-primary text-foreground"
+                >
+                  <option value="never">Never (No expiration)</option>
+                  <option value="1_day">1 Day (24 hours)</option>
+                  <option value="1_month">1 Month (30 days)</option>
+                  <option value="3_months">3 Months (90 days)</option>
+                  <option value="1_year">1 Year (365 days)</option>
+                </select>
+                <p className="text-[11px] text-muted-foreground">
+                  The API key will automatically be invalidated after this duration.
+                </p>
               </div>
 
               <div className="flex items-center justify-end gap-2 pt-2">

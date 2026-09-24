@@ -55,11 +55,37 @@ export async function listWorkspaceApiKeys(
   return rows;
 }
 
+export function calculateExpiryDate(
+  expiryOption?: string | Date | null
+): Date | null {
+  if (!expiryOption || expiryOption === "never") {
+    return null;
+  }
+  if (expiryOption instanceof Date) {
+    return expiryOption;
+  }
+
+  const now = Date.now();
+  switch (expiryOption) {
+    case "1_day":
+      return new Date(now + 1 * 24 * 60 * 60 * 1000);
+    case "1_month":
+      return new Date(now + 30 * 24 * 60 * 60 * 1000);
+    case "3_months":
+      return new Date(now + 90 * 24 * 60 * 60 * 1000);
+    case "1_year":
+      return new Date(now + 365 * 24 * 60 * 60 * 1000);
+    default:
+      return null;
+  }
+}
+
 export async function createWorkspaceApiKey(
   userId: string,
   workspaceId: string,
   name: string,
-  permissions = "read"
+  permissions = "read",
+  expiryOption?: string | Date | null
 ): Promise<CreateApiKeyResult> {
   await requireWorkspaceRole(userId, workspaceId, "admin");
 
@@ -68,6 +94,7 @@ export async function createWorkspaceApiKey(
     throw new Error("Key name must be between 1 and 100 characters.");
   }
 
+  const expiresAt = calculateExpiryDate(expiryOption);
   const { rawKey, prefix, hash } = generateRawApiKey();
   const db = getDb();
 
@@ -80,6 +107,7 @@ export async function createWorkspaceApiKey(
       keyPrefix: prefix,
       keyHash: hash,
       permissions: permissions === "read_write" ? "read_write" : "read",
+      expiresAt,
     })
     .returning();
 

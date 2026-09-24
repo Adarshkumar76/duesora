@@ -10,6 +10,7 @@ import {
   validateBearerApiKey,
   hashApiKey,
   generateRawApiKey,
+  calculateExpiryDate,
 } from "@/lib/auth/api-key";
 
 vi.mock("@/auth", () => ({
@@ -137,6 +138,33 @@ describe("API: Workspace Developer API Keys", () => {
       expect(rawKey.startsWith("due_live_")).toBe(true);
       expect(prefix.startsWith("due_live_")).toBe(true);
       expect(hashApiKey(rawKey)).toBe(hash);
+    });
+  });
+
+  describe("calculateExpiryDate", () => {
+    it("returns null for never or empty option", () => {
+      expect(calculateExpiryDate("never")).toBeNull();
+      expect(calculateExpiryDate(null)).toBeNull();
+      expect(calculateExpiryDate(undefined)).toBeNull();
+    });
+
+    it("calculates correct future dates for duration options", () => {
+      const now = Date.now();
+      const oneDay = calculateExpiryDate("1_day");
+      expect(oneDay).toBeInstanceOf(Date);
+      expect(oneDay!.getTime() - now).toBeGreaterThanOrEqual(23 * 3600 * 1000);
+
+      const oneMonth = calculateExpiryDate("1_month");
+      expect(oneMonth).toBeInstanceOf(Date);
+      expect(oneMonth!.getTime() - now).toBeGreaterThanOrEqual(29 * 24 * 3600 * 1000);
+
+      const threeMonths = calculateExpiryDate("3_months");
+      expect(threeMonths).toBeInstanceOf(Date);
+      expect(threeMonths!.getTime() - now).toBeGreaterThanOrEqual(89 * 24 * 3600 * 1000);
+
+      const oneYear = calculateExpiryDate("1_year");
+      expect(oneYear).toBeInstanceOf(Date);
+      expect(oneYear!.getTime() - now).toBeGreaterThanOrEqual(364 * 24 * 3600 * 1000);
     });
   });
 });

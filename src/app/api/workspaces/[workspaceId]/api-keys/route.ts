@@ -15,6 +15,7 @@ interface RouteParams {
 const createKeySchema = z.object({
   name: z.string().min(1, "Name is required").max(100),
   permissions: z.enum(["read", "read_write"]).default("read"),
+  expiry: z.enum(["never", "1_day", "1_month", "3_months", "1_year"]).default("never"),
 });
 
 export async function GET(_req: NextRequest, { params }: RouteParams) {
@@ -56,7 +57,8 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
       session.user.id,
       workspaceId,
       parsed.data.name,
-      parsed.data.permissions
+      parsed.data.permissions,
+      parsed.data.expiry
     );
 
     return NextResponse.json({ data: created }, { status: 201 });
