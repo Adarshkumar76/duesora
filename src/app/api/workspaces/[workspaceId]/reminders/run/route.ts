@@ -2,12 +2,13 @@ import { NextRequest } from "next/server";
 import { auth } from "@/auth";
 import { requireWorkspaceRole } from "@/lib/auth/workspace";
 import { processWorkspaceReminders } from "@/lib/notifications/reminder-engine";
+import { resolveWorkspaceId } from "@/lib/api/route-params";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(
-  _request: NextRequest,
-  context: { params: Promise<{ workspaceId: string }> }
+  request: NextRequest,
+  context?: unknown
 ) {
   try {
     const session = await auth();
@@ -23,7 +24,18 @@ export async function POST(
       );
     }
 
-    const { workspaceId } = await context.params;
+    const workspaceId = await resolveWorkspaceId(request, context);
+    if (!workspaceId) {
+      return Response.json(
+        {
+          error: {
+            code: "BAD_REQUEST",
+            message: "Missing or invalid workspaceId parameter",
+          },
+        },
+        { status: 400 }
+      );
+    }
     const userId = session.user.id;
 
     // Only admins or owners can trigger the reminder engine

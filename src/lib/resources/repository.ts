@@ -257,6 +257,12 @@ export async function getResourceById(
       billingCycle: resources.billingCycle,
       renewalDate: resources.renewalDate,
       autoRenew: resources.autoRenew,
+      renewalDecision: resources.renewalDecision,
+      decisionNotes: resources.decisionNotes,
+      cancellationNoticeDays: resources.cancellationNoticeDays,
+      cancellationDeadline: resources.cancellationDeadline,
+      decidedByUserId: resources.decidedByUserId,
+      decidedAt: resources.decidedAt,
       createdAt: resources.createdAt,
       updatedAt: resources.updatedAt,
       ownerName: users.name,
@@ -292,6 +298,12 @@ export async function getResourceById(
     billingCycle: row.billingCycle,
     renewalDate: row.renewalDate,
     autoRenew: row.autoRenew,
+    renewalDecision: row.renewalDecision,
+    decisionNotes: row.decisionNotes,
+    cancellationNoticeDays: row.cancellationNoticeDays,
+    cancellationDeadline: row.cancellationDeadline,
+    decidedByUserId: row.decidedByUserId,
+    decidedAt: row.decidedAt,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
     owner: row.ownerId
@@ -326,6 +338,7 @@ export async function deleteResource(
 
 export type UpdateResourceInput = Partial<CreateResourceInput> & {
   status?: "active" | "inactive" | "expired" | "archived";
+  changeReason?: string | null;
 };
 
 export async function updateResource(

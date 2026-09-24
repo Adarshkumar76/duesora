@@ -9,6 +9,8 @@ import { CategoryDonut } from "@/components/dashboard/category-donut";
 import { RecentActivityTable } from "@/components/dashboard/recent-activity-table";
 import { resolveActiveWorkspace } from "@/lib/auth/active-workspace";
 import { getWorkspaceDashboardData } from "@/lib/dashboard/service";
+import { getWorkspaceBudgetStatus } from "@/lib/budgets/service";
+import { BudgetProgressCard } from "@/components/dashboard/budget-progress-card";
 import { Button } from "@/components/ui/button";
 import { Plus, Coffee, Sparkles } from "lucide-react";
 import { BUY_ME_A_COFFEE_URL } from "@/lib/constants";
@@ -39,6 +41,14 @@ export default async function DashboardPage() {
       topCategories: [],
       recentActivity: [],
     };
+  }
+
+  // 3. Fetch workspace budget status
+  let budgetStatus = null;
+  try {
+    budgetStatus = await getWorkspaceBudgetStatus(session.user.id, activeWorkspace.id);
+  } catch {
+    // fallback
   }
 
   // Server action for sign out
@@ -137,6 +147,14 @@ export default async function DashboardPage() {
 
           {/* Row 1: KPI Stat Cards */}
           <KpiCards kpis={kpis} currency={dashboardData.workspace.currency} />
+
+          {/* Row 1.5: Budget Velocity & Spend Alerts */}
+          {budgetStatus && (
+            <BudgetProgressCard
+              status={budgetStatus}
+              workspaceId={activeWorkspace.id}
+            />
+          )}
 
           {/* Row 2: Charts Grid (Renewals Overview & Top Categories) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

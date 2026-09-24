@@ -14,6 +14,8 @@ export interface SendRenewalReminderEmailOptions {
   resourceId: string;
   workspaceName?: string;
   appUrl?: string;
+  isEscalated?: boolean;
+  escalatedReason?: string;
 }
 
 export interface SendEmailResult {
@@ -48,17 +50,22 @@ export function getEmailTransporter() {
   });
 }
 
-export function formatReminderSubject(resourceName: string, daysRemaining: number): string {
+export function formatReminderSubject(
+  resourceName: string,
+  daysRemaining: number,
+  isEscalated?: boolean
+): string {
+  const prefix = isEscalated ? "[ESCALATED] " : "";
   if (daysRemaining <= 0) {
-    return `[URGENT] ${resourceName} renewal is due today or overdue`;
+    return `${prefix}[URGENT] ${resourceName} renewal is due today or overdue`;
   }
   if (daysRemaining <= 3) {
-    return `[Action Required] ${resourceName} renews in ${daysRemaining} day${daysRemaining === 1 ? "" : "s"}`;
+    return `${prefix}[Action Required] ${resourceName} renews in ${daysRemaining} day${daysRemaining === 1 ? "" : "s"}`;
   }
   if (daysRemaining <= 7) {
-    return `Reminder: ${resourceName} renews in ${daysRemaining} days`;
+    return `${prefix}Reminder: ${resourceName} renews in ${daysRemaining} days`;
   }
-  return `Upcoming: ${resourceName} renews in ${daysRemaining} days`;
+  return `${prefix}Upcoming: ${resourceName} renews in ${daysRemaining} days`;
 }
 
 export function renderRenewalEmailHtml(opts: SendRenewalReminderEmailOptions): string {
@@ -117,6 +124,17 @@ export function renderRenewalEmailHtml(opts: SendRenewalReminderEmailOptions): s
       <div class="badge">${urgencyText}</div>
     </div>
     <div class="content">
+      ${
+        opts.isEscalated
+          ? `<div style="background-color: #fef2f2; border: 1px solid #f87171; border-radius: 12px; padding: 14px 18px; margin-bottom: 24px;">
+              <strong style="color: #991b1b; font-size: 13px; display: block; margin-bottom: 3px;">🚨 ESCALATION NOTICE</strong>
+              <span style="color: #b91c1c; font-size: 12px; line-height: 1.4;">${
+                opts.escalatedReason ||
+                `This renewal deadline is critical (${opts.daysRemaining <= 0 ? "overdue" : `renews in ${opts.daysRemaining} days`}) and has been escalated to workspace administration.`
+              }</span>
+            </div>`
+          : ""
+      }
       <h1 class="title">${opts.resourceName}</h1>
       <p class="subtitle">
         Hi ${opts.recipientName || "there"}, this is an automated renewal alert for your workspace resource.
@@ -172,9 +190,13 @@ export function renderRenewalEmailText(opts: SendRenewalReminderEmailOptions): s
       ? `${(opts.amountMinor / 100).toFixed(2)} ${opts.currency} (${opts.billingCycle})`
       : "Not specified";
 
+  const escalationBanner = opts.isEscalated
+    ? `*** ESCALATION NOTICE ***\nThis renewal deadline is critical and has been escalated to workspace administrators.\n----------------------------------------\n`
+    : "";
+
   return `DUESORA RENEWAL ALERT
 ----------------------------------------
-${opts.resourceName}
+${escalationBanner}${opts.resourceName}
 Status: Renews in ${opts.daysRemaining} days (${formattedDate})
 
 Type: ${opts.resourceType}
@@ -191,7 +213,7 @@ Sent by Duesora.
 export async function sendRenewalReminderEmail(
   opts: SendRenewalReminderEmailOptions
 ): Promise<SendEmailResult> {
-  const subject = formatReminderSubject(opts.resourceName, opts.daysRemaining);
+  const subject = formatReminderSubject(opts.resourceName, opts.daysRemaining, opts.isEscalated);
   const html = renderRenewalEmailHtml(opts);
   const text = renderRenewalEmailText(opts);
 

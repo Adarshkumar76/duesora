@@ -10,6 +10,7 @@ import {
   integer,
   boolean,
   primaryKey,
+  doublePrecision,
 } from "drizzle-orm/pg-core";
 
 export const workspaceTypeEnum = pgEnum("workspace_type", [
@@ -137,6 +138,7 @@ export const memberships = pgTable(
   ],
 );
 
+// Resources Table (with renewal decision and governance fields)
 export const resources = pgTable("resources", {
   id: uuid("id").defaultRandom().primaryKey(),
 
@@ -173,6 +175,26 @@ export const resources = pgTable("resources", {
   }),
 
   autoRenew: boolean("auto_renew").default(true).notNull(),
+
+  renewalDecision: varchar("renewal_decision", { length: 30 })
+    .default("none")
+    .notNull(),
+
+  decisionNotes: text("decision_notes"),
+
+  cancellationNoticeDays: integer("cancellation_notice_days"),
+
+  cancellationDeadline: timestamp("cancellation_deadline", {
+    withTimezone: true,
+  }),
+
+  decidedByUserId: uuid("decided_by_user_id").references(() => users.id, {
+    onDelete: "set null",
+  }),
+
+  decidedAt: timestamp("decided_at", {
+    withTimezone: true,
+  }),
 
   createdAt: timestamp("created_at", {
     withTimezone: true,
@@ -504,4 +526,206 @@ export const workspaceInvitations = pgTable(
     ),
   ]
 );
+
+export const workspaceNotificationChannels = pgTable(
+  "workspace_notification_channels",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+
+    workspaceId: uuid("workspace_id")
+      .notNull()
+      .references(() => workspaces.id, { onDelete: "cascade" }),
+
+    provider: varchar("provider", { length: 30 }).notNull(), // 'slack' | 'discord'
+
+    name: varchar("name", { length: 100 }).notNull(),
+
+    webhookUrl: varchar("webhook_url", { length: 2048 }).notNull(),
+
+    events: text("events").notNull().default('["*"]'),
+
+    active: boolean("active").notNull().default(true),
+
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index("workspace_notification_channels_workspace_idx").on(table.workspaceId),
+  ]
+);
+
+export const auditLogs = pgTable(
+  "audit_logs",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+
+    workspaceId: uuid("workspace_id")
+      .notNull()
+      .references(() => workspaces.id, { onDelete: "cascade" }),
+
+    actorId: uuid("actor_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+
+    action: varchar("action", { length: 100 }).notNull(),
+
+    entityType: varchar("entity_type", { length: 50 }).notNull(),
+
+    entityId: varchar("entity_id", { length: 255 }),
+
+    entityName: varchar("entity_name", { length: 255 }),
+
+    details: text("details"),
+
+    ipAddress: varchar("ip_address", { length: 45 }),
+
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index("audit_logs_workspace_idx").on(table.workspaceId),
+    index("audit_logs_created_at_idx").on(table.createdAt),
+    index("audit_logs_action_idx").on(table.action),
+  ]
+);
+
+export const workspaceBudgets = pgTable(
+  "workspace_budgets",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+
+    workspaceId: uuid("workspace_id")
+      .notNull()
+      .references(() => workspaces.id, { onDelete: "cascade" }),
+
+    monthlyBudgetMinor: integer("monthly_budget_minor"),
+
+    annualBudgetMinor: integer("annual_budget_minor"),
+
+    currency: varchar("currency", { length: 3 }).notNull().default("USD"),
+
+    alertThresholdPct: integer("alert_threshold_pct").notNull().default(80),
+
+    alertEmailsEnabled: boolean("alert_emails_enabled").notNull().default(true),
+
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    unique("workspace_budgets_workspace_id_unique").on(table.workspaceId),
+    index("workspace_budgets_workspace_idx").on(table.workspaceId),
+  ]
+);
+
+export const resourceCostHistory = pgTable(
+  "resource_cost_history",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+
+    resourceId: uuid("resource_id")
+      .notNull()
+      .references(() => resources.id, { onDelete: "cascade" }),
+
+    workspaceId: uuid("workspace_id")
+      .notNull()
+      .references(() => workspaces.id, { onDelete: "cascade" }),
+
+    previousAmountMinor: integer("previous_amount_minor"),
+
+    newAmountMinor: integer("new_amount_minor").notNull(),
+
+    currency: varchar("currency", { length: 3 }).notNull().default("USD"),
+
+    previousBillingCycle: varchar("previous_billing_cycle", { length: 20 }),
+
+    newBillingCycle: varchar("new_billing_cycle", { length: 20 }),
+
+    changePercentageBps: integer("change_percentage_bps").default(0).notNull(),
+
+    changedByUserId: uuid("changed_by_user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+
+    changeReason: varchar("change_reason", { length: 255 }),
+
+    effectiveDate: timestamp("effective_date", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index("resource_cost_history_resource_idx").on(table.resourceId),
+    index("resource_cost_history_workspace_idx").on(table.workspaceId),
+    index("resource_cost_history_created_at_idx").on(table.createdAt),
+  ]
+);
+
+export const resourceDocuments = pgTable(
+  "resource_documents",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+
+    resourceId: uuid("resource_id")
+      .notNull()
+      .references(() => resources.id, { onDelete: "cascade" }),
+
+    workspaceId: uuid("workspace_id")
+      .notNull()
+      .references(() => workspaces.id, { onDelete: "cascade" }),
+
+    fileName: varchar("file_name", { length: 255 }).notNull(),
+
+    fileSize: integer("file_size").notNull(),
+
+    mimeType: varchar("mime_type", { length: 100 }).notNull(),
+
+    storagePath: varchar("storage_path", { length: 500 }).notNull(),
+
+    uploadedByUserId: uuid("uploaded_by_user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    index("resource_documents_resource_idx").on(table.resourceId),
+    index("resource_documents_workspace_idx").on(table.workspaceId),
+    index("resource_documents_created_at_idx").on(table.createdAt),
+  ]
+);
+
+export const exchangeRates = pgTable("exchange_rates", {
+  currency: varchar("currency", { length: 3 }).primaryKey(),
+
+  rateToUsd: doublePrecision("rate_to_usd").notNull(),
+
+  source: varchar("source", { length: 50 })
+    .notNull()
+    .default("open-exchange-rates"),
+
+  fetchedAt: timestamp("fetched_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
 

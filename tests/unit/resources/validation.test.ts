@@ -135,5 +135,31 @@ describe("createResourceSchema", () => {
 
     expect(result.success).toBe(false);
   });
+
+  it("accepts a raw domain like google.com and normalizes to https://google.com", () => {
+    const result = createResourceSchema.safeParse({
+      name: "Google",
+      type: "domain",
+      websiteUrl: "google.com",
+    });
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.websiteUrl).toBe("https://google.com");
+    }
+  });
+
+  it("accepts empty string or whitespace websiteUrl as null", () => {
+    const result = createResourceSchema.safeParse({
+      name: "Google",
+      type: "domain",
+      websiteUrl: "   ",
+    });
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.websiteUrl).toBe(null);
+    }
+  });
 });
 

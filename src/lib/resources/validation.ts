@@ -14,6 +14,40 @@ export const resourceTypeSchema = z.enum([
   "custom",
 ]);
 
+export function normalizeWebsiteUrl(raw: unknown): string | null {
+  if (raw === null || raw === undefined) return null;
+  if (typeof raw !== "string") return null;
+  const trimmed = sanitizeString(raw);
+  if (!trimmed) return null;
+
+  const target = trimmed;
+  // If it already has a protocol:
+  if (/^[a-zA-Z][a-zA-Z\d+\-.]*:\/\//i.test(target)) {
+    try {
+      const u = new URL(target);
+      if ((u.protocol === "http:" || u.protocol === "https:") && isSafeUrl(target)) {
+        return target;
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  // If no protocol, test with https://
+  try {
+    const withHttps = `https://${target}`;
+    const u = new URL(withHttps);
+    if (u.hostname && (u.hostname.includes(".") || u.hostname === "localhost") && isSafeUrl(withHttps)) {
+      return withHttps;
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
 export const createResourceSchema = z.object({
   name: z
     .string()
@@ -57,11 +91,20 @@ export const createResourceSchema = z.object({
     .pipe(
       z
         .string()
-        .url("Website URL must be valid")
         .max(2048)
-        .refine((val) => isSafeUrl(val), {
-          message: "Website URL must use http or https protocol",
-        }),
+        .refine(
+          (val) => {
+            if (!val) return true;
+            return normalizeWebsiteUrl(val) !== null;
+          },
+          {
+            message: "Website URL must be a valid domain or http/https URL",
+          }
+        )
+        .transform((val) => {
+          if (!val) return null;
+          return normalizeWebsiteUrl(val);
+        })
     )
     .nullable()
     .optional(),
@@ -119,6 +162,7 @@ export const updateResourceSchema = createResourceSchema
   .partial()
   .extend({
     status: z.enum(["active", "inactive", "expired", "archived"]).optional(),
+    changeReason: z.string().max(255).optional(),
   });
 
 export type UpdateResourceRequest = z.infer<typeof updateResourceSchema>;

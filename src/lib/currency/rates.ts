@@ -7,16 +7,36 @@ export const BASE_RATES_TO_USD: Record<string, number> = {
   EUR: 1.08,
   GBP: 1.28,
   INR: 0.012,
+  CAD: 0.74,
+  AUD: 0.65,
+  JPY: 0.0067,
+  SGD: 0.75,
 };
 
-export const SUPPORTED_CURRENCIES = ["USD", "EUR", "GBP", "INR"] as const;
+export const SUPPORTED_CURRENCIES = [
+  "USD",
+  "EUR",
+  "GBP",
+  "INR",
+  "CAD",
+  "AUD",
+  "JPY",
+  "SGD",
+] as const;
 export type SupportedCurrency = (typeof SUPPORTED_CURRENCIES)[number];
+
+export const FX_CURRENCIES = SUPPORTED_CURRENCIES;
+export type FxCurrency = SupportedCurrency;
 
 export const CURRENCY_SYMBOLS: Record<string, string> = {
   USD: "$",
   EUR: "€",
   GBP: "£",
   INR: "₹",
+  CAD: "CA$",
+  AUD: "A$",
+  JPY: "¥",
+  SGD: "S$",
 };
 
 /**
@@ -26,7 +46,8 @@ export const CURRENCY_SYMBOLS: Record<string, string> = {
 export function convertCurrency(
   amountMinor: number | null | undefined,
   fromCurrency: string | null | undefined,
-  toCurrency: string | null | undefined
+  toCurrency: string | null | undefined,
+  customRates?: Record<string, number>
 ): number {
   if (!amountMinor || isNaN(amountMinor) || amountMinor <= 0) {
     return 0;
@@ -39,8 +60,9 @@ export function convertCurrency(
     return Math.round(amountMinor);
   }
 
-  const fromRateToUsd = BASE_RATES_TO_USD[from] ?? 1.0;
-  const toRateToUsd = BASE_RATES_TO_USD[to] ?? 1.0;
+  const rates = customRates || BASE_RATES_TO_USD;
+  const fromRateToUsd = rates[from] ?? BASE_RATES_TO_USD[from] ?? 1.0;
+  const toRateToUsd = rates[to] ?? BASE_RATES_TO_USD[to] ?? 1.0;
 
   // Convert from origin to USD, then from USD to destination
   const amountInUsd = amountMinor * fromRateToUsd;

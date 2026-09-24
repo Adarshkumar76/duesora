@@ -10,6 +10,7 @@ import { and, eq, gt, isNull, desc } from "drizzle-orm";
 import { requireWorkspaceRole } from "@/lib/auth/workspace";
 import { type WorkspaceRole } from "@/lib/auth/permissions";
 import { sendTeamInvitationEmail } from "@/lib/notifications/email";
+import { recordAuditEvent } from "@/lib/audit/service";
 
 export interface TeamMemberItem {
   id: string;
@@ -162,6 +163,16 @@ export async function createWorkspaceInvitation({
     console.error("Failed sending team invitation email:", err);
   });
 
+  recordAuditEvent({
+    workspaceId,
+    actorId: callerUserId,
+    action: "member.invited",
+    entityType: "invitation",
+    entityId: invitationId,
+    entityName: normalizedEmail,
+    details: { role },
+  }).catch(() => {});
+
   return {
     invitationId,
     token,
@@ -249,6 +260,14 @@ export async function revokeInvitation(
         eq(workspaceInvitations.workspaceId, workspaceId)
       )
     );
+
+  recordAuditEvent({
+    workspaceId,
+    actorId: callerUserId,
+    action: "invitation.revoked",
+    entityType: "invitation",
+    entityId: invitationId,
+  }).catch(() => {});
 }
 
 /**
@@ -298,6 +317,18 @@ export async function updateMemberRole(
       updatedAt: new Date(),
     })
     .where(eq(memberships.id, targetMembership.id));
+
+  recordAuditEvent({
+    workspaceId,
+    actorId: callerUserId,
+    action: "member.role_updated",
+    entityType: "member",
+    entityId: targetUserId,
+    details: {
+      previousRole: targetMembership.role,
+      newRole,
+    },
+  }).catch(() => {});
 }
 
 /**
@@ -343,6 +374,14 @@ export async function removeMemberFromWorkspace(
   }
 
   await db.delete(memberships).where(eq(memberships.id, targetMembership.id));
+
+  recordAuditEvent({
+    workspaceId,
+    actorId: callerUserId,
+    action: "member.removed",
+    entityType: "member",
+    entityId: targetUserId,
+  }).catch(() => {});
 }
 
 /**

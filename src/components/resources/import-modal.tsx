@@ -21,9 +21,10 @@ interface ImportModalProps {
   isOpen: boolean;
   onClose: () => void;
   workspaceId: string;
+  presetType?: "domain" | "subscription" | "ssl_certificate";
 }
 
-export function ImportModal({ isOpen, onClose, workspaceId }: ImportModalProps) {
+export function ImportModal({ isOpen, onClose, workspaceId, presetType }: ImportModalProps) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -41,6 +42,26 @@ export function ImportModal({ isOpen, onClose, workspaceId }: ImportModalProps) 
   const [commitResult, setCommitResult] = useState<{ importedCount: number; failedCount: number } | null>(null);
 
   if (!isOpen) return null;
+
+  const handleDownloadSample = () => {
+    let sampleCsv = "";
+    if (presetType === "domain") {
+      sampleCsv = "Name,Type,Category,Provider,Website URL,Amount,Currency,Billing Cycle,Next Renewal,Auto Renew,Tags\nexample.com,domain,Domains,Namecheap,https://example.com,12.99,USD,yearly,2027-01-15,true,core;production\nmycompany.io,domain,Domains,GoDaddy,https://mycompany.io,35.00,USD,yearly,2026-11-20,false,marketing";
+    } else if (presetType === "subscription") {
+      sampleCsv = "Name,Type,Category,Provider,Website URL,Amount,Currency,Billing Cycle,Next Renewal,Auto Renew,Tags\nGitHub Team,subscription,Developer Tools,GitHub,https://github.com,4.00,USD,monthly,2026-10-01,true,engineering\nSlack Business,subscription,Communication,Slack,https://slack.com,12.50,USD,monthly,2026-10-15,true,workspace";
+    } else {
+      sampleCsv = "Name,Type,Category,Provider,Website URL,Amount,Currency,Billing Cycle,Next Renewal,Auto Renew,Tags\ngoogle.com,domain,Domains,Google Domains,https://google.com,12.00,USD,yearly,2027-04-10,true,dns;primary\nFigma Professional,subscription,Design,Figma,https://figma.com,15.00,USD,monthly,2026-10-20,true,design";
+    }
+
+    const blob = new Blob([sampleCsv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `sample-${presetType || "resources"}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const handleReset = () => {
     setSelectedFileName(null);
@@ -188,9 +209,19 @@ export function ImportModal({ isOpen, onClose, workspaceId }: ImportModalProps) 
         {/* Header */}
         <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-border/60 bg-muted/30">
           <div>
-            <h2 className="text-sm sm:text-base font-semibold text-foreground">Import Resources</h2>
+            <h2 className="text-sm sm:text-base font-semibold text-foreground">
+              {presetType === "domain"
+                ? "Import Domains"
+                : presetType === "subscription"
+                ? "Import Subscriptions"
+                : "Import Resources"}
+            </h2>
             <p className="text-[11px] sm:text-xs text-muted-foreground">
-              Add multiple subscriptions, domains, or licenses via CSV or JSON.
+              {presetType === "domain"
+                ? "Bulk import domain names and registrars via CSV or JSON."
+                : presetType === "subscription"
+                ? "Bulk import recurring SaaS tools and cloud contracts via CSV or JSON."
+                : "Add multiple subscriptions, domains, or licenses via CSV or JSON."}
             </p>
           </div>
           <button
@@ -303,8 +334,18 @@ export function ImportModal({ isOpen, onClose, workspaceId }: ImportModalProps) 
               </div>
 
               {/* Template / CSV format instructions */}
-              <div className="rounded-2xl border border-border/60 bg-muted/20 p-4 space-y-2 text-xs">
-                <p className="font-semibold text-foreground">Recommended CSV Column Headers:</p>
+              <div className="rounded-2xl border border-border/60 bg-muted/20 p-4 space-y-2.5 text-xs">
+                <div className="flex items-center justify-between">
+                  <p className="font-semibold text-foreground">Recommended CSV Column Headers:</p>
+                  <button
+                    type="button"
+                    onClick={handleDownloadSample}
+                    className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 hover:underline cursor-pointer"
+                  >
+                    <FileSpreadsheet className="w-3.5 h-3.5" />
+                    <span>Download Sample CSV</span>
+                  </button>
+                </div>
                 <p className="text-muted-foreground font-mono text-[11px]">
                   Name, Type, Category, Provider, Website URL, Amount, Currency, Billing Cycle, Next Renewal, Auto Renew, Tags
                 </p>

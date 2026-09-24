@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useSyncExternalStore } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import {
   Search,
@@ -25,6 +25,7 @@ import {
 import { Logo } from "@/components/logo";
 import { NAV_ITEMS } from "./app-sidebar";
 import { BUY_ME_A_COFFEE_URL } from "@/lib/constants";
+import { CommandPalette } from "@/components/search/command-palette";
 
 interface WorkspaceItem {
   id: string;
@@ -68,7 +69,6 @@ export function AppHeader({
   workspaces = [],
   onSignOut,
 }: AppHeaderProps) {
-  const router = useRouter();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -84,12 +84,48 @@ export function AppHeader({
     status: string;
     createdAt: string;
   }>>([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
   const [switchingWorkspace, setSwitchingWorkspace] = useState<string | null>(null);
   const theme = useSyncExternalStore(subscribeTheme, getThemeSnapshot, getServerThemeSnapshot);
+  const isMac = useSyncExternalStore(
+    () => () => {},
+    () => (typeof window !== "undefined" ? /Mac|iPhone|iPod|iPad/i.test(navigator.userAgent) : false),
+    () => false
+  );
 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
+
+  // Global Cmd+K / Ctrl+K / Win+K / Esc keyboard shortcut
+  useEffect(() => {
+    function handleGlobalKeyDown(e: KeyboardEvent) {
+      const isK = e.key?.toLowerCase() === "k" || e.code === "KeyK";
+      // Support Win+K (e.metaKey on Windows), Cmd+K (e.metaKey on Mac), and Ctrl+K (e.ctrlKey)
+      if ((e.metaKey || e.ctrlKey) && isK) {
+        e.preventDefault();
+        setCommandPaletteOpen((prev) => !prev);
+        return;
+      }
+
+      // Quick slash / shortcut when user is not typing in a form input
+      if (
+        e.key === "/" &&
+        !["INPUT", "TEXTAREA", "SELECT"].includes((e.target as HTMLElement)?.tagName) &&
+        !(e.target as HTMLElement)?.isContentEditable
+      ) {
+        e.preventDefault();
+        setCommandPaletteOpen(true);
+        return;
+      }
+
+      // Esc to close if open
+      if (e.key === "Escape" || e.key === "Esc") {
+        setCommandPaletteOpen(false);
+      }
+    }
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+  }, []);
 
   // Close mobile drawer when route changes without cascading effect renders
   const [prevPathname, setPrevPathname] = useState(pathname);
@@ -176,15 +212,6 @@ export function AppHeader({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/resources?search=${encodeURIComponent(searchQuery.trim())}`);
-    } else {
-      router.push("/resources");
-    }
-  };
-
   const userName = user.name || "Adarsh Kumar";
   const userInitials = userName
     .split(" ")
@@ -215,17 +242,20 @@ export function AppHeader({
             </div>
           </Link>
 
-          {/* Search Input Bar */}
-          <form onSubmit={handleSearchSubmit} className="relative w-full max-w-[170px] sm:max-w-xs md:max-w-sm">
+          {/* Search / Command Palette Trigger */}
+          <button
+            type="button"
+            onClick={() => setCommandPaletteOpen(true)}
+            title={`Search resources, pages, and commands (${isMac ? "⌘K" : "Ctrl+K / Win+K"} or /)`}
+            className="relative flex items-center justify-between w-full max-w-[170px] sm:max-w-xs md:max-w-sm pl-8 sm:pl-9 pr-2.5 py-1.5 text-xs sm:text-sm bg-background border border-border/70 rounded-xl text-muted-foreground hover:text-foreground hover:border-emerald-500/40 transition-all shadow-2xs cursor-pointer text-left"
+          >
             <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search..."
-              className="w-full pl-8 sm:pl-9 pr-3 py-1.5 text-xs sm:text-sm bg-background border border-border/70 rounded-xl placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 transition-all shadow-2xs"
-            />
-          </form>
+            <span className="truncate">Search or jump to...</span>
+            <kbd className="hidden sm:inline-flex items-center gap-1 text-[10px] font-semibold text-muted-foreground bg-muted px-1.5 py-0.5 rounded border border-border/60">
+              <span>{isMac ? "⌘" : "Ctrl"}</span>
+              <span>K</span>
+            </kbd>
+          </button>
         </div>
 
         {/* Right Header Actions */}
@@ -552,6 +582,13 @@ export function AppHeader({
         </aside>
       </div>
     )}
+
+    {/* Global Command Palette */}
+    <CommandPalette
+      isOpen={commandPaletteOpen}
+      onClose={() => setCommandPaletteOpen(false)}
+      workspaceId={currentWorkspace.id}
+    />
   </>
   );
 }
