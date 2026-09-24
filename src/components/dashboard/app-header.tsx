@@ -93,12 +93,39 @@ export function AppHeader({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
 
-  // Global Cmd+K / Ctrl+K keyboard shortcut
+  const [isMac, setIsMac] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && /Mac|iPhone|iPod|iPad/i.test(navigator.userAgent)) {
+      setIsMac(true);
+    }
+  }, []);
+
+  // Global Cmd+K / Ctrl+K / Win+K / Esc keyboard shortcut
   useEffect(() => {
     function handleGlobalKeyDown(e: KeyboardEvent) {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+      const isK = e.key?.toLowerCase() === "k" || e.code === "KeyK";
+      // Support Win+K (e.metaKey on Windows), Cmd+K (e.metaKey on Mac), and Ctrl+K (e.ctrlKey)
+      if ((e.metaKey || e.ctrlKey) && isK) {
         e.preventDefault();
         setCommandPaletteOpen((prev) => !prev);
+        return;
+      }
+
+      // Quick slash / shortcut when user is not typing in a form input
+      if (
+        e.key === "/" &&
+        !["INPUT", "TEXTAREA", "SELECT"].includes((e.target as HTMLElement)?.tagName) &&
+        !(e.target as HTMLElement)?.isContentEditable
+      ) {
+        e.preventDefault();
+        setCommandPaletteOpen(true);
+        return;
+      }
+
+      // Esc to close if open
+      if (e.key === "Escape" || e.key === "Esc") {
+        setCommandPaletteOpen(false);
       }
     }
     window.addEventListener("keydown", handleGlobalKeyDown);
@@ -233,12 +260,14 @@ export function AppHeader({
           <button
             type="button"
             onClick={() => setCommandPaletteOpen(true)}
+            title={`Search resources, pages, and commands (${isMac ? "⌘K" : "Ctrl+K / Win+K"} or /)`}
             className="relative flex items-center justify-between w-full max-w-[170px] sm:max-w-xs md:max-w-sm pl-8 sm:pl-9 pr-2.5 py-1.5 text-xs sm:text-sm bg-background border border-border/70 rounded-xl text-muted-foreground hover:text-foreground hover:border-emerald-500/40 transition-all shadow-2xs cursor-pointer text-left"
           >
             <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <span className="truncate">Search or jump to...</span>
-            <kbd className="hidden sm:inline-flex items-center gap-0.5 text-[10px] font-semibold text-muted-foreground bg-muted px-1.5 py-0.5 rounded border border-border/60">
-              <span className="text-[9px]">⌘</span>K
+            <kbd className="hidden sm:inline-flex items-center gap-1 text-[10px] font-semibold text-muted-foreground bg-muted px-1.5 py-0.5 rounded border border-border/60">
+              <span>{isMac ? "⌘" : "Ctrl"}</span>
+              <span>K</span>
             </kbd>
           </button>
         </div>

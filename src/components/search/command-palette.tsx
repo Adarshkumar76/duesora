@@ -47,6 +47,7 @@ export function CommandPalette({ isOpen, onClose, workspaceId }: CommandPaletteP
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const itemRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   // Quick navigation pages
   const staticNavigation = [
@@ -89,6 +90,22 @@ export function CommandPalette({ isOpen, onClose, workspaceId }: CommandPaletteP
       setTimeout(() => inputRef.current?.focus(), 50);
     }
   }, [isOpen]);
+
+  // Close modal when clicking outside
+  useEffect(() => {
+    if (!isOpen) return;
+
+    function handleClickOutside(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        onClose();
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen, onClose]);
 
   // Search resources via API
   useEffect(() => {
@@ -141,13 +158,26 @@ export function CommandPalette({ isOpen, onClose, workspaceId }: CommandPaletteP
       )
     : quickActions;
 
+  // Search-all item when user types a query
+  const searchAllItem = query.trim()
+    ? {
+        type: "search-all" as const,
+        item: {
+          title: `Search all resources for "${query.trim()}"`,
+          query: query.trim(),
+        },
+      }
+    : null;
+
   // Flattened list for keyboard navigation
   type FlatItem =
+    | { type: "search-all"; item: { title: string; query: string } }
     | { type: "resource"; item: SearchResourceItem }
     | { type: "nav"; item: (typeof staticNavigation)[0] }
     | { type: "action"; item: (typeof quickActions)[0] };
 
   const flatItems: FlatItem[] = [
+    ...(searchAllItem ? [searchAllItem] : []),
     ...results.map((r) => ({ type: "resource" as const, item: r })),
     ...filteredNav.map((n) => ({ type: "nav" as const, item: n })),
     ...filteredActions.map((a) => ({ type: "action" as const, item: a })),
@@ -156,10 +186,18 @@ export function CommandPalette({ isOpen, onClose, workspaceId }: CommandPaletteP
   const handleSelect = useCallback(
     (index: number) => {
       const selected = flatItems[index];
-      if (!selected) return;
+      if (!selected) {
+        if (query.trim()) {
+          onClose();
+          router.push(`/resources?search=${encodeURIComponent(query.trim())}`);
+        }
+        return;
+      }
 
       onClose();
-      if (selected.type === "resource") {
+      if (selected.type === "search-all") {
+        router.push(`/resources?search=${encodeURIComponent(selected.item.query)}`);
+      } else if (selected.type === "resource") {
         router.push(`/resources/${selected.item.id}`);
       } else if (selected.type === "nav") {
         router.push(selected.item.href);
@@ -171,16 +209,26 @@ export function CommandPalette({ isOpen, onClose, workspaceId }: CommandPaletteP
         }
       }
     },
-    [flatItems, onClose, router]
+    [flatItems, onClose, query, router]
   );
 
-  // Keyboard navigation
+  // Scroll active item into view
+  useEffect(() => {
+    if (selectedIndex >= 0 && itemRefs.current[selectedIndex]) {
+      itemRefs.current[selectedIndex]?.scrollIntoView({
+        block: "nearest",
+      });
+    }
+  }, [selectedIndex]);
+
+  // Keyboard navigation inside modal
   useEffect(() => {
     if (!isOpen) return;
 
     function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") {
+      if (e.key === "Escape" || e.key === "Esc") {
         e.preventDefault();
+        e.stopPropagation();
         onClose();
       } else if (e.key === "ArrowDown") {
         e.preventDefault();
@@ -192,24 +240,47 @@ export function CommandPalette({ isOpen, onClose, workspaceId }: CommandPaletteP
         );
       } else if (e.key === "Enter") {
         e.preventDefault();
-        handleSelect(selectedIndex);
+        if (flatItems.length > 0 && selectedIndex >= 0 && selectedIndex < flatItems.length) {
+          handleSelect(selectedIndex);
+        } else if (query.trim()) {
+          onClose();
+          router.push(`/resources?search=${encodeURIComponent(query.trim())}`);
+        }
       }
     }
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, flatItems.length, selectedIndex, handleSelect, onClose]);
+  }, [isOpen, flatItems.length, selectedIndex, handleSelect, onClose, query, router]);
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 bg-background/80 backdrop-blur-sm animate-in fade-in-0 duration-150">
+    <div
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+      className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 bg-background/80 backdrop-blur-sm animate-in fade-in-0 duration-150"
+    >
       <div
         ref={containerRef}
         className="w-full max-w-2xl bg-card border border-border rounded-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-150 flex flex-col max-h-[80vh]"
       >
         {/* Search Input Bar */}
-        <div className="flex items-center px-4 py-3.5 border-b border-border/80 gap-3">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (flatItems.length > 0 && selectedIndex >= 0 && selectedIndex < flatItems.length) {
+              handleSelect(selectedIndex);
+            } else if (query.trim()) {
+              onClose();
+              router.push(`/resources?search=${encodeURIComponent(query.trim())}`);
+            }
+          }}
+          className="flex items-center px-4 py-3.5 border-b border-border/80 gap-3"
+        >
           <Search className="w-5 h-5 text-muted-foreground shrink-0" />
           <input
             ref={inputRef}
@@ -225,23 +296,79 @@ export function CommandPalette({ isOpen, onClose, workspaceId }: CommandPaletteP
           {loading && <Loader2 className="w-4 h-4 animate-spin text-muted-foreground shrink-0" />}
           {query && !loading && (
             <button
+              type="button"
               onClick={() => {
                 setQuery("");
                 setSelectedIndex(0);
                 inputRef.current?.focus();
               }}
-              className="text-muted-foreground hover:text-foreground text-xs p-1 rounded-md"
+              title="Clear search query"
+              className="text-muted-foreground hover:text-foreground text-xs p-1 rounded-md cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
           )}
-          <kbd className="hidden sm:inline-flex items-center gap-1 text-[10px] font-semibold text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border/60">
-            ESC
-          </kbd>
-        </div>
+
+          {/* Enter Button to trigger search/selection */}
+          <button
+            type="submit"
+            title="Press Enter to select"
+            className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 px-2 py-1 rounded-md border border-emerald-500/30 transition-colors cursor-pointer"
+          >
+            <span>Enter</span>
+            <span className="text-[12px] leading-none">↵</span>
+          </button>
+
+          {/* Close button with ESC */}
+          <button
+            type="button"
+            onClick={onClose}
+            title="Close search (Esc)"
+            className="inline-flex items-center gap-1 text-[11px] font-semibold text-muted-foreground hover:text-foreground bg-muted hover:bg-muted/80 px-2 py-1 rounded-md border border-border/60 transition-colors cursor-pointer"
+          >
+            <X className="w-3.5 h-3.5 sm:hidden" />
+            <span className="hidden sm:inline">ESC</span>
+          </button>
+        </form>
 
         {/* Results List */}
         <div className="overflow-y-auto p-2 space-y-4 flex-1">
+          {/* Search Everywhere / All Resources Quick Hit */}
+          {searchAllItem && (
+            <div className="space-y-1">
+              <button
+                ref={(el) => {
+                  itemRefs.current[0] = el;
+                }}
+                type="button"
+                onClick={() => handleSelect(0)}
+                onMouseEnter={() => setSelectedIndex(0)}
+                className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-left text-sm transition-colors cursor-pointer ${
+                  selectedIndex === 0
+                    ? "bg-emerald-500/10 text-emerald-900 dark:text-emerald-200 font-medium"
+                    : "hover:bg-muted/60 text-foreground"
+                }`}
+              >
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 shrink-0">
+                    <Search className="w-4 h-4" />
+                  </div>
+                  <div className="truncate">
+                    <span className="font-semibold text-foreground">
+                      Search all resources for &ldquo;{searchAllItem.item.query}&rdquo;
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className="text-[10px] font-semibold text-muted-foreground bg-muted px-1.5 py-0.5 rounded border border-border/60">
+                    ↵
+                  </span>
+                  <ArrowRight className="w-3.5 h-3.5 text-muted-foreground" />
+                </div>
+              </button>
+            </div>
+          )}
+
           {/* Resources Group */}
           {results.length > 0 && (
             <div className="space-y-1">
@@ -249,7 +376,8 @@ export function CommandPalette({ isOpen, onClose, workspaceId }: CommandPaletteP
                 Resources ({results.length})
               </div>
               {results.map((r, idx) => {
-                const isSelected = selectedIndex === idx;
+                const itemIndex = (searchAllItem ? 1 : 0) + idx;
+                const isSelected = selectedIndex === itemIndex;
                 const typeIcon =
                   r.type === "domain"
                     ? Globe
@@ -267,8 +395,12 @@ export function CommandPalette({ isOpen, onClose, workspaceId }: CommandPaletteP
                 return (
                   <button
                     key={r.id}
-                    onClick={() => handleSelect(idx)}
-                    onMouseEnter={() => setSelectedIndex(idx)}
+                    ref={(el) => {
+                      itemRefs.current[itemIndex] = el;
+                    }}
+                    type="button"
+                    onClick={() => handleSelect(itemIndex)}
+                    onMouseEnter={() => setSelectedIndex(itemIndex)}
                     className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-left text-sm transition-colors cursor-pointer ${
                       isSelected
                         ? "bg-emerald-500/10 text-emerald-900 dark:text-emerald-200 font-medium"
@@ -305,13 +437,17 @@ export function CommandPalette({ isOpen, onClose, workspaceId }: CommandPaletteP
                 Navigation
               </div>
               {filteredNav.map((n, idx) => {
-                const itemIndex = results.length + idx;
+                const itemIndex = (searchAllItem ? 1 : 0) + results.length + idx;
                 const isSelected = selectedIndex === itemIndex;
                 const Icon = n.icon;
 
                 return (
                   <button
                     key={n.href}
+                    ref={(el) => {
+                      itemRefs.current[itemIndex] = el;
+                    }}
+                    type="button"
                     onClick={() => handleSelect(itemIndex)}
                     onMouseEnter={() => setSelectedIndex(itemIndex)}
                     className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-left text-sm transition-colors cursor-pointer ${
@@ -340,13 +476,18 @@ export function CommandPalette({ isOpen, onClose, workspaceId }: CommandPaletteP
                 Quick Actions
               </div>
               {filteredActions.map((a, idx) => {
-                const itemIndex = results.length + filteredNav.length + idx;
+                const itemIndex =
+                  (searchAllItem ? 1 : 0) + results.length + filteredNav.length + idx;
                 const isSelected = selectedIndex === itemIndex;
                 const Icon = a.icon;
 
                 return (
                   <button
                     key={a.title}
+                    ref={(el) => {
+                      itemRefs.current[itemIndex] = el;
+                    }}
+                    type="button"
                     onClick={() => handleSelect(itemIndex)}
                     onMouseEnter={() => setSelectedIndex(itemIndex)}
                     className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-left text-sm transition-colors cursor-pointer ${
