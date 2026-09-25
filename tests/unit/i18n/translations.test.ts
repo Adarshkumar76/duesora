@@ -66,6 +66,12 @@ describe("Multi-Language Internationalization (i18n) Engine", () => {
       expect(getTranslation("de", "landing.headline")).toBe("Wisse, was du besitzt.");
       expect(getTranslation("fr", "landing.headline")).toBe("Sachez ce que vous possédez.");
       expect(getTranslation("ja", "landing.headline")).toBe("所有資産を可視化する。");
+
+      expect(getTranslation("en", "landing.tabDomains")).toBe("Domains");
+      expect(getTranslation("es", "landing.tabDomains")).toBe("Dominios");
+      expect(getTranslation("de", "landing.tabDomains")).toBe("Domains");
+      expect(getTranslation("fr", "landing.tabDomains")).toBe("Domaines");
+      expect(getTranslation("ja", "landing.tabDomains")).toBe("ドメイン");
     });
 
     it("falls back to English when a key does not exist in target locale", () => {

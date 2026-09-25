@@ -4,12 +4,15 @@ import { useState } from "react";
 import { Globe, RefreshCw, Shield, Server, ArrowRight, Check } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/components/i18n/i18n-provider";
 
 interface CategoryData {
   id: string;
-  label: string;
+  labelKey: string;
+  fallbackLabel: string;
   icon: typeof Globe;
-  description: string;
+  descriptionKey: string;
+  fallbackDescription: string;
   items: Array<{
     name: string;
     provider: string;
@@ -24,9 +27,11 @@ interface CategoryData {
 const CATEGORIES: CategoryData[] = [
   {
     id: "domains",
-    label: "Domains",
+    labelKey: "landing.tabDomains",
+    fallbackLabel: "Domains",
     icon: Globe,
-    description: "Track your domain portfolio across GoDaddy, Namecheap, Cloudflare, and Route 53 with automated ICANN expiry checks.",
+    descriptionKey: "landing.tabDomainsDesc",
+    fallbackDescription: "Track your domain portfolio across GoDaddy, Namecheap, Cloudflare, and Route 53 with automated ICANN expiry checks.",
     items: [
       {
         name: "duesora.com",
@@ -59,9 +64,11 @@ const CATEGORIES: CategoryData[] = [
   },
   {
     id: "subscriptions",
-    label: "SaaS Subscriptions",
+    labelKey: "landing.tabSubscriptions",
+    fallbackLabel: "SaaS Subscriptions",
     icon: RefreshCw,
-    description: "Centralize Google Workspace, GitHub Enterprise, Figma, and OpenAI licenses to eliminate unused team seat costs.",
+    descriptionKey: "landing.tabSubscriptionsDesc",
+    fallbackDescription: "Centralize Google Workspace, GitHub Enterprise, Figma, and OpenAI licenses to eliminate unused team seat costs.",
     items: [
       {
         name: "Google Workspace Enterprise",
@@ -94,9 +101,11 @@ const CATEGORIES: CategoryData[] = [
   },
   {
     id: "cloud",
-    label: "Cloud & Hosting",
+    labelKey: "landing.tabCloud",
+    fallbackLabel: "Cloud & Hosting",
     icon: Server,
-    description: "Monitor AWS EC2, DigitalOcean droplets, Vercel Pro, and VPS servers with accurate monthly billing forecasts.",
+    descriptionKey: "landing.tabCloudDesc",
+    fallbackDescription: "Monitor AWS EC2, DigitalOcean droplets, Vercel Pro, and VPS servers with accurate monthly billing forecasts.",
     items: [
       {
         name: "AWS US-East Production RDS",
@@ -129,9 +138,11 @@ const CATEGORIES: CategoryData[] = [
   },
   {
     id: "ssl",
-    label: "SSL & Security",
+    labelKey: "landing.tabSsl",
+    fallbackLabel: "SSL & Security",
     icon: Shield,
-    description: "Prevent sudden HTTPS browser warnings with multi-stage certificate renewal alerts (30 days, 7 days, 24 hours).",
+    descriptionKey: "landing.tabSslDesc",
+    fallbackDescription: "Prevent sudden HTTPS browser warnings with multi-stage certificate renewal alerts (30 days, 7 days, 24 hours).",
     items: [
       {
         name: "*.duesora.com Wildcard SSL",
@@ -165,6 +176,7 @@ const CATEGORIES: CategoryData[] = [
 ];
 
 export function InteractiveTabs() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("domains");
   const currentCategory = CATEGORIES.find((c) => c.id === activeTab) || CATEGORIES[0];
 
@@ -175,6 +187,8 @@ export function InteractiveTabs() {
         {CATEGORIES.map((cat) => {
           const Icon = cat.icon;
           const isActive = cat.id === activeTab;
+          const label = t(cat.labelKey) || cat.fallbackLabel;
+
           return (
             <button
               key={cat.id}
@@ -187,7 +201,7 @@ export function InteractiveTabs() {
               }`}
             >
               <Icon className="w-4 h-4" />
-              <span>{cat.label}</span>
+              <span>{label}</span>
             </button>
           );
         })}
@@ -195,7 +209,7 @@ export function InteractiveTabs() {
 
       {/* Description */}
       <p className="text-center text-sm text-muted-foreground max-w-xl mx-auto">
-        {currentCategory.description}
+        {t(currentCategory.descriptionKey) || currentCategory.fallbackDescription}
       </p>
 
       {/* Items Showcase Grid */}
@@ -217,13 +231,13 @@ export function InteractiveTabs() {
               </div>
               <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
                 <Check className="w-3.5 h-3.5" />
-                Active
+                {t("common.active")}
               </span>
             </div>
 
             <div className="pt-3 border-t border-border/60 flex items-center justify-between">
               <div>
-                <span className="text-[10px] text-muted-foreground block">Next Renewal</span>
+                <span className="text-[10px] text-muted-foreground block">{t("landing.nextRenewal")}</span>
                 <span className="text-xs font-semibold text-foreground">
                   {item.renewalDate}
                 </span>
@@ -246,7 +260,7 @@ export function InteractiveTabs() {
             variant="outline"
             className="rounded-2xl border-emerald-500/30 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 text-xs font-semibold gap-1.5 cursor-pointer shadow-xs"
           >
-            <span>Track your custom assets in Duesora</span>
+            <span>{t("landing.trackCustomAssets")}</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Button>
         </Link>

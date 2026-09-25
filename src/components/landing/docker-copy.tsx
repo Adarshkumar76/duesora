@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { Check, Copy, Terminal } from "lucide-react";
+import { useTranslation } from "@/components/i18n/i18n-provider";
 
 export function DockerCopy() {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   const command = "docker run -d -p 3000:3000 --name duesora duesora/duesora:latest";
 
@@ -28,12 +30,12 @@ export function DockerCopy() {
         {copied ? (
           <>
             <Check className="w-3.5 h-3.5 text-emerald-400" />
-            <span className="text-emerald-400">Copied!</span>
+            <span className="text-emerald-400">{t("landing.copiedCommand")}</span>
           </>
         ) : (
           <>
             <Copy className="w-3.5 h-3.5" />
-            <span>Copy Command</span>
+            <span>{t("landing.copyCommand")}</span>
           </>
         )}
       </button>
