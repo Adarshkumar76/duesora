@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     const clientIp = getClientIp(req);
     const rateLimitCheck = checkRateLimit(`login:${clientIp}`, RATE_LIMITS.AUTH);
     if (!rateLimitCheck.success) {
-      return createRateLimitResponse(rateLimitCheck);
+      return createRateLimitResponse(rateLimitCheck, req.url);
     }
   }
 

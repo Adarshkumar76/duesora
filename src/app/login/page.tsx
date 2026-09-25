@@ -55,11 +55,14 @@ function LoginForm() {
       });
 
       if (res?.error) {
+        const errLower = res.error.toLowerCase();
         if (
           res.status === 429 ||
           res.error.includes("429") ||
-          res.error.toLowerCase().includes("too many requests") ||
-          res.error.toLowerCase().includes("rate limit")
+          errLower.includes("too_many_requests") ||
+          errLower.includes("toomanyrequests") ||
+          errLower.includes("too many requests") ||
+          errLower.includes("rate limit")
         ) {
           setError("Too many login attempts. Rate limit exceeded (5 requests/minute). Please wait 60 seconds before trying again.");
         } else {
@@ -72,8 +75,16 @@ function LoginForm() {
     } catch (err) {
       console.error("Sign-in error:", err);
       const msg = err instanceof Error ? err.message : String(err);
-      if (msg.includes("429") || msg.toLowerCase().includes("too many requests")) {
-        setError("Too many login attempts. Rate limit exceeded. Please wait 60 seconds before trying again.");
+      const msgLower = msg.toLowerCase();
+      if (
+        msg.includes("429") ||
+        msgLower.includes("too many requests") ||
+        msgLower.includes("too_many_requests") ||
+        msgLower.includes("toomanyrequests") ||
+        msg.includes("Failed to construct 'URL'") ||
+        msg.includes("Invalid URL")
+      ) {
+        setError("Too many login attempts. Rate limit exceeded (5 requests/minute). Please wait 60 seconds before trying again.");
       } else {
         setError("An unexpected error occurred. Please try again.");
       }

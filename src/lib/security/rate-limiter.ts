@@ -103,9 +103,23 @@ export function checkRateLimit(
 /**
  * Constructs a standardized HTTP 429 Too Many Requests response with standard rate limit headers
  */
-export function createRateLimitResponse(result: RateLimitResult): NextResponse {
+export function createRateLimitResponse(
+  result: RateLimitResult,
+  requestUrl?: string
+): NextResponse {
+  let fallbackUrl = "http://localhost:3000/login?error=TooManyRequests";
+  if (requestUrl) {
+    try {
+      const u = new URL(requestUrl);
+      fallbackUrl = `${u.origin}/login?error=TooManyRequests`;
+    } catch {
+      // Keep default fallback
+    }
+  }
+
   return NextResponse.json(
     {
+      url: fallbackUrl,
       error: "TOO_MANY_REQUESTS",
       message: `Rate limit exceeded. Please retry in ${result.retryAfterSeconds} seconds.`,
       retryAfter: result.retryAfterSeconds,
