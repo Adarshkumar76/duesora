@@ -57,7 +57,8 @@
 - [x] scheduled executive renewal & cost digest engine;
 - [x] contract cancellation & renegotiation assistant;
 - [x] provider auto-discovery & sync engine (Cloudflare domain & DNS zones);
-- [ ] 2FA / SSO OIDC;
+- [ ] SSO / OIDC Authentication;
+- [ ] AWS Route 53 Provider Auto-Discovery;
 - [ ] plugin architecture;
 - [ ] third-party security audit.
 

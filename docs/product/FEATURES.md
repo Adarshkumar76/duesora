@@ -78,5 +78,4 @@ Optional later:
 -   CLI;
 -   plugin SDK;
 -   OIDC;
--   2FA;
 -   internationalization.
