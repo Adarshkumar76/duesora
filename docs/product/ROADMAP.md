@@ -49,7 +49,7 @@
 
 - [x] stable workspace API & developer keys;
 - [x] multi-stage Alpine Docker container;
-- [ ] automated backup / restore CLI tooling;
+- [x] automated backup / restore CLI tooling (`duesora doctor`, `backup`, `restore`);
 - [ ] 2FA / SSO OIDC;
 - [ ] plugin architecture;
 - [ ] i18n localization;

@@ -39,12 +39,23 @@ Examples:
 export async function runCli(argv = process.argv.slice(2)): Promise<number> {
   const command = argv[0];
 
-  if (!command || command === "--help" || command === "-h") {
+  if (
+    !command ||
+    command === "--help" ||
+    command === "-h" ||
+    command === "help" ||
+    command === "h"
+  ) {
     printUsage();
     return 0;
   }
 
-  if (command === "--version" || command === "-v") {
+  if (
+    command === "--version" ||
+    command === "-v" ||
+    command === "version" ||
+    command === "v"
+  ) {
     console.log("Duesora CLI v0.1.0");
     return 0;
   }
