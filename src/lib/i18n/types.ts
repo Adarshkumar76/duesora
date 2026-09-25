@@ -110,4 +110,22 @@ export interface TranslationDictionary {
     webhooks: string;
     language: string;
   };
+  landing: {
+    features: string;
+    categories: string;
+    selfHost: string;
+    github: string;
+    support: string;
+    signIn: string;
+    getStarted: string;
+    startTrackingFree: string;
+    goToDashboard: string;
+    headline: string;
+    headlineHighlight: string;
+    subheadline: string;
+    freeForever: string;
+    noTelemetry: string;
+    accurateMath: string;
+    heroPill: string;
+  };
 }

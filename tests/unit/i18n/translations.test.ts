@@ -60,6 +60,12 @@ describe("Multi-Language Internationalization (i18n) Engine", () => {
       expect(getTranslation("es", "nav.dependencies")).toBe("Dependencias");
       expect(getTranslation("de", "nav.dependencies")).toBe("Abhängigkeiten");
       expect(getTranslation("ja", "nav.dependencies")).toBe("依存関係マップ");
+
+      expect(getTranslation("en", "landing.headline")).toBe("Know what you own.");
+      expect(getTranslation("es", "landing.headline")).toBe("Conoce lo que posees.");
+      expect(getTranslation("de", "landing.headline")).toBe("Wisse, was du besitzt.");
+      expect(getTranslation("fr", "landing.headline")).toBe("Sachez ce que vous possédez.");
+      expect(getTranslation("ja", "landing.headline")).toBe("所有資産を可視化する。");
     });
 
     it("falls back to English when a key does not exist in target locale", () => {

@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Sun, Moon, Coffee, Menu, X, ArrowRight } from "lucide-react";
 import { BUY_ME_A_COFFEE_URL, GITHUB_REPO_URL } from "@/lib/constants";
 
+import { LanguageSwitcher } from "@/components/i18n/language-switcher";
+import { useTranslation } from "@/components/i18n/i18n-provider";
+
 function GithubIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
@@ -51,6 +54,7 @@ interface LandingNavbarProps {
 }
 
 export function LandingNavbar({ user }: LandingNavbarProps) {
+  const { t } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const theme = useSyncExternalStore(subscribeTheme, getThemeSnapshot, getServerThemeSnapshot);
 
@@ -94,13 +98,13 @@ export function LandingNavbar({ user }: LandingNavbarProps) {
         {/* Desktop Navigation Links */}
         <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-muted-foreground">
           <a href="#features" className="hover:text-foreground transition-colors">
-            Features
+            {t("landing.features")}
           </a>
           <a href="#categories" className="hover:text-foreground transition-colors">
-            Categories
+            {t("landing.categories")}
           </a>
           <a href="#self-host" className="hover:text-foreground transition-colors">
-            Self-Host
+            {t("landing.selfHost")}
           </a>
           <a
             href={GITHUB_REPO_URL}
@@ -109,12 +113,12 @@ export function LandingNavbar({ user }: LandingNavbarProps) {
             className="flex items-center gap-1.5 hover:text-foreground transition-colors"
           >
             <GithubIcon className="w-4 h-4" />
-            <span>GitHub</span>
+            <span>{t("landing.github")}</span>
           </a>
         </nav>
 
         {/* Right Actions */}
-        <div className="flex items-center gap-2.5 sm:gap-3">
+        <div className="flex items-center gap-2 sm:gap-2.5">
           {/* Buy Me a Coffee */}
           <a
             href={BUY_ME_A_COFFEE_URL}
@@ -123,8 +127,11 @@ export function LandingNavbar({ user }: LandingNavbarProps) {
             className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-300 dark:border-amber-800/60 bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-300 text-xs font-semibold hover:bg-amber-100 dark:hover:bg-amber-900/60 transition-colors shadow-2xs"
           >
             <Coffee className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-            <span>Support Project</span>
+            <span>{t("landing.support")}</span>
           </a>
+
+          {/* Language Switcher */}
+          <LanguageSwitcher />
 
           {/* Dark Mode Toggle */}
           <button
@@ -146,7 +153,7 @@ export function LandingNavbar({ user }: LandingNavbarProps) {
                 size="sm"
                 className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs gap-1.5 text-xs font-semibold cursor-pointer"
               >
-                <span>Dashboard</span>
+                <span>{t("landing.goToDashboard")}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Button>
             </Link>
@@ -155,7 +162,7 @@ export function LandingNavbar({ user }: LandingNavbarProps) {
               {/* Sign In */}
               <Link href="/login" className="hidden sm:block">
                 <Button variant="ghost" size="sm" className="rounded-xl text-xs font-medium cursor-pointer">
-                  Sign In
+                  {t("landing.signIn")}
                 </Button>
               </Link>
 
@@ -165,7 +172,7 @@ export function LandingNavbar({ user }: LandingNavbarProps) {
                   size="sm"
                   className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs gap-1.5 text-xs font-semibold cursor-pointer"
                 >
-                  <span>Get Started</span>
+                  <span>{t("landing.getStarted")}</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Button>
               </Link>
@@ -187,26 +194,31 @@ export function LandingNavbar({ user }: LandingNavbarProps) {
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
         <div className="md:hidden border-b border-border/70 bg-card/95 backdrop-blur-lg px-6 py-4 space-y-3 animate-in slide-in-from-top-2 duration-200">
+          <div className="flex items-center justify-between py-1 border-b border-border/40 pb-2">
+            <span className="text-xs font-semibold text-muted-foreground">Language</span>
+            <LanguageSwitcher />
+          </div>
+
           <a
             href="#features"
             onClick={() => setMobileMenuOpen(false)}
             className="block text-sm font-medium text-muted-foreground hover:text-foreground py-1"
           >
-            Features
+            {t("landing.features")}
           </a>
           <a
             href="#categories"
             onClick={() => setMobileMenuOpen(false)}
             className="block text-sm font-medium text-muted-foreground hover:text-foreground py-1"
           >
-            Categories
+            {t("landing.categories")}
           </a>
           <a
             href="#self-host"
             onClick={() => setMobileMenuOpen(false)}
             className="block text-sm font-medium text-muted-foreground hover:text-foreground py-1"
           >
-            Self-Host
+            {t("landing.selfHost")}
           </a>
           <a
             href={GITHUB_REPO_URL}
@@ -224,13 +236,13 @@ export function LandingNavbar({ user }: LandingNavbarProps) {
             className="flex items-center gap-2 text-sm font-medium text-amber-700 dark:text-amber-400 py-1"
           >
             <Coffee className="w-4 h-4" />
-            <span>Buy Me a Coffee</span>
+            <span>{t("landing.support")}</span>
           </a>
           {user ? (
             <div className="pt-2 border-t border-border/50 flex flex-col gap-2">
               <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)}>
                 <Button size="sm" className="w-full rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white">
-                  Go to Dashboard
+                  {t("landing.goToDashboard")}
                 </Button>
               </Link>
             </div>
@@ -238,12 +250,12 @@ export function LandingNavbar({ user }: LandingNavbarProps) {
             <div className="pt-2 border-t border-border/50 flex flex-col gap-2">
               <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
                 <Button variant="outline" size="sm" className="w-full rounded-xl text-xs font-semibold">
-                  Sign In to Workspace
+                  {t("landing.signIn")}
                 </Button>
               </Link>
               <Link href="/register" onClick={() => setMobileMenuOpen(false)}>
                 <Button size="sm" className="w-full rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white">
-                  Get Started
+                  {t("landing.getStarted")}
                 </Button>
               </Link>
             </div>

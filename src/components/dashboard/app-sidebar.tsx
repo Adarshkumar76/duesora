@@ -16,6 +16,8 @@ import {
   GitFork,
 } from "lucide-react";
 
+import { useTranslation } from "@/components/i18n/i18n-provider";
+
 interface NavItem {
   label: string;
   href: string;
@@ -35,8 +37,22 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Settings", href: "/settings", icon: Settings },
 ];
 
+export const NAV_ITEM_I18N_KEYS: Record<string, string> = {
+  "/dashboard": "nav.dashboard",
+  "/resources": "nav.resources",
+  "/domains": "nav.domains",
+  "/subscriptions": "nav.subscriptions",
+  "/renewals": "nav.renewals",
+  "/dependencies": "nav.dependencies",
+  "/calendar": "nav.calendar",
+  "/reports": "nav.reports",
+  "/notifications": "nav.notifications",
+  "/settings": "nav.settings",
+};
+
 export function AppSidebar() {
   const pathname = usePathname();
+  const { t } = useTranslation();
 
   return (
     <aside className="hidden lg:flex w-64 border-r border-border/70 bg-card/60 backdrop-blur-sm flex-col shrink-0 min-h-screen">
@@ -57,10 +73,13 @@ export function AppSidebar() {
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
+          const label = NAV_ITEM_I18N_KEYS[item.href]
+            ? t(NAV_ITEM_I18N_KEYS[item.href])
+            : item.label;
 
           return (
             <Link
-              key={item.label}
+              key={item.href}
               href={item.href}
               className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
                 isActive
@@ -73,7 +92,7 @@ export function AppSidebar() {
                   isActive ? "text-emerald-700 dark:text-emerald-300" : "text-muted-foreground"
                 }`}
               />
-              <span>{item.label}</span>
+              <span>{label}</span>
             </Link>
           );
         })}

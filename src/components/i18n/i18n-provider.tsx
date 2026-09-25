@@ -29,15 +29,17 @@ export function I18nProvider({
     // Check cookie or localStorage on initial mount
     const saved = document.cookie
       .split("; ")
-      .find((row) => row.startsWith("duesora_locale="))
+      .find((row) => row.startsWith("duesora_locale=") || row.startsWith("NEXT_LOCALE="))
       ?.split("=")[1] as Locale | undefined;
 
     if (saved && SUPPORTED_LOCALES.some((l) => l.code === saved)) {
       setLocaleState(saved);
+      document.documentElement.lang = saved;
     } else {
       const local = localStorage.getItem("duesora_locale") as Locale | undefined;
       if (local && SUPPORTED_LOCALES.some((l) => l.code === local)) {
         setLocaleState(local);
+        document.documentElement.lang = local;
       }
     }
   }, []);
@@ -45,8 +47,10 @@ export function I18nProvider({
   const setLocale = (newLocale: Locale) => {
     startTransition(() => {
       setLocaleState(newLocale);
+      document.documentElement.lang = newLocale;
       // Persist to cookie (1 year expiry) and localStorage
       document.cookie = `duesora_locale=${newLocale}; path=/; max-age=31536000; SameSite=Lax`;
+      document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000; SameSite=Lax`;
       try {
         localStorage.setItem("duesora_locale", newLocale);
       } catch {
