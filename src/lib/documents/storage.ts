@@ -34,8 +34,8 @@ export function getStorageBaseDir(): string {
  * within the base storage root directory (path-traversal protection).
  */
 export function resolveSafeStoragePath(relativeStoragePath: string): string {
-  const baseDir = path.resolve(getStorageBaseDir());
-  const resolved = path.resolve(baseDir, relativeStoragePath);
+  const baseDir = path.resolve(/*turbopackIgnore: true*/ getStorageBaseDir());
+  const resolved = path.resolve(/*turbopackIgnore: true*/ baseDir, relativeStoragePath);
 
   if (!resolved.startsWith(baseDir)) {
     throw new Error("Invalid storage path: Access outside storage directory denied");
@@ -59,7 +59,7 @@ export async function saveUploadedFile(
   const absolutePath = resolveSafeStoragePath(relativePath);
 
   await fs.mkdir(path.dirname(absolutePath), { recursive: true });
-  await fs.writeFile(absolutePath, buffer);
+  await fs.writeFile(/*turbopackIgnore: true*/ absolutePath, buffer);
 
   return relativePath.replace(/\\/g, "/");
 }
@@ -69,7 +69,7 @@ export async function saveUploadedFile(
  */
 export async function readUploadedFile(relativeStoragePath: string): Promise<Buffer> {
   const absolutePath = resolveSafeStoragePath(relativeStoragePath);
-  return fs.readFile(absolutePath);
+  return fs.readFile(/*turbopackIgnore: true*/ absolutePath);
 }
 
 /**
@@ -78,7 +78,7 @@ export async function readUploadedFile(relativeStoragePath: string): Promise<Buf
 export async function deleteUploadedFile(relativeStoragePath: string): Promise<boolean> {
   try {
     const absolutePath = resolveSafeStoragePath(relativeStoragePath);
-    await fs.unlink(absolutePath);
+    await fs.unlink(/*turbopackIgnore: true*/ absolutePath);
     return true;
   } catch (err: unknown) {
     if (err && typeof err === "object" && "code" in err && err.code === "ENOENT") {
