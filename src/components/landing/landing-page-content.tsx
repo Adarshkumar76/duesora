@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { LandingHero } from "@/components/landing/landing-hero";
+import { TelemetryPipeline } from "@/components/landing/telemetry-pipeline";
 import { InteractiveTabs } from "@/components/landing/interactive-tabs";
 import { DockerCopy } from "@/components/landing/docker-copy";
 import { Button } from "@/components/ui/button";
@@ -161,11 +162,10 @@ export function LandingPageContent({ user }: LandingPageContentProps) {
                       key={filter}
                       type="button"
                       onClick={() => setDecisionFilter(filter)}
-                      className={`px-2.5 py-1 rounded-lg font-semibold uppercase text-[10px] tracking-wider transition-all cursor-pointer ${
-                        decisionFilter === filter
+                      className={`px-2.5 py-1 rounded-lg font-semibold uppercase text-[10px] tracking-wider transition-all cursor-pointer ${decisionFilter === filter
                           ? "bg-card text-foreground shadow-2xs font-bold"
                           : "text-muted-foreground hover:text-foreground"
-                      }`}
+                        }`}
                     >
                       {filter}
                     </button>
@@ -184,13 +184,12 @@ export function LandingPageContent({ user }: LandingPageContentProps) {
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-sm text-foreground">{contract.name}</span>
                         <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                            contract.decision === "cancel"
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${contract.decision === "cancel"
                               ? "bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 border border-rose-300/40"
                               : contract.decision === "review"
-                              ? "bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-300/40"
-                              : "bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300/40"
-                          }`}
+                                ? "bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-300/40"
+                                : "bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300/40"
+                            }`}
                         >
                           {contract.badge}
                         </span>
@@ -271,6 +270,9 @@ export function LandingPageContent({ user }: LandingPageContentProps) {
             </div>
           </div>
         </section>
+
+        {/* ================= TELEMETRY PIPELINE IN MOTION (Supabase/Ramp Animation) ================= */}
+        <TelemetryPipeline />
 
         {/* ================= FEATURES BENTO GRID (Supabase Style) ================= */}
         <section id="features" className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-12">

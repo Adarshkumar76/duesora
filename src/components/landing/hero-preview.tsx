@@ -88,6 +88,28 @@ export function HeroPreview() {
       {/* Glow Ambient Blob */}
       <div className="absolute -top-12 left-1/2 -translate-x-1/2 w-3/4 h-32 bg-emerald-500/15 blur-3xl rounded-full pointer-events-none -z-10" />
 
+      {/* Ramp Floating Card 1: Unused Seat Trim */}
+      <div className="hidden lg:flex absolute -left-10 top-24 z-20 items-center gap-3 p-3 rounded-2xl border border-border/80 bg-card/95 backdrop-blur-xl shadow-xl shadow-black/10 animate-float-slow">
+        <div className="w-8 h-8 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+          <TrendingDown className="w-4 h-4" />
+        </div>
+        <div className="text-left space-y-0.5">
+          <p className="text-[11px] font-bold text-foreground">Figma Seat Audit</p>
+          <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">Trimmed 6 seats &bull; -$360/yr</p>
+        </div>
+      </div>
+
+      {/* Ramp Floating Card 2: Sub-second Escalation */}
+      <div className="hidden lg:flex absolute -right-10 bottom-16 z-20 items-center gap-3 p-3 rounded-2xl border border-border/80 bg-card/95 backdrop-blur-xl shadow-xl shadow-black/10 animate-float-reverse">
+        <div className="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+          <Zap className="w-4 h-4" />
+        </div>
+        <div className="text-left space-y-0.5">
+          <p className="text-[11px] font-bold text-foreground">Autonomous Alert</p>
+          <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">Slack &bull; Webhook &bull; 24ms</p>
+        </div>
+      </div>
+
       {/* Main Glass Mockup Window */}
       <div className="rounded-2xl border border-border/80 bg-card overflow-hidden shadow-inner">
         {/* Top Control Ribbon */}
@@ -207,8 +229,10 @@ export function HeroPreview() {
               </div>
             </div>
 
-            {/* Live Ticker Card */}
-            <div className="p-4 sm:p-5 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 space-y-4">
+            {/* Live Ticker Card with Ramp Laser Scan Beam */}
+            <div className="relative overflow-hidden p-4 sm:p-5 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 space-y-4">
+              {/* Laser Scan Beam */}
+              <div className="absolute inset-x-0 h-0.5 bg-linear-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_12px_rgba(52,211,153,0.9)] pointer-events-none animate-scan-beam" />
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
