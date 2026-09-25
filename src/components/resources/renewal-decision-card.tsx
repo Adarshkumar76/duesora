@@ -347,11 +347,11 @@ export function RenewalDecisionCard({
                 onChange={(e) => setFormDecision(e.target.value as RenewalDecision)}
                 className="w-full px-3 py-2 text-xs rounded-xl border border-input bg-background font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
               >
-                <option value="none">Unreviewed (Default)</option>
-                <option value="needs_review">Needs Review (Flag for team discussion)</option>
-                <option value="approved">Approved to Renew (Sign-off on next cycle)</option>
-                <option value="cancel">Marked to Cancel (Do not renew / stop charges)</option>
-                <option value="negotiate">In Negotiation (Request vendor discount or tier change)</option>
+                <option value="none" className="bg-card text-foreground py-1 font-medium">Unreviewed (Default)</option>
+                <option value="needs_review" className="bg-card text-foreground py-1 font-medium">Needs Review (Flag for team discussion)</option>
+                <option value="approved" className="bg-card text-foreground py-1 font-medium">Approved to Renew (Sign-off on next cycle)</option>
+                <option value="cancel" className="bg-card text-foreground py-1 font-medium">Marked to Cancel (Do not renew / stop charges)</option>
+                <option value="negotiate" className="bg-card text-foreground py-1 font-medium">In Negotiation (Request vendor discount or tier change)</option>
               </select>
             </div>
 

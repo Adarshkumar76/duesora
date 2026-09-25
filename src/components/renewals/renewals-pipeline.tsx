@@ -17,6 +17,8 @@ import {
   Handshake,
   Filter,
   FileText,
+  ChevronDown,
+  BellRing,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CURRENCY_SYMBOLS } from "@/lib/currency/rates";
@@ -400,7 +402,7 @@ export function RenewalsPipeline({
                   <th className="py-3 px-4">Urgency</th>
                   <th className="py-3 px-4">Renewal Date</th>
                   <th className="py-3 px-4">Cost</th>
-                  <th className="py-3 px-4">Decision & Notice</th>
+                  <th className="py-3 px-4 min-w-[180px]">Decision & Notice</th>
                   <th className="py-3 px-4">Auto-Renew</th>
                   <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
@@ -478,37 +480,40 @@ export function RenewalsPipeline({
                       </td>
 
                       {/* Renewal Decision & Notice Window */}
-                      <td className="py-3 px-4">
+                      <td className="py-3 px-4 min-w-[180px]">
                         <div className="space-y-1.5">
                           {canEdit ? (
-                            <select
-                              value={item.renewalDecision || "none"}
-                              disabled={isUpdatingDecision}
-                              onChange={(e) =>
-                                handleDecisionChange(
-                                  item.id,
-                                  item.name,
-                                  e.target.value as RenewalDecision
-                                )
-                              }
-                              className={`text-xs px-2 py-1 rounded-lg border font-semibold focus:outline-none transition-colors cursor-pointer ${
-                                item.renewalDecision === "approved"
-                                  ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
-                                  : item.renewalDecision === "cancel"
-                                  ? "bg-destructive/10 text-destructive border-destructive/30"
-                                  : item.renewalDecision === "needs_review"
-                                  ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30"
-                                  : item.renewalDecision === "negotiate"
-                                  ? "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/30"
-                                  : "bg-muted/50 text-muted-foreground border-border/60"
-                              }`}
-                            >
-                              <option value="none">Unreviewed</option>
-                              <option value="needs_review">Needs Review</option>
-                              <option value="approved">Approved to Renew</option>
-                              <option value="cancel">Marked to Cancel</option>
-                              <option value="negotiate">In Negotiation</option>
-                            </select>
+                            <div className="relative inline-block w-full max-w-[165px]">
+                              <select
+                                value={item.renewalDecision || "none"}
+                                disabled={isUpdatingDecision}
+                                onChange={(e) =>
+                                  handleDecisionChange(
+                                    item.id,
+                                    item.name,
+                                    e.target.value as RenewalDecision
+                                  )
+                                }
+                                className={`w-full text-xs pl-2.5 pr-7 py-1.5 rounded-xl border font-semibold focus:outline-none transition-colors cursor-pointer appearance-none shadow-2xs ${
+                                  item.renewalDecision === "approved"
+                                    ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/15"
+                                    : item.renewalDecision === "cancel"
+                                    ? "bg-destructive/10 text-destructive border-destructive/30 hover:bg-destructive/15"
+                                    : item.renewalDecision === "needs_review"
+                                    ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30 hover:bg-amber-500/15"
+                                    : item.renewalDecision === "negotiate"
+                                    ? "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/30 hover:bg-purple-500/15"
+                                    : "bg-muted/40 text-muted-foreground border-border/60 hover:bg-muted/60"
+                                }`}
+                              >
+                                <option value="none" className="bg-card text-foreground py-1 font-medium">Unreviewed</option>
+                                <option value="needs_review" className="bg-card text-foreground py-1 font-medium">Needs Review</option>
+                                <option value="approved" className="bg-card text-foreground py-1 font-medium">Approved to Renew</option>
+                                <option value="cancel" className="bg-card text-foreground py-1 font-medium">Marked to Cancel</option>
+                                <option value="negotiate" className="bg-card text-foreground py-1 font-medium">In Negotiation</option>
+                              </select>
+                              <ChevronDown className="w-3.5 h-3.5 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none opacity-60 text-foreground" />
+                            </div>
                           ) : (
                             renderDecisionBadge(item.renewalDecision)
                           )}
@@ -517,7 +522,7 @@ export function RenewalsPipeline({
                           {item.noticeDaysRemaining !== null && (
                             <div className="flex items-center gap-1 text-[10px]" suppressHydrationWarning>
                               <span
-                                className={`px-1.5 py-0.5 rounded font-medium border ${
+                                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-medium border whitespace-nowrap ${
                                   item.noticeDaysRemaining < 0
                                     ? "bg-destructive/10 text-destructive border-destructive/20"
                                     : item.noticeDaysRemaining <= 7
@@ -525,6 +530,7 @@ export function RenewalsPipeline({
                                     : "bg-muted text-muted-foreground border-border/50"
                                 }`}
                               >
+                                <BellRing className="w-2.5 h-2.5 shrink-0" />
                                 {item.noticeDaysRemaining < 0
                                   ? "Notice expired"
                                   : item.noticeDaysRemaining === 0

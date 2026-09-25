@@ -79,7 +79,7 @@ export default async function SettingsPage() {
     try {
       auditData = await listWorkspaceAuditLogs(session.user.id, activeWorkspace.id, {
         page: 1,
-        pageSize: 20,
+        pageSize: 10,
       });
     } catch {
       // fallback
