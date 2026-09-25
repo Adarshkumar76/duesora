@@ -26,6 +26,7 @@ import { Logo } from "@/components/logo";
 import { NAV_ITEMS } from "./app-sidebar";
 import { BUY_ME_A_COFFEE_URL } from "@/lib/constants";
 import { CommandPalette } from "@/components/search/command-palette";
+import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 
 interface WorkspaceItem {
   id: string;
@@ -270,6 +271,9 @@ export function AppHeader({
             <Coffee className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
             <span>Buy Me a Coffee</span>
           </a>
+
+          {/* Language Switcher */}
+          <LanguageSwitcher />
 
           {/* Dark Mode Toggle */}
           <button

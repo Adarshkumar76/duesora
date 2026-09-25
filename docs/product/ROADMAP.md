@@ -51,9 +51,10 @@
 - [x] multi-stage Alpine Docker container;
 - [x] automated backup / restore CLI tooling (`duesora doctor`, `backup`, `restore`);
 - [x] visual interactive dependency graph & blast radius explorer;
+- [x] license & seat utilization optimizer (idle seat waste detection & downsize suggestions);
+- [x] i18n localization (English, Spanish, German, French, Japanese);
 - [ ] 2FA / SSO OIDC;
 - [ ] plugin architecture;
-- [ ] i18n localization;
 - [ ] third-party security audit.
 
 Roadmap items are intentions, not promised dates.
