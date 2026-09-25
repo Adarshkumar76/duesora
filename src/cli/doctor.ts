@@ -217,7 +217,7 @@ export async function checkSmtp(
   const host = env.SMTP_HOST || env.EMAIL_SERVER_HOST;
   const port = parseInt(env.SMTP_PORT || env.EMAIL_SERVER_PORT || "587", 10);
   const user = env.SMTP_USER || env.EMAIL_SERVER_USER;
-  const pass = env.SMTP_PASS || env.EMAIL_SERVER_PASSWORD;
+  const pass = env.SMTP_PASSWORD || env.SMTP_PASS || env.EMAIL_SERVER_PASSWORD;
 
   if (!host) {
     return {
