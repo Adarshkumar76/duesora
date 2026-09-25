@@ -5,13 +5,8 @@ import {
   Globe,
   Database,
   Bell,
-  CheckCircle2,
   Terminal,
-  Shield,
   Zap,
-  ArrowRight,
-  Server,
-  Cpu,
 } from "lucide-react";
 
 export function TelemetryPipeline() {

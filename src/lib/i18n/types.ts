@@ -123,6 +123,10 @@ export interface TranslationDictionary {
     createFreeWorkspace: string;
     headline: string;
     headlineHighlight: string;
+    zeroSurpriseRenewals: string;
+    zeroExpiredSsl: string;
+    zeroWastedSeats: string;
+    zeroDnsDowntime: string;
     subheadline: string;
     freeForever: string;
     noTelemetry: string;

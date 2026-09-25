@@ -20,13 +20,6 @@ import {
   Heart,
   BookOpen,
   Sliders,
-  DollarSign,
-  TrendingDown,
-  AlertTriangle,
-  ArrowRight,
-  Check,
-  Server,
-  Terminal,
 } from "lucide-react";
 import { BUY_ME_A_COFFEE_URL, GITHUB_REPO_URL } from "@/lib/constants";
 import { Logo } from "@/components/logo";
