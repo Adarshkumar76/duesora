@@ -27,8 +27,8 @@ describe("CLI Database Migrations (duesora migrate)", () => {
 
   it("invokes drizzle migrate on existing migrations folder", async () => {
     const fakeDb = { dummy: true };
-    vi.mocked(dbModule.getDb).mockReturnValue(fakeDb as any);
-    vi.mocked(migrator.migrate).mockResolvedValue(undefined as any);
+    vi.mocked(dbModule.getDb).mockReturnValue(fakeDb as unknown as ReturnType<typeof dbModule.getDb>);
+    vi.mocked(migrator.migrate).mockResolvedValue(undefined as unknown as void);
 
     const validFolder = path.resolve(process.cwd(), "drizzle");
     const result = await runDatabaseMigrations(validFolder);
@@ -41,7 +41,7 @@ describe("CLI Database Migrations (duesora migrate)", () => {
 
   it("captures migration failure errors and returns failure result", async () => {
     const fakeDb = { dummy: true };
-    vi.mocked(dbModule.getDb).mockReturnValue(fakeDb as any);
+    vi.mocked(dbModule.getDb).mockReturnValue(fakeDb as unknown as ReturnType<typeof dbModule.getDb>);
     vi.mocked(migrator.migrate).mockRejectedValue(new Error("Connection refused: 5432"));
 
     const validFolder = path.resolve(process.cwd(), "drizzle");

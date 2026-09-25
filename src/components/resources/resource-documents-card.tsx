@@ -13,12 +13,16 @@ import {
   Loader2,
   AlertCircle,
   FileCheck,
+  Sparkles,
 } from "lucide-react";
 import type { ResourceDocumentItem } from "@/lib/documents/service";
+import { InvoiceExtractionModal } from "@/components/documents/invoice-extraction-modal";
+import type { ExtractedInvoiceMetadata } from "@/lib/invoices/extractor";
 
 interface ResourceDocumentsCardProps {
   workspaceId: string;
   resourceId: string;
+  resourceName?: string;
   initialDocuments: ResourceDocumentItem[];
   canManage?: boolean;
 }
@@ -26,6 +30,7 @@ interface ResourceDocumentsCardProps {
 export function ResourceDocumentsCard({
   workspaceId,
   resourceId,
+  resourceName = "Resource",
   initialDocuments,
   canManage = true,
 }: ResourceDocumentsCardProps) {
@@ -34,6 +39,10 @@ export function ResourceDocumentsCard({
   const [dragOver, setDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [extractingId, setExtractingId] = useState<string | null>(null);
+  const [extractedMetadata, setExtractedMetadata] = useState<ExtractedInvoiceMetadata | null>(null);
+  const [selectedDocName, setSelectedDocName] = useState<string>("");
+  const [isExtractModalOpen, setIsExtractModalOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   function formatFileSize(bytes: number): string {
@@ -136,6 +145,35 @@ export function ResourceDocumentsCard({
       setError(err instanceof Error ? err.message : "Failed to delete document");
     } finally {
       setDeletingId(null);
+    }
+  }
+
+  async function handleExtract(doc: ResourceDocumentItem) {
+    setExtractingId(doc.id);
+    setError(null);
+
+    try {
+      const res = await fetch(
+        `/api/workspaces/${workspaceId}/resources/${resourceId}/documents/extract`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ documentId: doc.id }),
+        }
+      );
+
+      const json = await res.json();
+      if (!res.ok) {
+        throw new Error(json.error?.message || "Failed to extract invoice details");
+      }
+
+      setExtractedMetadata(json.metadata);
+      setSelectedDocName(doc.fileName);
+      setIsExtractModalOpen(true);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to extract invoice metadata");
+    } finally {
+      setExtractingId(null);
     }
   }
 
@@ -249,6 +287,23 @@ export function ResourceDocumentsCard({
                 </div>
 
                 <div className="flex items-center gap-1.5 shrink-0">
+                  {canManage && (
+                    <button
+                      type="button"
+                      disabled={extractingId === doc.id}
+                      onClick={() => handleExtract(doc)}
+                      className="px-2 py-1 rounded-lg text-xs font-semibold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-500/20 transition-colors flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                      title="Extract invoice data"
+                    >
+                      {extractingId === doc.id ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+                      )}
+                      <span className="hidden sm:inline">Extract Data</span>
+                    </button>
+                  )}
+
                   <a
                     href={`/api/workspaces/${workspaceId}/resources/${resourceId}/documents/${doc.id}?download=true`}
                     download={doc.fileName}
@@ -279,6 +334,22 @@ export function ResourceDocumentsCard({
           </div>
         )}
       </CardContent>
+
+      {/* Invoice Extraction Confirmation Modal */}
+      <InvoiceExtractionModal
+        isOpen={isExtractModalOpen}
+        onClose={() => setIsExtractModalOpen(false)}
+        workspaceId={workspaceId}
+        resourceId={resourceId}
+        resourceName={resourceName}
+        extractedMetadata={extractedMetadata}
+        documentName={selectedDocName}
+        onApplied={() => {
+          if (typeof window !== "undefined") {
+            window.location.reload();
+          }
+        }}
+      />
     </Card>
   );
 }

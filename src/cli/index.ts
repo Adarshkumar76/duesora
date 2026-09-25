@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import dotenv from "dotenv";
 import { runDoctorDiagnostics, formatDoctorCliOutput } from "./doctor";
+import { runSecurityAudit, formatAuditCliOutput } from "./audit";
 import { createDuesoraBackup } from "./backup";
 import { restoreDuesoraBackup } from "./restore";
 import { runDatabaseMigrations } from "./migrate";
@@ -21,6 +22,7 @@ Usage:
 
 Commands:
   doctor                Check runtime, database, redis, smtp, and storage health
+  audit                 Perform automated security, entropy, and configuration audit
   migrate               Execute pending database schema migrations
   backup [options]      Create a full snapshot backup (.tar.gz) of database & files
   restore <archive>     Restore database and attachments from a backup archive
@@ -68,6 +70,13 @@ export async function runCli(argv = process.argv.slice(2)): Promise<number> {
       const report = await runDoctorDiagnostics();
       console.log(formatDoctorCliOutput(report));
       return report.success ? 0 : 1;
+    }
+
+    case "audit": {
+      console.log("Running Duesora security and configuration audit...\n");
+      const report = runSecurityAudit();
+      console.log(formatAuditCliOutput(report));
+      return report.overallStatus === "insecure" ? 1 : 0;
     }
 
     case "migrate": {

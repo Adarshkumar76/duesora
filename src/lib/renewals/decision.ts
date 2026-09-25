@@ -149,7 +149,7 @@ export async function updateRenewalDecision(
 
   // Webhook event
   try {
-    await emitWorkspaceWebhook(workspaceId, "renewal.decision_updated", {
+    const payload = {
       resourceId,
       resourceName: existing.name,
       previousDecision: existing.renewalDecision,
@@ -158,7 +158,9 @@ export async function updateRenewalDecision(
       cancellationNoticeDays: noticeDays,
       cancellationDeadline: computedDeadline ? computedDeadline.toISOString() : null,
       decidedAt: now.toISOString(),
-    });
+    };
+    await emitWorkspaceWebhook(workspaceId, "renewal.decision_updated", payload);
+    await emitWorkspaceWebhook(workspaceId, "decision.updated", payload);
   } catch {
     // Non-fatal webhook dispatch failure
   }

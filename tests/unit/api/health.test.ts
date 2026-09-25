@@ -15,7 +15,7 @@ describe("Health API (/api/health)", () => {
     const fakeDb = {
       execute: vi.fn().mockResolvedValue([{ 1: 1 }]),
     };
-    vi.mocked(dbModule.getDb).mockReturnValue(fakeDb as any);
+    vi.mocked(dbModule.getDb).mockReturnValue(fakeDb as unknown as ReturnType<typeof dbModule.getDb>);
 
     const response = await GET();
     const data = await response.json();
@@ -31,7 +31,7 @@ describe("Health API (/api/health)", () => {
     const fakeDb = {
       execute: vi.fn().mockRejectedValue(new Error("Database offline")),
     };
-    vi.mocked(dbModule.getDb).mockReturnValue(fakeDb as any);
+    vi.mocked(dbModule.getDb).mockReturnValue(fakeDb as unknown as ReturnType<typeof dbModule.getDb>);
 
     const response = await GET();
     const data = await response.json();

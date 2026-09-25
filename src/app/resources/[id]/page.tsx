@@ -400,6 +400,7 @@ export default async function ResourceDetailsPage({
               <ResourceDocumentsCard
                 workspaceId={activeWorkspace.id}
                 resourceId={resource.id}
+                resourceName={resource.name}
                 initialDocuments={attachedDocuments}
                 canManage={activeWorkspace.role !== "viewer"}
               />
