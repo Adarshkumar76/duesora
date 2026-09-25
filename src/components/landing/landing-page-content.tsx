@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { LandingHero } from "@/components/landing/landing-hero";
 import { InteractiveTabs } from "@/components/landing/interactive-tabs";
@@ -17,6 +18,14 @@ import {
   Zap,
   Heart,
   BookOpen,
+  Sliders,
+  DollarSign,
+  TrendingDown,
+  AlertTriangle,
+  ArrowRight,
+  Check,
+  Server,
+  Terminal,
 } from "lucide-react";
 import { BUY_ME_A_COFFEE_URL, GITHUB_REPO_URL } from "@/lib/constants";
 import { Logo } from "@/components/logo";
@@ -32,10 +41,65 @@ interface LandingPageContentProps {
 export function LandingPageContent({ user }: LandingPageContentProps) {
   const { t } = useTranslation();
 
+  // Ramp-style interactive seat calculator
+  const [teamSize, setTeamSize] = useState<number>(20);
+  const estimatedSavings = Math.round(teamSize * 185); // ~$185/year average waste per seat in SaaS
+
+  // Ramp-style decision filter
+  const [decisionFilter, setDecisionFilter] = useState<"all" | "keep" | "review" | "cancel">("all");
+
+  const sampleContracts = [
+    {
+      name: "Figma Organization Plan",
+      category: "Design",
+      cost: "$90.00/mo",
+      seats: "18 / 24 active",
+      decision: "review",
+      savings: "Save $360/yr",
+      badge: "6 Idle Seats",
+      action: "Trim Seats",
+    },
+    {
+      name: "Datadog APM Staging Cluster",
+      category: "Monitoring",
+      cost: "$240.00/mo",
+      seats: "Legacy environment",
+      decision: "cancel",
+      savings: "Save $2,880/yr",
+      badge: "Zero Traffic in 45d",
+      action: "Decommission",
+    },
+    {
+      name: "Google Workspace Enterprise",
+      category: "Productivity",
+      cost: "$72.00/mo",
+      seats: "12 / 12 active",
+      decision: "keep",
+      savings: "Fully Utilized",
+      badge: "Essential",
+      action: "Auto-renew",
+    },
+    {
+      name: "AWS US-East Production RDS",
+      category: "Infrastructure",
+      cost: "$114.50/mo",
+      seats: "PostgreSQL 16 Multi-AZ",
+      decision: "keep",
+      savings: "Reserved Instance",
+      badge: "Production Core",
+      action: "Auto-renew",
+    },
+  ];
+
+  const filteredContracts =
+    decisionFilter === "all"
+      ? sampleContracts
+      : sampleContracts.filter((c) => c.decision === decisionFilter);
+
   return (
     <>
       <main className="flex-1">
-        {/* ================= HERO SECTION ================= */}
+        {/* ================= HERO SECTION (with Supabase-Style Living Demo) ================= */}
         <LandingHero user={user} />
 
         {/* ================= TECH STACK RIBBON ================= */}
@@ -64,7 +128,151 @@ export function LandingPageContent({ user }: LandingPageContentProps) {
           </div>
         </section>
 
-        {/* ================= FEATURES BENTO GRID ================= */}
+        {/* ================= RAMP-STYLE FINANCIAL & ASSET TELEMETRY ================= */}
+        <section className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-12">
+          <div className="text-center space-y-3 max-w-2xl mx-auto">
+            <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              Ramp-Style Financial Telemetry
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
+              Eliminate zombie SaaS and rogue renewals
+            </h2>
+            <p className="text-sm sm:text-base text-muted-foreground">
+              Modern companies lose thousands annually to unattended trials and forgotten seat licenses. Duesora enforces structured decision workflows.
+            </p>
+          </div>
+
+          {/* Interactive Ramp Matrix & Calculator Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* Left Col: Interactive Decision Matrix (Col 7) */}
+            <div className="lg:col-span-7 rounded-3xl border border-border/80 bg-card p-6 sm:p-8 shadow-xs space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h3 className="text-lg font-bold text-foreground">The Renewal Decision Engine</h3>
+                  <p className="text-xs text-muted-foreground">
+                    Classify contracts ahead of billing: Keep, Renegotiate Seats, or Cancel.
+                  </p>
+                </div>
+
+                {/* Filter buttons */}
+                <div className="flex items-center gap-1 bg-muted/60 p-1 rounded-xl border border-border/60 text-xs">
+                  {(["all", "keep", "review", "cancel"] as const).map((filter) => (
+                    <button
+                      key={filter}
+                      type="button"
+                      onClick={() => setDecisionFilter(filter)}
+                      className={`px-2.5 py-1 rounded-lg font-semibold uppercase text-[10px] tracking-wider transition-all cursor-pointer ${
+                        decisionFilter === filter
+                          ? "bg-card text-foreground shadow-2xs font-bold"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {filter}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Contracts List */}
+              <div className="space-y-2.5">
+                {filteredContracts.map((contract) => (
+                  <div
+                    key={contract.name}
+                    className="p-3.5 rounded-2xl border border-border/70 bg-background/50 hover:bg-muted/40 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                  >
+                    <div className="space-y-0.5">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-sm text-foreground">{contract.name}</span>
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                            contract.decision === "cancel"
+                              ? "bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 border border-rose-300/40"
+                              : contract.decision === "review"
+                              ? "bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-300/40"
+                              : "bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-300/40"
+                          }`}
+                        >
+                          {contract.badge}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {contract.category} • {contract.seats}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center justify-between sm:justify-end gap-4">
+                      <div className="text-right">
+                        <span className="text-xs font-bold text-foreground block">{contract.cost}</span>
+                        <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                          {contract.savings}
+                        </span>
+                      </div>
+
+                      <span className="px-3 py-1 rounded-xl text-xs font-bold bg-muted/80 border border-border/60 text-foreground">
+                        {contract.action}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right Col: Interactive Seat Waste Calculator (Col 5) */}
+            <div className="lg:col-span-5 rounded-3xl border border-border/80 bg-card p-6 sm:p-8 shadow-xs flex flex-col justify-between space-y-6">
+              <div className="space-y-2">
+                <div className="w-10 h-10 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 flex items-center justify-center shadow-xs">
+                  <Sliders className="w-5 h-5" />
+                </div>
+                <h3 className="text-lg font-bold text-foreground">Interactive Waste Calculator</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Drag the slider to match your team headcount and see how much annual subscription waste Duesora prevents.
+                </p>
+              </div>
+
+              {/* Slider Controller */}
+              <div className="space-y-4 p-5 rounded-2xl border border-border/60 bg-muted/20">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-muted-foreground">Team Headcount</span>
+                  <span className="text-sm font-black text-foreground font-mono bg-card px-2.5 py-1 rounded-lg border border-border/60">
+                    {teamSize} Members
+                  </span>
+                </div>
+
+                <input
+                  type="range"
+                  min="5"
+                  max="150"
+                  step="5"
+                  value={teamSize}
+                  onChange={(e) => setTeamSize(Number(e.target.value))}
+                  className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-emerald-600"
+                />
+
+                <div className="flex justify-between text-[10px] text-muted-foreground">
+                  <span>5 members (Seed)</span>
+                  <span>75 members</span>
+                  <span>150+ members (Scale)</span>
+                </div>
+              </div>
+
+              {/* Result Card */}
+              <div className="p-4 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 space-y-1 text-center">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+                  Estimated Annual Capital Saved
+                </span>
+                <p className="text-3xl font-black text-emerald-800 dark:text-emerald-300 font-mono">
+                  ${estimatedSavings.toLocaleString()}
+                  <span className="text-xs font-normal text-muted-foreground ml-1">/ year</span>
+                </p>
+                <p className="text-[11px] text-muted-foreground">
+                  Based on 1.8 average unused licenses per 10 employees across SaaS seats.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ================= FEATURES BENTO GRID (Supabase Style) ================= */}
         <section id="features" className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-12">
           <div className="text-center space-y-3 max-w-2xl mx-auto">
             <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
@@ -79,7 +287,7 @@ export function LandingPageContent({ user }: LandingPageContentProps) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-            {/* Bento Card 1: Zero Surprise Renewals (Col 7) */}
+            {/* Bento Card 1: Multi-Stage Escalation Ladder (Col 7) */}
             <div className="md:col-span-7 rounded-3xl border border-border/80 bg-card p-6 sm:p-8 shadow-xs flex flex-col justify-between space-y-6 hover:border-emerald-500/40 transition-colors">
               <div className="space-y-3">
                 <div className="w-10 h-10 rounded-2xl bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 flex items-center justify-center shadow-xs">
@@ -331,7 +539,7 @@ export function LandingPageContent({ user }: LandingPageContentProps) {
                 className="h-8 rounded-lg border-border/70 bg-card hover:bg-muted/70 text-xs font-semibold gap-1.5 cursor-pointer shadow-2xs"
               >
                 <BookOpen className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                <span>Docs & API</span>
+                <span>Docs &amp; API</span>
               </Button>
             </Link>
             <a

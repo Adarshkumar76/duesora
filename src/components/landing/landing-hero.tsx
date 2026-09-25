@@ -37,24 +37,24 @@ export function LandingHero({ user }: LandingHeroProps) {
   const { t } = useTranslation();
 
   return (
-    <section className="relative pt-12 sm:pt-20 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center space-y-8">
+    <section className="relative pt-10 sm:pt-16 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center space-y-8">
       {/* Announcement Pill Badge */}
       <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-50/80 dark:bg-emerald-950/50 backdrop-blur-md text-emerald-800 dark:text-emerald-300 text-xs font-semibold shadow-2xs hover:border-emerald-500/50 transition-colors">
         <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-        <span>{t("landing.heroPill")}</span>
+        <span>Open Source Release v1.0 • Autonomous Renewal &amp; Spend Telemetry</span>
         <span className="text-emerald-600 dark:text-emerald-400 font-bold">&rarr;</span>
       </div>
 
       {/* Main Headline */}
       <div className="space-y-4 max-w-4xl mx-auto">
         <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.08] text-foreground">
-          {t("landing.headline")} <br />
+          Autonomous asset intelligence. <br />
           <span className="bg-linear-to-r from-emerald-600 via-emerald-500 to-teal-500 bg-clip-text text-transparent">
-            {t("landing.headlineHighlight")}
+            Zero surprise renewals.
           </span>
         </h1>
         <p className="text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          {t("landing.subheadline")}
+          The open-source command center for engineering &amp; finance. Track domain portfolios, SSL certificates, SaaS seat waste, and cloud infrastructure with mathematical precision.
         </p>
       </div>
 
@@ -98,15 +98,39 @@ export function LandingHero({ user }: LandingHeroProps) {
           href={GITHUB_REPO_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 h-12 px-5 rounded-2xl border border-border/80 bg-card/60 hover:bg-muted text-foreground text-sm font-semibold transition-all"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 h-12 px-5 rounded-2xl border border-border/80 bg-card/60 hover:bg-muted text-foreground text-sm font-semibold transition-all shadow-2xs"
         >
           <GithubIcon className="w-4 h-4" />
           <span>Star on GitHub</span>
         </a>
       </div>
 
+      {/* Ramp-Style Precision Metrics Strip */}
+      <div className="pt-2 max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-3 text-left">
+        <div className="p-3 rounded-2xl border border-border/70 bg-card/60 shadow-2xs">
+          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Precision Math</p>
+          <p className="text-base sm:text-lg font-black text-foreground">100% Deterministic</p>
+          <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">Integer cents ledger</p>
+        </div>
+        <div className="p-3 rounded-2xl border border-border/70 bg-card/60 shadow-2xs">
+          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">DNS &amp; TLS Probes</p>
+          <p className="text-base sm:text-lg font-black text-foreground">Sub-Second</p>
+          <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">ICANN &amp; ACME verified</p>
+        </div>
+        <div className="p-3 rounded-2xl border border-border/70 bg-card/60 shadow-2xs">
+          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Self-Host Ready</p>
+          <p className="text-base sm:text-lg font-black text-foreground">Zero Lock-In</p>
+          <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">100% PostgreSQL schema</p>
+        </div>
+        <div className="p-3 rounded-2xl border border-border/70 bg-card/60 shadow-2xs">
+          <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Escalation Ladder</p>
+          <p className="text-base sm:text-lg font-black text-foreground">30d &rarr; 7d &rarr; 24h</p>
+          <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">Slack, Discord, Email</p>
+        </div>
+      </div>
+
       {/* Social Proof Checklist */}
-      <div className="flex items-center justify-center gap-6 sm:gap-8 text-xs font-semibold text-muted-foreground pt-4 flex-wrap">
+      <div className="flex items-center justify-center gap-6 sm:gap-8 text-xs font-semibold text-muted-foreground pt-1 flex-wrap">
         <span className="flex items-center gap-1.5">
           <CheckCircle2 className="w-4 h-4 text-emerald-600" />
           {t("landing.freeForever")}
@@ -121,8 +145,8 @@ export function LandingHero({ user }: LandingHeroProps) {
         </span>
       </div>
 
-      {/* 3D-Perspective Hero Preview */}
-      <div className="pt-6 sm:pt-10">
+      {/* 3D-Perspective Live Interactive Hero Demo */}
+      <div className="pt-4 sm:pt-6">
         <HeroPreview />
       </div>
     </section>
