@@ -9,6 +9,10 @@ const rootDir = path.resolve(__dirname, "..");
 
 const jiti = createJiti(import.meta.url, {
   fsCache: false,
+  alias: {
+    "@": path.join(rootDir, "src"),
+    "server-only": path.join(rootDir, "node_modules/server-only/empty.js"),
+  },
 });
 
 async function main() {

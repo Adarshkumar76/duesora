@@ -60,8 +60,7 @@
 - [x] document & invoice metadata extraction engine with user confirmation;
 - [x] outgoing webhook event dispatcher & delivery inspector;
 - [x] automated security & configuration auditor CLI (`duesora audit`);
-- [x] advanced multi-filter & saved views (urgency, spend, idle seats);
-- [ ] AWS Route 53 Provider Auto-Discovery;
-- [ ] plugin architecture.
+- [x] plugin architecture & SDK (extensible provider & notification registry, duesora plugins CLI);
+- [x] public API v1 with OpenAPI 3.1 specification & interactive explorer (/api/docs, /api/openapi.json).
 
 Roadmap items are intentions, not promised dates.

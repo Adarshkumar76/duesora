@@ -65,7 +65,6 @@ Optional later:
 -   Slack;
 -   Discord;
 -   Telegram;
--   GitHub;
 -   cloud/provider adapters.
 
 ## Advanced

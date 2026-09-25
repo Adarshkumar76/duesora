@@ -2,6 +2,7 @@ import fs from "node:fs";
 import dotenv from "dotenv";
 import { runDoctorDiagnostics, formatDoctorCliOutput } from "./doctor";
 import { runSecurityAudit, formatAuditCliOutput } from "./audit";
+import { formatPluginsCliOutput } from "./plugins";
 import { createDuesoraBackup } from "./backup";
 import { restoreDuesoraBackup } from "./restore";
 import { runDatabaseMigrations } from "./migrate";
@@ -23,6 +24,7 @@ Usage:
 Commands:
   doctor                Check runtime, database, redis, smtp, and storage health
   audit                 Perform automated security, entropy, and configuration audit
+  plugins               List registered provider and notification extension plugins
   migrate               Execute pending database schema migrations
   backup [options]      Create a full snapshot backup (.tar.gz) of database & files
   restore <archive>     Restore database and attachments from a backup archive
@@ -77,6 +79,11 @@ export async function runCli(argv = process.argv.slice(2)): Promise<number> {
       const report = runSecurityAudit();
       console.log(formatAuditCliOutput(report));
       return report.overallStatus === "insecure" ? 1 : 0;
+    }
+
+    case "plugins": {
+      console.log(formatPluginsCliOutput());
+      return 0;
     }
 
     case "migrate": {
