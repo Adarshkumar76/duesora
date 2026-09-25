@@ -57,9 +57,11 @@
 - [x] scheduled executive renewal & cost digest engine;
 - [x] contract cancellation & renegotiation assistant;
 - [x] provider auto-discovery & sync engine (Cloudflare domain & DNS zones);
-- [x] SSO / OIDC Authentication (Google & GitHub OAuth);
+- [x] document & invoice metadata extraction engine with user confirmation;
+- [x] outgoing webhook event dispatcher & delivery inspector;
+- [x] automated security & configuration auditor CLI (`duesora audit`);
+- [x] advanced multi-filter & saved views (urgency, spend, idle seats);
 - [ ] AWS Route 53 Provider Auto-Discovery;
-- [ ] plugin architecture;
-- [ ] third-party security audit.
+- [ ] plugin architecture.
 
 Roadmap items are intentions, not promised dates.
