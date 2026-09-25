@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Bell,
@@ -23,19 +24,41 @@ interface NotificationsViewProps {
   initialUnreadCount: number;
   workspaceId: string;
   userRole?: string;
+  currentPage?: number;
+  pageSize?: number;
 }
 
 export function NotificationsView({
   initialNotifications,
+  initialTotal,
   initialUnreadCount,
   workspaceId,
   userRole = "member",
+  currentPage = 1,
+  pageSize = 20,
 }: NotificationsViewProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
   const [items, setItems] = useState<NotificationItem[]>(initialNotifications);
+  const [prevInitial, setPrevInitial] = useState(initialNotifications);
   const [unreadCount, setUnreadCount] = useState(initialUnreadCount);
   const [activeFilter, setActiveFilter] = useState<"all" | "unread" | "critical" | "warning">("all");
   const [isScanning, setIsScanning] = useState(false);
   const [scanMessage, setScanMessage] = useState<string | null>(null);
+
+  if (prevInitial !== initialNotifications) {
+    setPrevInitial(initialNotifications);
+    setItems(initialNotifications);
+  }
+
+  const totalPages = Math.max(1, Math.ceil(initialTotal / pageSize));
+
+  function updatePage(newPage: number) {
+    const params = new URLSearchParams(searchParams ? searchParams.toString() : "");
+    params.set("page", String(newPage));
+    router.push(`/notifications?${params.toString()}`);
+  }
 
   const canRunCheck = userRole === "owner" || userRole === "admin";
 
@@ -340,6 +363,53 @@ export function NotificationsView({
           })
         )}
       </div>
+
+      {/* Pagination Bar */}
+      {totalPages > 1 && (
+        <div className="p-4 border border-border/60 bg-card rounded-2xl flex items-center justify-between text-xs text-muted-foreground shadow-2xs">
+          <span>
+            Page {currentPage} of {totalPages} ({initialTotal} total)
+          </span>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={currentPage <= 1}
+              onClick={() => updatePage(currentPage - 1)}
+              className="h-7 text-xs rounded-lg cursor-pointer"
+            >
+              Previous
+            </Button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter((p) => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
+              .map((p, idx, arr) => (
+                <span key={p} className="flex items-center">
+                  {idx > 0 && p - arr[idx - 1] > 1 && <span className="px-1 text-muted-foreground/50">...</span>}
+                  <button
+                    type="button"
+                    onClick={() => updatePage(p)}
+                    className={`h-7 w-7 text-xs rounded-lg font-medium transition-colors cursor-pointer ${
+                      currentPage === p
+                        ? "bg-emerald-600 text-white font-semibold"
+                        : "text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+                    }`}
+                  >
+                    {p}
+                  </button>
+                </span>
+              ))}
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={currentPage >= totalPages}
+              onClick={() => updatePage(currentPage + 1)}
+              className="h-7 text-xs rounded-lg cursor-pointer"
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

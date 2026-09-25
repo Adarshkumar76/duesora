@@ -18,7 +18,11 @@ import { getWorkspaceBudget, getWorkspaceBudgetStatus } from "@/lib/budgets/serv
 import { BudgetSettings } from "@/components/settings/budget-settings";
 import { CurrencyExchangeSettings } from "@/components/settings/currency-exchange-settings";
 import { EmailSettings } from "@/components/settings/email-settings";
+import { ReminderSettings } from "@/components/settings/reminder-settings";
 import { CronStatusCard } from "@/components/settings/cron-status-card";
+import { WorkspaceDangerZone } from "@/components/settings/workspace-danger-zone";
+import { ApiKeysManager } from "@/components/settings/api-keys-manager";
+import { listWorkspaceApiKeys } from "@/lib/auth/api-key";
 import { Building2, Mail, ShieldCheck } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -82,6 +86,16 @@ export default async function SettingsPage() {
     }
   }
 
+  // 6. Fetch developer API keys
+  let apiKeysList: Awaited<ReturnType<typeof listWorkspaceApiKeys>> = [];
+  if (activeWorkspace.role === "owner" || activeWorkspace.role === "admin") {
+    try {
+      apiKeysList = await listWorkspaceApiKeys(session.user.id, activeWorkspace.id);
+    } catch {
+      // fallback
+    }
+  }
+
   const emailReady = isEmailConfigured();
 
   // 6. Fetch workspace budget & status
@@ -92,6 +106,18 @@ export default async function SettingsPage() {
     budgetStatus = await getWorkspaceBudgetStatus(session.user.id, activeWorkspace.id);
   } catch {
     // fallback
+  }
+
+  let parsedReminderDays = [30, 14, 7, 3, 1, 0];
+  if (activeWorkspace.reminderDays) {
+    try {
+      const parsed = JSON.parse(activeWorkspace.reminderDays);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        parsedReminderDays = parsed;
+      }
+    } catch {
+      // fallback
+    }
   }
 
   async function handleSignOut() {
@@ -199,6 +225,15 @@ export default async function SettingsPage() {
             currentUserRole={teamData.currentUserRole}
           />
 
+          {/* Renewal Alert Lead Times & Notification Horizons */}
+          <div className="pt-2" id="reminders">
+            <ReminderSettings
+              workspaceId={activeWorkspace.id}
+              userRole={activeWorkspace.role}
+              initialReminderDays={parsedReminderDays}
+            />
+          </div>
+
           {/* Email Alerts & Delivery Settings */}
           <div className="pt-2" id="email">
             <EmailSettings
@@ -234,6 +269,17 @@ export default async function SettingsPage() {
             />
           </div>
 
+          {/* Developer Workspace API Keys */}
+          {(activeWorkspace.role === "owner" || activeWorkspace.role === "admin") && (
+            <div className="pt-2" id="api-keys">
+              <ApiKeysManager
+                workspaceId={activeWorkspace.id}
+                initialKeys={apiKeysList}
+                userRole={activeWorkspace.role}
+              />
+            </div>
+          )}
+
           {/* Workspace Audit & Compliance Log (Admins, Owners, Members) */}
           {canViewAudit && (
             <div className="pt-2">
@@ -247,6 +293,15 @@ export default async function SettingsPage() {
               />
             </div>
           )}
+
+          {/* Workspace Danger Zone: Delete Workspace / Leave Workspace */}
+          <div className="pt-4" id="danger-zone">
+            <WorkspaceDangerZone
+              workspaceId={activeWorkspace.id}
+              workspaceName={activeWorkspace.name}
+              userRole={activeWorkspace.role}
+            />
+          </div>
         </main>
       </div>
     </div>

@@ -11,10 +11,8 @@ import {
   Loader2,
   Check,
   AlertCircle,
-  User,
-  Mail,
-  Shield,
 } from "lucide-react";
+import { ProfileSettings } from "./profile-settings";
 
 interface WorkspaceSettingsFormProps {
   workspace: {
@@ -206,47 +204,8 @@ export function WorkspaceSettingsForm({ workspace, user }: WorkspaceSettingsForm
         </CardContent>
       </Card>
 
-      {/* Account Profile Details Card */}
-      <Card className="rounded-2xl border border-border/80 bg-card shadow-xs">
-        <CardHeader className="pb-4 border-b border-border/50">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-600">
-              <User className="w-4 h-4" />
-            </div>
-            <div>
-              <CardTitle className="text-base font-bold text-foreground">
-                Your Account Profile
-              </CardTitle>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Details for your active session and workspace authorization.
-              </p>
-            </div>
-          </div>
-        </CardHeader>
-
-        <CardContent className="pt-4 divide-y divide-border/40 text-sm">
-          <div className="py-2.5 flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">Full Name</span>
-            <span className="font-semibold text-foreground">{user.name || "—"}</span>
-          </div>
-
-          <div className="py-2.5 flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">Email Address</span>
-            <span className="font-semibold text-foreground flex items-center gap-1.5">
-              <Mail className="w-3.5 h-3.5 text-muted-foreground" />
-              <span>{user.email}</span>
-            </span>
-          </div>
-
-          <div className="py-2.5 flex items-center justify-between">
-            <span className="text-xs font-medium text-muted-foreground">Workspace Role</span>
-            <span className="font-semibold capitalize text-foreground flex items-center gap-1.5">
-              <Shield className="w-3.5 h-3.5 text-emerald-600" />
-              <span>{workspace.role}</span>
-            </span>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Interactive Account Profile & Security Settings */}
+      <ProfileSettings user={user} userRole={workspace.role} />
     </div>
   );
 }

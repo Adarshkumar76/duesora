@@ -56,6 +56,23 @@ function TeamsIcon({ className = "w-5 h-5" }: { className?: string }) {
   );
 }
 
+function NtfyIcon({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+      <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
+    </svg>
+  );
+}
+
+function GotifyIcon({ className = "w-5 h-5" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14.5h-2v-2h2zm0-4h-2V7h2z" />
+    </svg>
+  );
+}
+
 const EVENT_OPTIONS = [
   { id: "reminder.upcoming", label: "Upcoming Renewals", description: "30d, 14d, 7d, 3d, 1d reminder alerts" },
   { id: "reminder.overdue", label: "Overdue Renewals", description: "Expired domains, licenses, or contracts" },
@@ -104,6 +121,12 @@ export function ChatIntegrations({
         break;
       case "teams":
         setName("IT Ops Alerts");
+        break;
+      case "ntfy":
+        setName("ntfy-alerts");
+        break;
+      case "gotify":
+        setName("gotify-alerts");
         break;
     }
     setWebhookUrl("");
@@ -283,6 +306,8 @@ export function ChatIntegrations({
   const discordCount = channels.filter((c) => c.provider === "discord").length;
   const telegramCount = channels.filter((c) => c.provider === "telegram").length;
   const teamsCount = channels.filter((c) => c.provider === "teams").length;
+  const ntfyCount = channels.filter((c) => c.provider === "ntfy").length;
+  const gotifyCount = channels.filter((c) => c.provider === "gotify").length;
 
   return (
     <div className="space-y-6">
@@ -290,7 +315,7 @@ export function ChatIntegrations({
       <div>
         <h2 className="text-lg font-bold text-foreground">Chat & Team Integrations</h2>
         <p className="text-xs text-muted-foreground mt-0.5">
-          Dispatch instant notifications to Slack, Discord, Telegram, and Microsoft Teams when renewals are due or SSL certificates degrade.
+          Dispatch instant notifications to Slack, Discord, Telegram, MS Teams, ntfy, and Gotify when renewals are due or SSL certificates degrade.
         </p>
       </div>
 
@@ -321,8 +346,8 @@ export function ChatIntegrations({
         </div>
       )}
 
-      {/* Provider Quick Cards Grid (Slack, Discord, Telegram, Teams) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Provider Quick Cards Grid (Slack, Discord, Telegram, Teams, ntfy, Gotify) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Slack Card */}
         <div className="rounded-2xl border border-border/80 bg-card p-4.5 space-y-3.5 shadow-2xs hover:border-border transition-colors flex flex-col justify-between">
           <div className="space-y-3">
@@ -470,6 +495,80 @@ export function ChatIntegrations({
             <span>Connect Teams</span>
           </Button>
         </div>
+
+        {/* ntfy Card (Open Push) */}
+        <div className="rounded-2xl border border-border/80 bg-card p-4.5 space-y-3.5 shadow-2xs hover:border-border transition-colors flex flex-col justify-between">
+          <div className="space-y-3">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-cyan-500/10 dark:bg-cyan-500/25 text-cyan-600 dark:text-cyan-400 flex items-center justify-center shrink-0">
+                  <NtfyIcon className="w-4.5 h-4.5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-foreground">ntfy.sh</h3>
+                  <p className="text-[11px] text-muted-foreground">
+                    {ntfyCount > 0 ? `${ntfyCount} topic${ntfyCount > 1 ? "s" : ""}` : "Not connected"}
+                  </p>
+                </div>
+              </div>
+              {ntfyCount > 0 && (
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                  Active
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Free open-source HTTP push notifications for phones and desktop.
+            </p>
+          </div>
+          <Button
+            type="button"
+            size="sm"
+            onClick={() => openAddModal("ntfy")}
+            disabled={!isAdmin}
+            className="w-full rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white shadow-xs gap-1.5 text-xs font-semibold cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Connect ntfy</span>
+          </Button>
+        </div>
+
+        {/* Gotify Card (Self-Hosted Push) */}
+        <div className="rounded-2xl border border-border/80 bg-card p-4.5 space-y-3.5 shadow-2xs hover:border-border transition-colors flex flex-col justify-between">
+          <div className="space-y-3">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-blue-600/10 dark:bg-blue-600/25 text-blue-600 flex items-center justify-center shrink-0">
+                  <GotifyIcon className="w-4.5 h-4.5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-foreground">Gotify</h3>
+                  <p className="text-[11px] text-muted-foreground">
+                    {gotifyCount > 0 ? `${gotifyCount} server${gotifyCount > 1 ? "s" : ""}` : "Not connected"}
+                  </p>
+                </div>
+              </div>
+              {gotifyCount > 0 && (
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                  Active
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Self-hosted notification server with persistent push messages.
+            </p>
+          </div>
+          <Button
+            type="button"
+            size="sm"
+            onClick={() => openAddModal("gotify")}
+            disabled={!isAdmin}
+            className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-xs gap-1.5 text-xs font-semibold cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Connect Gotify</span>
+          </Button>
+        </div>
       </div>
 
       {/* Configured Channels Table */}
@@ -508,6 +607,8 @@ export function ChatIntegrations({
                   const isSlack = channel.provider === "slack";
                   const isDiscord = channel.provider === "discord";
                   const isTelegram = channel.provider === "telegram";
+                  const isNtfy = channel.provider === "ntfy";
+                  const isGotify = channel.provider === "gotify";
 
                   const badgeClass = isSlack
                     ? "bg-[#4A154B]/10 text-[#4A154B] dark:text-[#E01E5A] border border-[#4A154B]/20"
@@ -515,6 +616,10 @@ export function ChatIntegrations({
                     ? "bg-[#5865F2]/10 text-[#5865F2] border border-[#5865F2]/20"
                     : isTelegram
                     ? "bg-[#229ED9]/10 text-[#229ED9] border border-[#229ED9]/20"
+                    : isNtfy
+                    ? "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20"
+                    : isGotify
+                    ? "bg-blue-600/10 text-blue-600 dark:text-blue-400 border border-blue-600/20"
                     : "bg-[#464EB8]/10 text-[#464EB8] border border-[#464EB8]/20";
 
                   const IconComp = isSlack
@@ -523,6 +628,10 @@ export function ChatIntegrations({
                     ? DiscordIcon
                     : isTelegram
                     ? TelegramIcon
+                    : isNtfy
+                    ? NtfyIcon
+                    : isGotify
+                    ? GotifyIcon
                     : TeamsIcon;
 
                   return (
@@ -538,7 +647,7 @@ export function ChatIntegrations({
                           className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md font-semibold text-[10px] ${badgeClass}`}
                         >
                           <IconComp className="w-3 h-3" />
-                          <span className="capitalize">{channel.provider}</span>
+                          <span className="capitalize">{channel.provider === "ntfy" ? "ntfy.sh" : channel.provider}</span>
                         </span>
                       </td>
 
@@ -631,6 +740,10 @@ export function ChatIntegrations({
                       ? "bg-[#5865F2]/10 text-[#5865F2]"
                       : modalProvider === "telegram"
                       ? "bg-[#229ED9]/10 text-[#229ED9]"
+                      : modalProvider === "ntfy"
+                      ? "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400"
+                      : modalProvider === "gotify"
+                      ? "bg-blue-600/10 text-blue-600 dark:text-blue-400"
                       : "bg-[#464EB8]/10 text-[#464EB8]"
                   }`}
                 >
@@ -640,12 +753,16 @@ export function ChatIntegrations({
                     <DiscordIcon className="w-4 h-4" />
                   ) : modalProvider === "telegram" ? (
                     <TelegramIcon className="w-4 h-4" />
+                  ) : modalProvider === "ntfy" ? (
+                    <NtfyIcon className="w-4 h-4" />
+                  ) : modalProvider === "gotify" ? (
+                    <GotifyIcon className="w-4 h-4" />
                   ) : (
                     <TeamsIcon className="w-4 h-4" />
                   )}
                 </div>
                 <h3 className="text-base font-bold text-foreground">
-                  Connect {modalProvider.toUpperCase()} Channel
+                  Connect {modalProvider === "ntfy" ? "ntfy.sh" : modalProvider.toUpperCase()} Channel
                 </h3>
               </div>
               <button
@@ -675,6 +792,10 @@ export function ChatIntegrations({
                       ? "#devops"
                       : modalProvider === "telegram"
                       ? "@alerts_channel"
+                      : modalProvider === "ntfy"
+                      ? "duesora-alerts"
+                      : modalProvider === "gotify"
+                      ? "duesora-server"
                       : "IT Alerts"
                   }
                   required
@@ -702,6 +823,10 @@ export function ChatIntegrations({
                       ? "https://discord.com/api/webhooks/0000/XXXX"
                       : modalProvider === "telegram"
                       ? "https://api.telegram.org/bot<TOKEN>/sendMessage?chat_id=<ID>"
+                      : modalProvider === "ntfy"
+                      ? "https://ntfy.sh/my_secret_topic"
+                      : modalProvider === "gotify"
+                      ? "https://gotify.example.com/message?token=A1B2C3D4"
                       : "https://outlook.office.com/webhook/..."
                   }
                   required
@@ -742,6 +867,30 @@ export function ChatIntegrations({
                         className="text-primary hover:underline inline-flex items-center gap-0.5"
                       >
                         Telegram Guide <ExternalLink className="w-2.5 h-2.5" />
+                      </a>
+                    </>
+                  ) : modalProvider === "ntfy" ? (
+                    <>
+                      Enter your ntfy.sh topic URL or self-hosted ntfy server URL (e.g. <code>https://ntfy.sh/my_secret_topic</code>). No account required!{" "}
+                      <a
+                        href="https://ntfy.sh"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-primary hover:underline inline-flex items-center gap-0.5"
+                      >
+                        ntfy Documentation <ExternalLink className="w-2.5 h-2.5" />
+                      </a>
+                    </>
+                  ) : modalProvider === "gotify" ? (
+                    <>
+                      Enter your self-hosted Gotify server message endpoint with your app token (e.g. <code>https://gotify.example.com/message?token=&lt;APP_TOKEN&gt;</code>).{" "}
+                      <a
+                        href="https://gotify.net/docs/more-pushmsg"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-primary hover:underline inline-flex items-center gap-0.5"
+                      >
+                        Gotify Push API <ExternalLink className="w-2.5 h-2.5" />
                       </a>
                     </>
                   ) : (

@@ -1,0 +1,13 @@
+node_modules
+.next
+.git
+.github
+tests
+coverage
+docs
+.agents
+.gemini
+*.log
+.env.local
+.env*.local
+*.tsbuildinfo

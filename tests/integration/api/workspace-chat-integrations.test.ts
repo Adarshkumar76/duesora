@@ -200,6 +200,60 @@ describe("API: Workspace Chat Integrations (Slack & Discord)", () => {
       expect(teamsRes.status).toBe(201);
       const teamsJson = await teamsRes.json();
       expect(teamsJson.data.provider).toBe("teams");
+
+      vi.mocked(createNotificationChannel).mockResolvedValueOnce({
+        id: "ch-ntfy",
+        workspaceId: "ws-1",
+        provider: "ntfy",
+        name: "ntfy-alerts",
+        webhookUrl: "https://ntfy.sh/my_secret_alerts",
+        events: ["*"],
+        active: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      const ntfyReq = new NextRequest("http://localhost:3000/api/workspaces/ws-1/integrations", {
+        method: "POST",
+        body: JSON.stringify({
+          provider: "ntfy",
+          name: "ntfy-alerts",
+          webhookUrl: "https://ntfy.sh/my_secret_alerts",
+          events: ["*"],
+        }),
+      });
+
+      const ntfyRes = await postChannel(ntfyReq, { params: Promise.resolve({ workspaceId: "ws-1" }) });
+      expect(ntfyRes.status).toBe(201);
+      const ntfyJson = await ntfyRes.json();
+      expect(ntfyJson.data.provider).toBe("ntfy");
+
+      vi.mocked(createNotificationChannel).mockResolvedValueOnce({
+        id: "ch-gotify",
+        workspaceId: "ws-1",
+        provider: "gotify",
+        name: "gotify-alerts",
+        webhookUrl: "https://gotify.example.com/message?token=mytoken123",
+        events: ["*"],
+        active: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      const gotifyReq = new NextRequest("http://localhost:3000/api/workspaces/ws-1/integrations", {
+        method: "POST",
+        body: JSON.stringify({
+          provider: "gotify",
+          name: "gotify-alerts",
+          webhookUrl: "https://gotify.example.com/message?token=mytoken123",
+          events: ["*"],
+        }),
+      });
+
+      const gotifyRes = await postChannel(gotifyReq, { params: Promise.resolve({ workspaceId: "ws-1" }) });
+      expect(gotifyRes.status).toBe(201);
+      const gotifyJson = await gotifyRes.json();
+      expect(gotifyJson.data.provider).toBe("gotify");
     });
   });
 

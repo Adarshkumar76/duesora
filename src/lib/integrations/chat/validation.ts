@@ -64,10 +64,32 @@ export function isValidTeamsWebhookUrl(url: string): boolean {
   }
 }
 
+export function isValidNtfyUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== "https:" && parsed.protocol !== "http:") return false;
+    // Must contain a topic name in pathname (e.g. /my_topic)
+    const topic = parsed.pathname.replace(/^\/+|\/+$/g, "");
+    return topic.length > 0;
+  } catch {
+    return false;
+  }
+}
+
+export function isValidGotifyUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== "https:" && parsed.protocol !== "http:") return false;
+    return parsed.searchParams.has("token") && parsed.pathname.includes("/message");
+  } catch {
+    return false;
+  }
+}
+
 export const createNotificationChannelSchema = z
   .object({
-    provider: z.enum(["slack", "discord", "telegram", "teams"], {
-      message: "Provider must be 'slack', 'discord', 'telegram', or 'teams'",
+    provider: z.enum(["slack", "discord", "telegram", "teams", "ntfy", "gotify"], {
+      message: "Provider must be 'slack', 'discord', 'telegram', 'teams', 'ntfy', or 'gotify'",
     }),
     name: z.string().trim().min(1, "Name is required").max(100, "Name must be <= 100 characters"),
     webhookUrl: z.string().trim().url("Must be a valid URL"),
@@ -109,6 +131,24 @@ export const createNotificationChannelSchema = z
         path: ["webhookUrl"],
         message:
           "Invalid Microsoft Teams Webhook URL. It must be a valid HTTPS webhook ending in .office.com, .logic.azure.com, or .microsoft.com",
+      });
+    }
+
+    if (data.provider === "ntfy" && !isValidNtfyUrl(data.webhookUrl)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["webhookUrl"],
+        message:
+          "Invalid ntfy URL. It must be an HTTP/HTTPS URL with a target topic path (e.g. https://ntfy.sh/my_topic)",
+      });
+    }
+
+    if (data.provider === "gotify" && !isValidGotifyUrl(data.webhookUrl)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["webhookUrl"],
+        message:
+          "Invalid Gotify URL. It must be an HTTP/HTTPS message URL with an app token (e.g. https://gotify.example.com/message?token=XYZ)",
       });
     }
   });

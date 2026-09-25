@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { SocialAuthButtons } from "@/components/auth/social-auth-buttons";
 
 function getSafeCallbackUrl(raw: string | null): string {
   if (!raw) return "/dashboard";
@@ -30,6 +31,15 @@ function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const urlError = searchParams.get("error");
+  const displayError =
+    error ||
+    (urlError === "Configuration"
+      ? "OAuth provider not configured yet. Set AUTH_GITHUB_ID & AUTH_GITHUB_SECRET or AUTH_GOOGLE_ID & AUTH_GOOGLE_SECRET in your .env.local file to enable social login."
+      : urlError === "OAuthSignin" || urlError === "OAuthCallback"
+      ? "Social sign-in was interrupted. Please try again."
+      : null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,15 +85,29 @@ function LoginForm() {
       </CardHeader>
 
       <CardContent>
-        {error && (
+        {displayError && (
           <div
             role="alert"
             className="flex items-center gap-2.5 p-3.5 mb-5 rounded-lg text-sm bg-destructive/10 text-destructive border border-destructive/20 animate-in fade-in"
           >
             <AlertCircle className="w-4 h-4 shrink-0" />
-            <span>{error}</span>
+            <span>{displayError}</span>
           </div>
         )}
+
+        {/* 1-Click Social Sign-In */}
+        <SocialAuthButtons callbackUrl={callbackUrl} disabled={loading} />
+
+        <div className="relative my-5">
+          <div className="absolute inset-0 flex items-center">
+            <span className="w-full border-t border-border/80" />
+          </div>
+          <div className="relative flex justify-center text-[11px] uppercase tracking-wider">
+            <span className="bg-card px-2.5 text-muted-foreground font-semibold">
+              Or continue with email
+            </span>
+          </div>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1.5">

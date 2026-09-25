@@ -35,6 +35,13 @@ export interface CostDriverItem {
   shareOfTotalPct: number;
 }
 
+export interface MonthlyCashflowPoint {
+  monthKey: string;
+  label: string;
+  projectedSpendMinor: number;
+  renewalCount: number;
+}
+
 export interface ReportSummary {
   totalAnnualRunRateMinor: number;
   totalMonthlyRunRateMinor: number;
@@ -46,4 +53,5 @@ export interface ReportSummary {
   cadences: CadenceSpend[];
   currencies: CurrencyBreakdown[];
   topCostDrivers: CostDriverItem[];
+  monthlyForecast: MonthlyCashflowPoint[];
 }

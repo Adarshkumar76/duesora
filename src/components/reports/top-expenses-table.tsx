@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { FileSpreadsheet, FileJson, ArrowRight, Award } from "lucide-react";
+import { FileSpreadsheet, FileJson, ArrowRight, Award, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CURRENCY_SYMBOLS } from "@/lib/currency/rates";
 import type { CostDriverItem } from "@/lib/reports/types";
@@ -65,6 +65,18 @@ export function TopExpensesTable({
               <span>Export JSON</span>
             </Button>
           </a>
+
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => window.print()}
+            className="h-8 px-2.5 rounded-lg text-xs gap-1.5 text-muted-foreground hover:text-foreground cursor-pointer print:hidden"
+            title="Print or Save Executive PDF Summary"
+          >
+            <Printer className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span>Print Summary</span>
+          </Button>
         </div>
       </div>
 

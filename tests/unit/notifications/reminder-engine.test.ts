@@ -74,10 +74,29 @@ describe("Reminder Engine Interval Matching", () => {
     expect(match?.severity).toBe("info");
   });
 
-  it("returns null for resources renewing beyond 30 days", () => {
+  it("returns null for resources renewing beyond 30 days by default", () => {
     const in45Days = new Date("2026-11-15T12:00:00Z");
     const match = calculateReminderMatch(in45Days, now);
 
     expect(match).toBeNull();
+  });
+
+  it("supports custom enterprise intervals like 60 and 45 days", () => {
+    const customIntervals = [60, 45, 30, 14, 7, 3, 1, 0];
+    const in40Days = new Date("2026-11-10T12:00:00Z");
+    const match = calculateReminderMatch(in40Days, now, customIntervals);
+
+    expect(match).not.toBeNull();
+    expect(match?.intervalDays).toBe(45);
+    expect(match?.severity).toBe("info");
+  });
+
+  it("supports custom intervals with 90 days", () => {
+    const customIntervals = [90, 60, 30];
+    const in80Days = new Date("2026-12-20T12:00:00Z");
+    const match = calculateReminderMatch(in80Days, now, customIntervals);
+
+    expect(match).not.toBeNull();
+    expect(match?.intervalDays).toBe(90);
   });
 });

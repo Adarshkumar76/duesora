@@ -52,6 +52,7 @@ export async function listUserWorkspaces(userId: string) {
       type: workspaces.type,
       defaultCurrency: workspaces.defaultCurrency,
       timezone: workspaces.timezone,
+      reminderDays: workspaces.reminderDays,
       role: memberships.role,
       joinedAt: memberships.createdAt,
     })

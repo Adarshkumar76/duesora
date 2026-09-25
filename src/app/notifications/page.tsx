@@ -8,12 +8,18 @@ import { NotificationsView } from "@/components/notifications/notifications-view
 
 export const dynamic = "force-dynamic";
 
-export default async function NotificationsPage() {
+export default async function NotificationsPage(props: {
+  searchParams?: Promise<{ page?: string }>;
+}) {
   const session = await auth();
 
   if (!session?.user?.id) {
     redirect("/login");
   }
+
+  const rawParams = props.searchParams ? await props.searchParams : {};
+  const currentPage = Math.max(1, parseInt(rawParams.page || "1", 10));
+  const pageSize = 20;
 
   // 1. Resolve user's active workspace (via cookie or fallback)
   const sessionWorkspaceId = (session.user as { workspaceId?: string | null }).workspaceId;
@@ -26,7 +32,8 @@ export default async function NotificationsPage() {
   let notificationData;
   try {
     notificationData = await listUserNotifications(session.user.id, activeWorkspace.id, {
-      pageSize: 50,
+      page: currentPage,
+      pageSize,
     });
   } catch {
     notificationData = { items: [], total: 0, unreadCount: 0 };
@@ -58,6 +65,8 @@ export default async function NotificationsPage() {
             initialUnreadCount={notificationData.unreadCount}
             workspaceId={activeWorkspace.id}
             userRole={activeWorkspace.role}
+            currentPage={currentPage}
+            pageSize={pageSize}
           />
         </main>
       </div>

@@ -38,9 +38,12 @@ Surprise card charges and unexpected service outages occur because nobody knew:
 ## 🚀 Key Highlights & Capabilities
 
 - 🌐 **Comprehensive Asset Portfolio**: Track domains, SSL certificates, SaaS tools, cloud infrastructure, API subscriptions, warranties, and custom contracts.
+- 🔗 **Resource Dependency Mapping**: Model upstream and downstream infrastructure dependencies to visualize blast radius before de-provisioning or renewals.
 - 👥 **Clear Ownership & Workspaces**: Eliminate orphaned resources with designated owners, team workspaces, and role-based access control (RBAC).
-- 💸 **Cost & Recurring Spend Analytics**: Monitor monthly and annual renewal commitments, multi-currency costs, and historical spending.
-- ⏰ **Proactive Alert Engine**: Receive renewal notifications before critical expiration deadlines through in-app alerts, email digests, and webhooks.
+- 💸 **Cost & Renewal Cashflow Forecasting**: Monitor monthly and annual commitments, 12-month renewal cashflow forecasts, multi-currency conversions, and historical rate changes.
+- ⏰ **Multi-Channel Alert Dispatcher**: Receive timely notifications across Slack, Discord, Telegram, Microsoft Teams, **ntfy.sh**, **Gotify**, in-app feeds, and email digests.
+- 🔑 **Developer API Keys**: Automate resource provisioning and query metadata programmatically with scoped Bearer API tokens (`due_live_...`).
+- 🐳 **Production-Ready Docker**: Deploy anywhere with a lightweight multi-stage Alpine Docker container (`standalone` mode) and full-stack Docker Compose.
 - 🔒 **Self-Hosted & Privacy-First**: 100% control of your data. Zero telemetry by default, no artificial feature gates, and no mandatory cloud dependencies.
 - 🎨 **Enterprise-Grade UI**: Designed with a sleek, dark-mode-first interface, micro-animations, and full accessibility compliance (WCAG AA).
 
