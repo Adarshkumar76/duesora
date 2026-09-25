@@ -1,0 +1,45 @@
+# Duesora Production Caddyfile
+#
+# Replace {$DOMAIN:duesora.example.com} with your actual domain or set the DOMAIN environment variable.
+# Caddy will automatically provision and renew Let's Encrypt SSL/TLS certificates.
+
+{$DOMAIN:localhost} {
+    # Encode responses with gzip and zstd for enhanced performance
+    encode zstd gzip
+
+    # Security headers
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        Permissions-Policy "camera=(), microphone=(), geolocation=()"
+        -Server
+    }
+
+    # Upload size limit (allow documents, invoices, and contracts up to 50MB)
+    request_body {
+        max_size 50MB
+    }
+
+    # Proxy all traffic to Duesora Next.js application
+    # In Docker Compose, the upstream service is named "web:3000".
+    # For local bare-metal / standalone setups, use "127.0.0.1:3000".
+    reverse_proxy web:3000 {
+        # Transparently forward client IP and protocol
+        header_up Host {host}
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
+
+        # WebSocket & Server-Sent Events (SSE) support
+        header_up Connection {>Connection}
+        header_up Upgrade {>Upgrade}
+    }
+
+    # Structured logging
+    log {
+        output stdout
+        format console
+    }
+}

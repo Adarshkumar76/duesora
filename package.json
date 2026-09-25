@@ -8,7 +8,11 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
+    "duesora": "node ./bin/duesora.mjs",
     "verify": "eslint && tsc --noEmit && vitest run"
+  },
+  "bin": {
+    "duesora": "./bin/duesora.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
@@ -17,6 +21,7 @@
     "clsx": "^2.1.1",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
+    "jiti": "^2.7.0",
     "lucide-react": "^1.31.0",
     "next": "16.3.1",
     "next-auth": "^5.0.0-beta.32",
