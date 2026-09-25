@@ -25,6 +25,7 @@ ENV DATABASE_URL="postgresql://duesora:duesora@localhost:5432/duesora"
 ENV REDIS_URL="redis://localhost:6379"
 ENV AUTH_SECRET="production-build-placeholder-secret-32-chars-min"
 ENV APP_URL="http://localhost:3000"
+ENV BUILD_STANDALONE="true"
 
 RUN npm run build
 

@@ -45,10 +45,8 @@ const securityHeaders = [
   },
 ];
 
-const isVercel = Boolean(process.env.VERCEL);
-
 const nextConfig: NextConfig = {
-  ...(isVercel ? {} : { output: "standalone" }),
+  output: process.env.BUILD_STANDALONE === "true" ? "standalone" : undefined,
   async redirects() {
     return [
       {
