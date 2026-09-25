@@ -1,6 +1,6 @@
 {
   "name": "duesora",
-  "version": "0.1.0",
+  "version": "1.0.0-rc.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
+    "db:migrate": "node ./bin/duesora.mjs migrate",
     "duesora": "node ./bin/duesora.mjs",
     "verify": "eslint && tsc --noEmit && vitest run"
   },

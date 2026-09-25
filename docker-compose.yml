@@ -9,6 +9,7 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
+      - RUN_MIGRATIONS=${RUN_MIGRATIONS:-true}
       - APP_URL=${APP_URL:-http://localhost:3000}
       - DATABASE_URL=postgresql://duesora:duesora@postgres:5432/duesora
       - REDIS_URL=redis://redis:6379

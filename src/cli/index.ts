@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import { runDoctorDiagnostics, formatDoctorCliOutput } from "./doctor";
 import { createDuesoraBackup } from "./backup";
 import { restoreDuesoraBackup } from "./restore";
+import { runDatabaseMigrations } from "./migrate";
 
 // Load environment variables if not already set
 if (fs.existsSync(".env.local")) {
@@ -20,6 +21,7 @@ Usage:
 
 Commands:
   doctor                Check runtime, database, redis, smtp, and storage health
+  migrate               Execute pending database schema migrations
   backup [options]      Create a full snapshot backup (.tar.gz) of database & files
   restore <archive>     Restore database and attachments from a backup archive
 
@@ -56,7 +58,7 @@ export async function runCli(argv = process.argv.slice(2)): Promise<number> {
     command === "version" ||
     command === "v"
   ) {
-    console.log("Duesora CLI v0.1.0");
+    console.log("Duesora CLI v1.0.0-rc.1");
     return 0;
   }
 
@@ -66,6 +68,18 @@ export async function runCli(argv = process.argv.slice(2)): Promise<number> {
       const report = await runDoctorDiagnostics();
       console.log(formatDoctorCliOutput(report));
       return report.success ? 0 : 1;
+    }
+
+    case "migrate": {
+      console.log("Applying pending database schema migrations...");
+      const result = await runDatabaseMigrations();
+      if (result.success) {
+        console.log(`\nMigrations successfully applied from ${result.migrationsFolder}`);
+        return 0;
+      } else {
+        console.error(`\nMigration failed: ${result.error}`);
+        return 1;
+      }
     }
 
     case "backup": {

@@ -49,7 +49,7 @@
 
 - [x] stable workspace API & developer keys;
 - [x] multi-stage Alpine Docker container;
-- [x] automated backup / restore CLI tooling (`duesora doctor`, `backup`, `restore`);
+- [x] automated backup / restore / migration CLI tooling (`duesora doctor`, `migrate`, `backup`, `restore`);
 - [x] visual interactive dependency graph & blast radius explorer;
 - [x] license & seat utilization optimizer (idle seat waste detection & downsize suggestions);
 - [x] i18n localization (English, Spanish, German, French, Japanese);
@@ -57,7 +57,7 @@
 - [x] scheduled executive renewal & cost digest engine;
 - [x] contract cancellation & renegotiation assistant;
 - [x] provider auto-discovery & sync engine (Cloudflare domain & DNS zones);
-- [ ] SSO / OIDC Authentication;
+- [x] SSO / OIDC Authentication (Google & GitHub OAuth);
 - [ ] AWS Route 53 Provider Auto-Discovery;
 - [ ] plugin architecture;
 - [ ] third-party security audit.
