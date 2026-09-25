@@ -4,6 +4,13 @@ import { getDb } from "@/db";
 import { users, workspaces, memberships } from "@/db/schema";
 import { hashPassword } from "@/lib/auth/password";
 import { registerSchema } from "@/lib/auth/register-schema";
+import {
+  getClientIp,
+  checkRateLimit,
+  createRateLimitResponse,
+  RATE_LIMITS,
+} from "@/lib/security/rate-limiter";
+import { sanitizeString } from "@/lib/security/sanitize";
 
 function generateSlug(name: string): string {
   const sanitized = name
@@ -16,8 +23,21 @@ function generateSlug(name: string): string {
 }
 
 export async function POST(req: NextRequest) {
+  // Apply IP-based rate limiting to prevent brute force registration
+  const clientIp = getClientIp(req);
+  const rateLimitCheck = checkRateLimit(`register:${clientIp}`, RATE_LIMITS.AUTH);
+  if (!rateLimitCheck.success) {
+    return createRateLimitResponse(rateLimitCheck);
+  }
+
   try {
     const json = await req.json();
+    if (json && typeof json.name === "string") {
+      json.name = sanitizeString(json.name);
+    }
+    if (json && typeof json.email === "string") {
+      json.email = sanitizeString(json.email).toLowerCase();
+    }
     const parseResult = registerSchema.safeParse(json);
 
     if (!parseResult.success) {

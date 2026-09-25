@@ -21,9 +21,11 @@ import {
   Activity,
   Loader2,
   UploadCloud,
+  Cloud,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ImportModal } from "@/components/resources/import-modal";
+import { ProviderSyncModal } from "@/components/resources/provider-sync-modal";
 import type { DomainItem } from "@/lib/domains/types";
 import type { MonitorStatus } from "@/lib/monitors/types";
 
@@ -54,6 +56,7 @@ export function DomainsTable({
   const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
   const [checkMessage, setCheckMessage] = useState<{ id: string; text: string; error?: boolean } | null>(null);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [isProviderSyncModalOpen, setIsProviderSyncModalOpen] = useState(false);
 
   const canEdit = userRole === "owner" || userRole === "admin" || userRole === "member";
 
@@ -342,6 +345,17 @@ export function DomainsTable({
               >
                 <UploadCloud className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                 <span>Import Domains</span>
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setIsProviderSyncModalOpen(true)}
+                className="rounded-xl border-border/80 shadow-2xs gap-1.5 text-xs font-semibold hover:bg-muted/70 cursor-pointer h-8 text-orange-600 dark:text-orange-400 border-orange-500/30 hover:bg-orange-500/10"
+                title="Auto-discover and sync domains from Cloudflare"
+              >
+                <Cloud className="w-3.5 h-3.5 text-orange-500" />
+                <span>Sync Cloudflare</span>
               </Button>
             </>
           )}
@@ -669,6 +683,13 @@ export function DomainsTable({
         onClose={() => setIsImportModalOpen(false)}
         workspaceId={workspaceId}
         presetType="domain"
+      />
+
+      {/* Cloudflare Provider Sync Modal */}
+      <ProviderSyncModal
+        isOpen={isProviderSyncModalOpen}
+        onClose={() => setIsProviderSyncModalOpen(false)}
+        workspaceId={workspaceId}
       />
     </div>
   );

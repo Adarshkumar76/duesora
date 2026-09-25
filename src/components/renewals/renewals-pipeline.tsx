@@ -16,10 +16,12 @@ import {
   Ban,
   Handshake,
   Filter,
+  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CURRENCY_SYMBOLS } from "@/lib/currency/rates";
 import type { RenewalItem, UrgencyBucket, RenewalDecision } from "@/lib/renewals/types";
+import { CancellationAssistantModal } from "@/components/renewals/cancellation-assistant-modal";
 
 interface RenewalsPipelineProps {
   initialItems: RenewalItem[];
@@ -41,6 +43,7 @@ export function RenewalsPipeline({
   const [prevInitialItems, setPrevInitialItems] = useState(initialItems);
   const [renewingId, setRenewingId] = useState<string | null>(null);
   const [updatingDecisionId, setUpdatingDecisionId] = useState<string | null>(null);
+  const [assistantItem, setAssistantItem] = useState<RenewalItem | null>(null);
   const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
   const [statusMessage, setStatusMessage] = useState<{ text: string; error?: boolean } | null>(null);
 
@@ -566,6 +569,16 @@ export function RenewalsPipeline({
                               </span>
                             </Button>
                           )}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setAssistantItem(item)}
+                            className="h-8 px-2 rounded-lg text-xs gap-1 text-muted-foreground hover:text-foreground cursor-pointer"
+                            title="Open Cancellation / Renegotiation Letter Assistant"
+                          >
+                            <FileText className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                            <span className="hidden xl:inline">Assistant</span>
+                          </Button>
                           <Link href={`/resources/${item.id}`}>
                             <Button
                               variant="ghost"
@@ -600,6 +613,24 @@ export function RenewalsPipeline({
           </div>
         )}
       </div>
+
+      {assistantItem && (
+        <CancellationAssistantModal
+          isOpen={Boolean(assistantItem)}
+          onClose={() => setAssistantItem(null)}
+          defaultTab={assistantItem.renewalDecision === "negotiate" ? "renegotiation" : "cancellation"}
+          resource={{
+            id: assistantItem.id,
+            name: assistantItem.name,
+            provider: assistantItem.provider,
+            renewalDate: assistantItem.renewalDate,
+            cancellationNoticeDays: assistantItem.cancellationNoticeDays,
+            cancellationDeadline: assistantItem.cancellationDeadline,
+            amountMinor: assistantItem.amountMinor,
+            currency: assistantItem.currency,
+          }}
+        />
+      )}
     </div>
   );
 }

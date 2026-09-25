@@ -53,6 +53,10 @@
 - [x] visual interactive dependency graph & blast radius explorer;
 - [x] license & seat utilization optimizer (idle seat waste detection & downsize suggestions);
 - [x] i18n localization (English, Spanish, German, French, Japanese);
+- [x] production security hardening & sliding-window rate limiting;
+- [x] scheduled executive renewal & cost digest engine;
+- [x] contract cancellation & renegotiation assistant;
+- [x] provider auto-discovery & sync engine (Cloudflare domain & DNS zones);
 - [ ] 2FA / SSO OIDC;
 - [ ] plugin architecture;
 - [ ] third-party security audit.

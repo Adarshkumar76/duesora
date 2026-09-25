@@ -464,6 +464,13 @@ export default async function ResourceDetailsPage({
               <RenewalDecisionCard
                 resourceId={resource.id}
                 workspaceId={activeWorkspace.id}
+                resourceName={resource.name}
+                provider={resource.provider}
+                amountMinor={resource.amountMinor}
+                currency={resource.currency}
+                totalSeats={resource.totalSeats}
+                assignedSeats={resource.assignedSeats}
+                costPerSeatMinor={resource.costPerSeatMinor}
                 initialDecision={resource.renewalDecision}
                 initialNotes={resource.decisionNotes}
                 initialNoticeDays={resource.cancellationNoticeDays}

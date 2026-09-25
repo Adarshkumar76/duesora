@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { createWorkspaceInvitation } from "@/lib/team/service";
 import { z } from "zod";
+import {
+  getClientIp,
+  checkRateLimit,
+  createRateLimitResponse,
+  RATE_LIMITS,
+} from "@/lib/security/rate-limiter";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +21,12 @@ const inviteSchema = z.object({
 });
 
 export async function POST(request: NextRequest, { params }: RouteParams) {
+  const clientIp = getClientIp(request);
+  const rateLimit = checkRateLimit(`invites:${clientIp}`, RATE_LIMITS.AUTH);
+  if (!rateLimit.success) {
+    return createRateLimitResponse(rateLimit);
+  }
+
   try {
     const session = await auth();
     if (!session?.user?.id) {

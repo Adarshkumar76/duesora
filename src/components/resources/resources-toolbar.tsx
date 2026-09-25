@@ -12,8 +12,10 @@ import {
   FileSpreadsheet,
   FileCode,
   ChevronDown,
+  Cloud,
 } from "lucide-react";
 import { ImportModal } from "./import-modal";
+import { ProviderSyncModal } from "./provider-sync-modal";
 
 interface ExportableResource {
   id: string;
@@ -50,6 +52,7 @@ export function ResourcesToolbar({
   const [filterOpen, setFilterOpen] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
+  const [providerSyncOpen, setProviderSyncOpen] = useState(false);
 
   const filterRef = useRef<HTMLDivElement>(null);
   const exportRef = useRef<HTMLDivElement>(null);
@@ -260,6 +263,18 @@ export function ResourcesToolbar({
           <span>Import</span>
         </Button>
 
+        {/* Sync Cloudflare Button */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setProviderSyncOpen(true)}
+          title="Auto-discover and sync domains from Cloudflare"
+          className="rounded-xl border-border/80 shadow-2xs gap-1.5 text-xs font-medium cursor-pointer hover:bg-muted/60 text-orange-600 dark:text-orange-400 border-orange-500/30 hover:bg-orange-500/10"
+        >
+          <Cloud className="w-3.5 h-3.5 text-orange-500" />
+          <span className="hidden sm:inline">Sync Cloudflare</span>
+        </Button>
+
         {/* Export Dropdown */}
         <div className="relative" ref={exportRef}>
           <Button
@@ -301,6 +316,13 @@ export function ResourcesToolbar({
       <ImportModal
         isOpen={importOpen}
         onClose={() => setImportOpen(false)}
+        workspaceId={workspaceId}
+      />
+
+      {/* Provider Sync Modal */}
+      <ProviderSyncModal
+        isOpen={providerSyncOpen}
+        onClose={() => setProviderSyncOpen(false)}
         workspaceId={workspaceId}
       />
     </>
