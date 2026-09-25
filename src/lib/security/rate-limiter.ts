@@ -22,8 +22,8 @@ const rateLimitStore = new Map<string, WindowBucket>();
 
 // Predefined security rate limit configurations
 export const RATE_LIMITS = {
-  // Authentication & registration attempts: 10 requests per minute
-  AUTH: { maxRequests: 10, windowMs: 60 * 1000 },
+  // Authentication, login & registration attempts: 5 requests per minute
+  AUTH: { maxRequests: 5, windowMs: 60 * 1000 },
   // Critical mutations (e.g. Danger zone, delete workspace): 5 requests per minute
   STRICT: { maxRequests: 5, windowMs: 60 * 1000 },
   // Developer API key calls: 60 requests per minute

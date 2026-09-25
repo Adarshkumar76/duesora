@@ -55,14 +55,28 @@ function LoginForm() {
       });
 
       if (res?.error) {
-        setError("Invalid email or password. Please try again.");
+        if (
+          res.status === 429 ||
+          res.error.includes("429") ||
+          res.error.toLowerCase().includes("too many requests") ||
+          res.error.toLowerCase().includes("rate limit")
+        ) {
+          setError("Too many login attempts. Rate limit exceeded (5 requests/minute). Please wait 60 seconds before trying again.");
+        } else {
+          setError("Invalid email or password. Please try again.");
+        }
       } else {
         router.push(callbackUrl);
         router.refresh();
       }
     } catch (err) {
       console.error("Sign-in error:", err);
-      setError("An unexpected error occurred. Please try again.");
+      const msg = err instanceof Error ? err.message : String(err);
+      if (msg.includes("429") || msg.toLowerCase().includes("too many requests")) {
+        setError("Too many login attempts. Rate limit exceeded. Please wait 60 seconds before trying again.");
+      } else {
+        setError("An unexpected error occurred. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
