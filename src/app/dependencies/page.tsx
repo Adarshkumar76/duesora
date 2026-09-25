@@ -17,7 +17,13 @@ import {
   ArrowRight,
 } from "lucide-react";
 
+import type { Metadata } from "next";
+
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Dependencies",
+};
 
 export default async function DependenciesPage() {
   const session = await auth();

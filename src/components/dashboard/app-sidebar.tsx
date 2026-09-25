@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "@/components/logo";
@@ -22,6 +22,48 @@ import {
 } from "lucide-react";
 
 import { useTranslation } from "@/components/i18n/i18n-provider";
+
+// Shared reactive module store for sidebar collapsed state across page transitions
+let globalCollapsed: boolean | null = null;
+const listeners = new Set<() => void>();
+
+function getSidebarCollapsedSnapshot(): boolean {
+  if (globalCollapsed !== null) {
+    return globalCollapsed;
+  }
+  if (typeof window !== "undefined") {
+    try {
+      globalCollapsed = localStorage.getItem("duesora_sidebar_collapsed") === "true";
+      return globalCollapsed;
+    } catch {
+      // LocalStorage access fallback
+    }
+  }
+  return false;
+}
+
+function getServerSidebarSnapshot(): boolean {
+  return false;
+}
+
+function subscribeSidebar(callback: () => void) {
+  listeners.add(callback);
+  return () => {
+    listeners.delete(callback);
+  };
+}
+
+export function setSidebarCollapsed(collapsed: boolean) {
+  globalCollapsed = collapsed;
+  if (typeof window !== "undefined") {
+    try {
+      localStorage.setItem("duesora_sidebar_collapsed", String(collapsed));
+    } catch {
+      // LocalStorage access fallback
+    }
+  }
+  listeners.forEach((l) => l());
+}
 
 interface NavItem {
   label: string;
@@ -58,29 +100,14 @@ export const NAV_ITEM_I18N_KEYS: Record<string, string> = {
 export function AppSidebar() {
   const pathname = usePathname();
   const { t } = useTranslation();
-  const [isCollapsed, setIsCollapsed] = useState(false);
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem("duesora_sidebar_collapsed");
-      if (stored === "true") {
-        setIsCollapsed(true);
-      }
-    } catch {
-      // LocalStorage access fallback
-    }
-  }, []);
+  const isCollapsed = useSyncExternalStore(
+    subscribeSidebar,
+    getSidebarCollapsedSnapshot,
+    getServerSidebarSnapshot
+  );
 
   const toggleCollapse = () => {
-    setIsCollapsed((prev) => {
-      const next = !prev;
-      try {
-        localStorage.setItem("duesora_sidebar_collapsed", String(next));
-      } catch {
-        // Fallback
-      }
-      return next;
-    });
+    setSidebarCollapsed(!isCollapsed);
   };
 
   return (

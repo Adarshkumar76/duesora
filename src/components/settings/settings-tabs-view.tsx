@@ -92,7 +92,7 @@ export function SettingsTabsView({
       </div>
 
       {/* Top Horizontal Tabs Bar */}
-      <div className="border-b border-border/70 overflow-x-auto scrollbar-none">
+      <div className="border-b border-border/70 overflow-x-auto scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0">
         <nav className="flex items-center gap-6 sm:gap-8 min-w-max">
           {TABS.map((tab) => {
             const isActive = activeTab === tab.id;

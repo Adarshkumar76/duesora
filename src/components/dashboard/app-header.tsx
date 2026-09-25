@@ -21,6 +21,8 @@ import {
   Menu,
   X,
   Loader2,
+  BookOpen,
+  ExternalLink,
 } from "lucide-react";
 import { Logo } from "@/components/logo";
 import { NAV_ITEMS, NAV_ITEM_I18N_KEYS } from "./app-sidebar";
@@ -578,6 +580,16 @@ export function AppHeader({
                 Active
               </span>
             </div>
+            <Link
+              href="/api/docs"
+              target="_blank"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl border border-border/80 bg-background text-foreground text-xs font-semibold hover:bg-muted/50 transition-colors shadow-2xs"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+              <span>API Documentation</span>
+              <ExternalLink className="w-3 h-3 text-muted-foreground ml-auto" />
+            </Link>
             <a
               href={BUY_ME_A_COFFEE_URL}
               target="_blank"

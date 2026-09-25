@@ -306,24 +306,26 @@ export default function ApiDocsPage() {
             href="/api/openapi.json"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-border/70 hover:bg-muted/60 transition-colors flex items-center gap-1.5"
+            className="text-xs font-semibold px-2.5 sm:px-3 py-1.5 rounded-lg border border-border/70 hover:bg-muted/60 transition-colors flex items-center gap-1.5"
+            title="Open OpenAPI JSON Specification"
           >
             <Code2 className="w-3.5 h-3.5 text-muted-foreground" />
-            <span>OpenAPI Spec</span>
-            <ExternalLink className="w-3 h-3 text-muted-foreground" />
+            <span className="hidden sm:inline">OpenAPI Spec</span>
+            <ExternalLink className="w-3 h-3 text-muted-foreground hidden sm:inline" />
           </a>
-          <Link href="/settings">
-            <Button size="sm" variant="outline" className="gap-1.5 text-xs h-8">
+          <Link href="/settings#api-keys">
+            <Button size="sm" variant="outline" className="gap-1.5 text-xs h-8 px-2.5 sm:px-3">
               <Key className="w-3.5 h-3.5" />
-              <span>Get API Key</span>
+              <span className="hidden sm:inline">Get API Key</span>
+              <span className="sm:hidden">Keys</span>
             </Button>
           </Link>
         </div>
       </header>
 
       {/* Main Container */}
-      <div className="flex-1 flex flex-col md:flex-row max-w-7xl w-full mx-auto">
-        {/* Sidebar (Sticky) */}
+      <div className="flex-1 flex flex-col md:flex-row max-w-7xl w-full mx-auto min-w-0">
+        {/* Sidebar (Sticky on md+) */}
         <aside className="w-full md:w-64 border-b md:border-b-0 md:border-r border-border/60 bg-muted/20 p-4 space-y-6 shrink-0 md:sticky md:top-14 md:h-[calc(100vh-3.5rem)] md:overflow-y-auto">
           <div className="space-y-1.5">
             <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
@@ -379,7 +381,7 @@ export default function ApiDocsPage() {
         </aside>
 
         {/* Endpoint Documentation Pane */}
-        <main className="flex-1 p-6 md:p-8 space-y-8 max-w-4xl">
+        <main className="flex-1 p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8 max-w-4xl min-w-0">
           {/* Header Info */}
           <div className="space-y-2">
             <div className="flex items-center gap-2">

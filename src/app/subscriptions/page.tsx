@@ -22,6 +22,12 @@ interface SubscriptionsPageProps {
   }>;
 }
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Subscriptions",
+};
+
 export default async function SubscriptionsPage({ searchParams }: SubscriptionsPageProps) {
   const session = await auth();
 

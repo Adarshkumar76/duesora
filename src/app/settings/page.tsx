@@ -28,7 +28,13 @@ import { SettingsTabsView } from "@/components/settings/settings-tabs-view";
 import { SecuritySettingsCards } from "@/components/settings/security-settings-cards";
 import Link from "next/link";
 
+import type { Metadata } from "next";
+
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Settings",
+};
 
 export default async function SettingsPage() {
   const session = await auth();

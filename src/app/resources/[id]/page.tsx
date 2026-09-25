@@ -29,8 +29,29 @@ import {
   Tag,
 } from "lucide-react";
 
+import type { Metadata } from "next";
+
 interface ResourceDetailsPageProps {
   params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: ResourceDetailsPageProps): Promise<Metadata> {
+  const { id } = await params;
+  try {
+    const session = await auth();
+    if (session?.user?.id) {
+      const workspaceId = (session.user as { workspaceId?: string }).workspaceId;
+      if (workspaceId) {
+        const item = await getWorkspaceResource(session.user.id, workspaceId, id);
+        if (item?.name) {
+          return { title: item.name };
+        }
+      }
+    }
+  } catch {}
+  return { title: "Resource Details" };
 }
 
 export default async function ResourceDetailsPage({

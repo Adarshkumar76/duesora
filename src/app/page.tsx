@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import { auth } from "@/auth";
 import { LandingNavbar } from "@/components/landing/landing-navbar";
 import { LandingPageContent } from "@/components/landing/landing-page-content";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Duesora - Know what you own. Know what's due.",
+  description: "Track renewals, SaaS subscriptions, domains, and certificates with ease.",
+};
 
 export default async function Home() {
   const session = await auth();

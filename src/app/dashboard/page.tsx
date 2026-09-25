@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { auth, signOut } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -14,6 +15,10 @@ import { BudgetProgressCard } from "@/components/dashboard/budget-progress-card"
 import { Button } from "@/components/ui/button";
 import { Plus, Coffee, Sparkles } from "lucide-react";
 import { BUY_ME_A_COFFEE_URL } from "@/lib/constants";
+
+export const metadata: Metadata = {
+  title: "Dashboard",
+};
 
 export default async function DashboardPage() {
   const session = await auth();
