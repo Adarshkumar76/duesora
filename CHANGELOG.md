@@ -4,6 +4,21 @@ All notable changes to Duesora should be documented here.
 
 The project should use Semantic Versioning after releases become public.
 
+## [1.0.0] - 2026-09-25
+
+### Added
+
+- **Living Interactive Simulation Hero**: High-fidelity product simulation in hero section featuring timed story scrubbers, play/pause controls, live ICANN radar sweep, SaaS waste optimizer, Slack alert preview, and integer spend telemetry.
+- **Multilingual Animated Headline**: Dynamic rotation of value propositions in the hero section with slide-up transitions, fully translated across English, German, Spanish, French, and Japanese.
+- **Live Radar Sweep in Domains Table**: Real-time ICANN/TLS automated radar sweep animation and visual probing state in `/domains`.
+- **1-Click Autonomous Seat Trimming**: Instant optimization action directly within resource seats card to eliminate idle seat waste.
+- **Animated Blast Radius Graph Flow**: Dynamic traveling amber particle simulation along cubic bezier curves in `/dependencies` visual dependency graph.
+
+### Changed
+
+- **Native Duesora Identity & Harmonization**: Fully unified all UI components, badges, and documentation under authentic Duesora branding.
+- **Modernized Technology Stack**: Formalized support for Next.js 16 and React 19 across the core runtime and landing preview.
+
 ## [1.0.0-rc.1] - 2026-09-25
 
 ### Added
