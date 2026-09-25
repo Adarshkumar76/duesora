@@ -13,6 +13,7 @@ import {
   FileText,
   Bell,
   Settings,
+  GitFork,
 } from "lucide-react";
 
 interface NavItem {
@@ -27,6 +28,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Domains", href: "/domains", icon: Globe },
   { label: "Subscriptions", href: "/subscriptions", icon: CreditCard },
   { label: "Renewals", href: "/renewals", icon: RefreshCw },
+  { label: "Dependencies", href: "/dependencies", icon: GitFork },
   { label: "Calendar", href: "/calendar", icon: Calendar },
   { label: "Reports", href: "/reports", icon: FileText },
   { label: "Notifications", href: "/notifications", icon: Bell },

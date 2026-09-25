@@ -50,6 +50,7 @@
 - [x] stable workspace API & developer keys;
 - [x] multi-stage Alpine Docker container;
 - [x] automated backup / restore CLI tooling (`duesora doctor`, `backup`, `restore`);
+- [x] visual interactive dependency graph & blast radius explorer;
 - [ ] 2FA / SSO OIDC;
 - [ ] plugin architecture;
 - [ ] i18n localization;

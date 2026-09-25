@@ -129,21 +129,31 @@ export function ResourceDependenciesCard({
               </div>
             </div>
 
-            {canEdit && availableCandidates.length > 0 && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setIsAddModalOpen(true);
-                  setError(null);
-                }}
-                className="rounded-xl text-xs gap-1.5 h-8 font-medium cursor-pointer"
+            <div className="flex items-center gap-2">
+              <Link
+                href="/dependencies"
+                className="inline-flex items-center gap-1.5 px-2.5 h-8 rounded-xl text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
               >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Link Prerequisite</span>
-              </Button>
-            )}
+                <GitFork className="w-3.5 h-3.5 text-purple-500" />
+                <span className="hidden sm:inline">Network Map</span>
+              </Link>
+
+              {canEdit && availableCandidates.length > 0 && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setIsAddModalOpen(true);
+                    setError(null);
+                  }}
+                  className="rounded-xl text-xs gap-1.5 h-8 font-medium cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Link Prerequisite</span>
+                </Button>
+              )}
+            </div>
           </div>
         </CardHeader>
 
