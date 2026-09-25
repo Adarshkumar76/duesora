@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Code2,
@@ -9,8 +9,11 @@ import {
   Check,
   ExternalLink,
   Terminal,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/logo";
 
 interface EndpointDef {
   method: "GET" | "POST" | "PATCH" | "DELETE";
@@ -211,6 +214,28 @@ export default function ApiDocsPage() {
   const [selectedEndpoint, setSelectedEndpoint] = useState<EndpointDef>(ENDPOINTS.Resources[0]);
   const [testApiKey, setTestApiKey] = useState("");
   const [copiedKey, setCopiedKey] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    const isDark =
+      document.documentElement.classList.contains("dark") ||
+      localStorage.getItem("theme") === "dark";
+    setTheme(isDark ? "dark" : "light");
+  }, []);
+
+  const toggleTheme = () => {
+    const isDark = document.documentElement.classList.contains("dark");
+    if (isDark) {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+      setTheme("light");
+    } else {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+      setTheme("dark");
+    }
+    window.dispatchEvent(new Event("storage"));
+  };
 
   function copyToClipboard(text: string) {
     navigator.clipboard.writeText(text);
@@ -250,8 +275,8 @@ export default function ApiDocsPage() {
       <header className="border-b border-border/80 bg-card/60 backdrop-blur-md sticky top-0 z-30 px-6 py-3.5 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link href="/dashboard" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-sm shadow-xs">
-              D
+            <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white shadow-sm shrink-0">
+              <Logo size={18} color="#FFFFFF" />
             </div>
             <span className="font-bold text-base tracking-tight text-foreground">
               Duesora <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">API v1</span>
@@ -262,6 +287,21 @@ export default function ApiDocsPage() {
         </div>
 
         <div className="flex items-center gap-2.5">
+          {/* Dark / Light Mode Toggle */}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            className="w-8 h-8 rounded-lg border border-border/70 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shadow-2xs cursor-pointer"
+          >
+            {theme === "dark" ? (
+              <Sun className="w-4 h-4 text-amber-400 animate-in spin-in-90 duration-200" />
+            ) : (
+              <Moon className="w-4 h-4 text-slate-700 animate-in spin-in-90 duration-200" />
+            )}
+          </button>
+
           <a
             href="/api/openapi.json"
             target="_blank"
@@ -283,8 +323,8 @@ export default function ApiDocsPage() {
 
       {/* Main Container */}
       <div className="flex-1 flex flex-col md:flex-row max-w-7xl w-full mx-auto">
-        {/* Sidebar */}
-        <aside className="w-full md:w-64 border-b md:border-b-0 md:border-r border-border/60 bg-muted/20 p-4 space-y-6 shrink-0">
+        {/* Sidebar (Sticky) */}
+        <aside className="w-full md:w-64 border-b md:border-b-0 md:border-r border-border/60 bg-muted/20 p-4 space-y-6 shrink-0 md:sticky md:top-14 md:h-[calc(100vh-3.5rem)] md:overflow-y-auto">
           <div className="space-y-1.5">
             <label className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
               <Key className="w-3.5 h-3.5 text-emerald-500" />
