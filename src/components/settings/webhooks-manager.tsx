@@ -57,7 +57,11 @@ const AVAILABLE_EVENTS = [
   { id: "resource.created", label: "Resource Created" },
   { id: "resource.updated", label: "Resource Updated" },
   { id: "resource.deleted", label: "Resource Deleted" },
+  { id: "renewal.approaching", label: "Renewal Approaching (Urgent)" },
   { id: "reminder.dispatched", label: "Renewal Reminder Dispatched" },
+  { id: "decision.updated", label: "Renewal Decision Changed" },
+  { id: "budget.exceeded", label: "Monthly Budget Threshold Exceeded" },
+  { id: "seats.waste_detected", label: "Idle Seat Bloat Detected" },
 ];
 
 export function WebhooksManager({

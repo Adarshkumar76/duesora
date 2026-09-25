@@ -9,7 +9,13 @@ import { eq, desc } from "drizzle-orm";
 import { generateCalendarToken } from "@/lib/calendar/token";
 import { CalendarView, type CalendarEventItem } from "@/components/calendar/calendar-view";
 
+import type { Metadata } from "next";
+
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Calendar",
+};
 
 export default async function CalendarPage() {
   const session = await auth();

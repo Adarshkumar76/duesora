@@ -117,11 +117,14 @@ Run these scripts directly from the project root:
 
 | Command | Description |
 |---|---|
-| `npm run dev` | Start the Next.js local development server with Turbopack |
-| `npm run build` | Compile and generate optimized production bundle |
+| `npm run dev` | Start the Next.js local development server |
+| `npm run build` | Compile and generate optimized standalone production bundle |
 | `npm run start` | Run the Next.js production server |
-| `npm test` | Execute the unit test suite via Vitest |
+| `npm test` | Execute the unit and integration test suite via Vitest |
 | `npm run lint` | Run ESLint across all codebase files |
+| `npm run db:migrate` | Execute pending database schema migrations via CLI |
+| `npm run duesora` | Run the Duesora operator CLI (`doctor`, `migrate`, `backup`, `restore`) |
+| `npm run verify` | Run full test suite, TypeScript compiler, and linter check |
 
 ---
 

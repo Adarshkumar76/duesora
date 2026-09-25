@@ -23,9 +23,18 @@ import { CronStatusCard } from "@/components/settings/cron-status-card";
 import { WorkspaceDangerZone } from "@/components/settings/workspace-danger-zone";
 import { ApiKeysManager } from "@/components/settings/api-keys-manager";
 import { listWorkspaceApiKeys } from "@/lib/auth/api-key";
-import { Building2, Mail, ShieldCheck } from "lucide-react";
+import { Building2, Mail, ShieldCheck, Code2, ExternalLink } from "lucide-react";
+import { SettingsTabsView } from "@/components/settings/settings-tabs-view";
+import { SecuritySettingsCards } from "@/components/settings/security-settings-cards";
+import Link from "next/link";
+
+import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Settings",
+};
 
 export default async function SettingsPage() {
   const session = await auth();
@@ -79,7 +88,7 @@ export default async function SettingsPage() {
     try {
       auditData = await listWorkspaceAuditLogs(session.user.id, activeWorkspace.id, {
         page: 1,
-        pageSize: 20,
+        pageSize: 10,
       });
     } catch {
       // fallback
@@ -139,169 +148,202 @@ export default async function SettingsPage() {
           onSignOut={handleSignOut}
         />
 
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-5xl w-full mx-auto space-y-6 sm:space-y-8">
-          {/* Header */}
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">Workspace Settings</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">
-              Manage outbound integrations, notification channels, and workspace configuration.
-            </p>
-          </div>
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-5xl w-full mx-auto">
+          <SettingsTabsView
+            generalContent={
+              <>
+                {/* Quick Overview Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div className="rounded-2xl border border-border/80 bg-card p-4.5 space-y-2">
+                    <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                      <Building2 className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Active Workspace</span>
+                    </div>
+                    <p className="text-base font-bold text-foreground truncate">{activeWorkspace.name}</p>
+                    <span className="inline-block text-[11px] font-mono text-muted-foreground truncate max-w-full">
+                      ID: {activeWorkspace.id}
+                    </span>
+                  </div>
 
-          {/* Quick Overview Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="rounded-2xl border border-border/80 bg-card p-4.5 space-y-2">
-              <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                <Building2 className="w-3.5 h-3.5 text-emerald-600" />
-                <span>Active Workspace</span>
-              </div>
-              <p className="text-base font-bold text-foreground truncate">{activeWorkspace.name}</p>
-              <span className="inline-block text-[11px] font-mono text-muted-foreground truncate max-w-full">
-                ID: {activeWorkspace.id}
-              </span>
-            </div>
+                  <div className="rounded-2xl border border-border/80 bg-card p-4.5 space-y-2">
+                    <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                      <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
+                      <span>Your Role</span>
+                    </div>
+                    <p className="text-base font-bold capitalize text-foreground">{activeWorkspace.role}</p>
+                    <span className="text-[11px] text-muted-foreground">
+                      {activeWorkspace.role === "owner" || activeWorkspace.role === "admin"
+                        ? "Full administrative permissions"
+                        : activeWorkspace.role === "member"
+                        ? "Standard workspace member"
+                        : "Read-only workspace viewer"}
+                    </span>
+                  </div>
 
-            <div className="rounded-2xl border border-border/80 bg-card p-4.5 space-y-2">
-              <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
-                <span>Your Role</span>
-              </div>
-              <p className="text-base font-bold capitalize text-foreground">{activeWorkspace.role}</p>
-              <span className="text-[11px] text-muted-foreground">
-                {activeWorkspace.role === "owner" || activeWorkspace.role === "admin"
-                  ? "Full administrative permissions"
-                  : activeWorkspace.role === "member"
-                  ? "Standard workspace member"
-                  : "Read-only workspace viewer"}
-              </span>
-            </div>
+                  <div className="rounded-2xl border border-border/80 bg-card p-4.5 space-y-2">
+                    <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                      <Mail className="w-3.5 h-3.5 text-amber-600" />
+                      <span>SMTP Email Delivery</span>
+                    </div>
+                    <p className="text-base font-bold text-foreground">
+                      {emailReady ? "Configured" : "Simulation Mode"}
+                    </p>
+                    <span className="text-[11px] text-muted-foreground">
+                      {emailReady
+                        ? "Delivering live via SMTP server"
+                        : "Simulated in logs (SMTP_* env vars unset)"}
+                    </span>
+                  </div>
+                </div>
 
-            <div className="rounded-2xl border border-border/80 bg-card p-4.5 space-y-2">
-              <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                <Mail className="w-3.5 h-3.5 text-amber-600" />
-                <span>SMTP Email Delivery</span>
-              </div>
-              <p className="text-base font-bold text-foreground">
-                {emailReady ? "Configured" : "Simulation Mode"}
-              </p>
-              <span className="text-[11px] text-muted-foreground">
-                {emailReady
-                  ? "Delivering live via SMTP server"
-                  : "Simulated in logs (SMTP_* env vars unset)"}
-              </span>
-            </div>
-          </div>
+                {/* Workspace General & Profile Settings */}
+                <WorkspaceSettingsForm
+                  workspace={activeWorkspace}
+                  user={{
+                    name: session.user.name,
+                    email: session.user.email,
+                  }}
+                />
 
-          {/* Workspace General & Profile Settings */}
-          <WorkspaceSettingsForm
-            workspace={activeWorkspace}
-            user={{
-              name: session.user.name,
-              email: session.user.email,
-            }}
-          />
+                {/* Workspace Danger Zone: Delete Workspace / Leave Workspace */}
+                <div className="pt-4" id="danger-zone">
+                  <WorkspaceDangerZone
+                    workspaceId={activeWorkspace.id}
+                    workspaceName={activeWorkspace.name}
+                    userRole={activeWorkspace.role}
+                  />
+                </div>
+              </>
+            }
+            billingContent={
+              <>
+                {/* Workspace Budget Ceilings & Spend Warnings */}
+                <div id="budget">
+                  <BudgetSettings
+                    workspaceId={activeWorkspace.id}
+                    initialBudget={budgetConfig}
+                    initialStatus={budgetStatus}
+                    currentUserRole={activeWorkspace.role}
+                    defaultCurrency={activeWorkspace.defaultCurrency || "USD"}
+                  />
+                </div>
 
-          {/* Workspace Budget Ceilings & Spend Warnings */}
-          <div className="pt-2" id="budget">
-            <BudgetSettings
-              workspaceId={activeWorkspace.id}
-              initialBudget={budgetConfig}
-              initialStatus={budgetStatus}
-              currentUserRole={activeWorkspace.role}
-              defaultCurrency={activeWorkspace.defaultCurrency || "USD"}
-            />
-          </div>
-
-          {/* Real-time Exchange Rates & Live FX Currency Sync */}
-          <div className="pt-2" id="currency">
-            <CurrencyExchangeSettings />
-          </div>
-
-          {/* Team & Member Access Management */}
-          <TeamManagement
-            workspaceId={activeWorkspace.id}
-            initialMembers={teamData.members}
-            initialInvitations={teamData.invitations}
-            currentUserRole={teamData.currentUserRole}
-          />
-
-          {/* Renewal Alert Lead Times & Notification Horizons */}
-          <div className="pt-2" id="reminders">
-            <ReminderSettings
-              workspaceId={activeWorkspace.id}
-              userRole={activeWorkspace.role}
-              initialReminderDays={parsedReminderDays}
-            />
-          </div>
-
-          {/* Email Alerts & Delivery Settings */}
-          <div className="pt-2" id="email">
-            <EmailSettings
-              workspaceId={activeWorkspace.id}
-              userRole={activeWorkspace.role}
-              currentUserEmail={session.user.email}
-            />
-          </div>
-
-          {/* Slack & Discord Alert Webhooks */}
-          <div className="pt-2">
-            <ChatIntegrations
-              workspaceId={activeWorkspace.id}
-              initialChannels={chatChannels}
-              currentUserRole={activeWorkspace.role}
-            />
-          </div>
-
-          {/* Automated Background Jobs & Cron Schedule */}
-          <div className="pt-2">
-            <CronStatusCard
-              workspaceId={activeWorkspace.id}
-              userRole={activeWorkspace.role}
-            />
-          </div>
-
-          {/* Custom Webhooks Section */}
-          <div className="pt-2">
-            <WebhooksManager
-              initialEndpoints={endpoints}
-              workspaceId={activeWorkspace.id}
-              userRole={activeWorkspace.role}
-            />
-          </div>
-
-          {/* Developer Workspace API Keys */}
-          {(activeWorkspace.role === "owner" || activeWorkspace.role === "admin") && (
-            <div className="pt-2" id="api-keys">
-              <ApiKeysManager
+                {/* Real-time Exchange Rates & Live FX Currency Sync */}
+                <div className="pt-2" id="currency">
+                  <CurrencyExchangeSettings />
+                </div>
+              </>
+            }
+            teamContent={
+              <TeamManagement
                 workspaceId={activeWorkspace.id}
-                initialKeys={apiKeysList}
-                userRole={activeWorkspace.role}
+                initialMembers={teamData.members}
+                initialInvitations={teamData.invitations}
+                currentUserRole={teamData.currentUserRole}
               />
-            </div>
-          )}
+            }
+            notificationsContent={
+              <>
+                {/* Renewal Alert Lead Times & Notification Horizons */}
+                <div id="reminders">
+                  <ReminderSettings
+                    workspaceId={activeWorkspace.id}
+                    userRole={activeWorkspace.role}
+                    initialReminderDays={parsedReminderDays}
+                  />
+                </div>
 
-          {/* Workspace Audit & Compliance Log (Admins, Owners, Members) */}
-          {canViewAudit && (
-            <div className="pt-2">
-              <AuditLogViewer
-                workspaceId={activeWorkspace.id}
-                initialLogs={auditData.items}
-                totalCount={auditData.pagination.total}
-                currentPage={auditData.pagination.page}
-                totalPages={auditData.pagination.totalPages}
-                currentUserRole={activeWorkspace.role}
-              />
-            </div>
-          )}
+                {/* Email Alerts & Delivery Settings */}
+                <div className="pt-2" id="email">
+                  <EmailSettings
+                    workspaceId={activeWorkspace.id}
+                    userRole={activeWorkspace.role}
+                    currentUserEmail={session.user.email}
+                  />
+                </div>
 
-          {/* Workspace Danger Zone: Delete Workspace / Leave Workspace */}
-          <div className="pt-4" id="danger-zone">
-            <WorkspaceDangerZone
-              workspaceId={activeWorkspace.id}
-              workspaceName={activeWorkspace.name}
-              userRole={activeWorkspace.role}
-            />
-          </div>
+                {/* Automated Background Jobs & Cron Schedule */}
+                <div className="pt-2">
+                  <CronStatusCard
+                    workspaceId={activeWorkspace.id}
+                    userRole={activeWorkspace.role}
+                  />
+                </div>
+              </>
+            }
+            securityContent={
+              <>
+                <SecuritySettingsCards />
+
+                {/* Workspace Audit & Compliance Log (Admins, Owners, Members) */}
+                {canViewAudit && (
+                  <div className="pt-4">
+                    <AuditLogViewer
+                      workspaceId={activeWorkspace.id}
+                      initialLogs={auditData.items}
+                      totalCount={auditData.pagination.total}
+                      currentPage={auditData.pagination.page}
+                      totalPages={auditData.pagination.totalPages}
+                      currentUserRole={activeWorkspace.role}
+                    />
+                  </div>
+                )}
+              </>
+            }
+            integrationsContent={
+              <>
+                {/* Developer Documentation & Plugins Quick Links */}
+                <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="space-y-1">
+                    <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+                      <Code2 className="w-4 h-4 text-emerald-600" />
+                      <span>Developer API & Extension Plugins</span>
+                    </h3>
+                    <p className="text-xs text-muted-foreground">
+                      Explore the interactive OpenAPI documentation, test endpoints, or register custom provider plugins.
+                    </p>
+                  </div>
+                  <Link
+                    href="/api/docs"
+                    target="_blank"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-colors shrink-0"
+                  >
+                    <span>Open API Explorer</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+
+                {/* Slack & Discord Alert Webhooks */}
+                <div className="pt-2">
+                  <ChatIntegrations
+                    workspaceId={activeWorkspace.id}
+                    initialChannels={chatChannels}
+                    currentUserRole={activeWorkspace.role}
+                  />
+                </div>
+
+                {/* Custom Webhooks Section */}
+                <div className="pt-2">
+                  <WebhooksManager
+                    initialEndpoints={endpoints}
+                    workspaceId={activeWorkspace.id}
+                    userRole={activeWorkspace.role}
+                  />
+                </div>
+
+                {/* Developer Workspace API Keys */}
+                {(activeWorkspace.role === "owner" || activeWorkspace.role === "admin") && (
+                  <div className="pt-2" id="api-keys">
+                    <ApiKeysManager
+                      workspaceId={activeWorkspace.id}
+                      initialKeys={apiKeysList}
+                      userRole={activeWorkspace.role}
+                    />
+                  </div>
+                )}
+              </>
+            }
+          />
         </main>
       </div>
     </div>

@@ -6,7 +6,13 @@ import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import { AppHeader } from "@/components/dashboard/app-header";
 import { NotificationsView } from "@/components/notifications/notifications-view";
 
+import type { Metadata } from "next";
+
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Notifications",
+};
 
 export default async function NotificationsPage(props: {
   searchParams?: Promise<{ page?: string }>;

@@ -22,6 +22,12 @@ interface DomainsPageProps {
   }>;
 }
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Domains",
+};
+
 export default async function DomainsPage({ searchParams }: DomainsPageProps) {
   const session = await auth();
 

@@ -28,10 +28,10 @@ export async function GET(request: NextRequest, context?: unknown) {
     const entityType = searchParams.get("entityType") || undefined;
     const search = searchParams.get("search") || undefined;
     const rawPage = parseInt(searchParams.get("page") || "1", 10);
-    const rawPageSize = parseInt(searchParams.get("pageSize") || "20", 10);
+    const rawPageSize = parseInt(searchParams.get("pageSize") || "10", 10);
 
     const page = isNaN(rawPage) ? 1 : rawPage;
-    const pageSize = isNaN(rawPageSize) ? 20 : rawPageSize;
+    const pageSize = isNaN(rawPageSize) ? 10 : rawPageSize;
 
     const result = await listWorkspaceAuditLogs(session.user.id, workspaceId, {
       action,

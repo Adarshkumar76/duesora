@@ -34,6 +34,12 @@ const TABS = [
   { id: "other", label: "Other" },
 ];
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Resources",
+};
+
 export default async function ResourcesPage({ searchParams }: ResourcesPageProps) {
   const session = await auth();
 

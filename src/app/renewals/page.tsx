@@ -19,6 +19,12 @@ interface RenewalsPageProps {
   }>;
 }
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Renewals",
+};
+
 export default async function RenewalsPage({ searchParams }: RenewalsPageProps) {
   const session = await auth();
 

@@ -16,7 +16,13 @@ import { CashflowChart } from "@/components/reports/cashflow-chart";
 import { CategoryDonut } from "@/components/reports/category-donut";
 import { FileText } from "lucide-react";
 
+import type { Metadata } from "next";
+
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Reports",
+};
 
 export default async function ReportsPage() {
   const session = await auth();

@@ -65,7 +65,7 @@ export function AuditLogViewer({
       if (typeFilter !== "all") params.set("entityType", typeFilter);
       if (searchFilter.trim()) params.set("search", searchFilter.trim());
       params.set("page", String(targetPage));
-      params.set("pageSize", "20");
+      params.set("pageSize", "10");
 
       const res = await fetch(`/api/workspaces/${workspaceId}/audit?${params.toString()}`);
       if (!res.ok) {

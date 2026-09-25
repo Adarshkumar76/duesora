@@ -17,10 +17,18 @@ import {
   BellRing,
 } from "lucide-react";
 import { type RenewalDecision } from "@/lib/renewals/types";
+import { CancellationAssistantModal } from "@/components/renewals/cancellation-assistant-modal";
 
 interface RenewalDecisionCardProps {
   resourceId: string;
   workspaceId: string;
+  resourceName?: string;
+  provider?: string | null;
+  amountMinor?: number | null;
+  currency?: string;
+  totalSeats?: number | null;
+  assignedSeats?: number | null;
+  costPerSeatMinor?: number | null;
   initialDecision?: RenewalDecision | string | null;
   initialNotes?: string | null;
   initialNoticeDays?: number | null;
@@ -34,6 +42,13 @@ interface RenewalDecisionCardProps {
 export function RenewalDecisionCard({
   resourceId,
   workspaceId,
+  resourceName,
+  provider,
+  amountMinor,
+  currency,
+  totalSeats,
+  assignedSeats,
+  costPerSeatMinor,
   initialDecision = "none",
   initialNotes = null,
   initialNoticeDays = null,
@@ -59,6 +74,7 @@ export function RenewalDecisionCard({
   );
 
   const [isEditing, setIsEditing] = useState(false);
+  const [showAssistantModal, setShowAssistantModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -188,17 +204,30 @@ export function RenewalDecisionCard({
             <span>Renewal Governance & Decision</span>
           </CardTitle>
 
-          {canEdit && !isEditing && (
+          <div className="flex items-center gap-2">
             <Button
               variant="outline"
               size="sm"
-              onClick={startEditing}
-              className="h-8 gap-1.5 text-xs rounded-xl border-border"
+              onClick={() => setShowAssistantModal(true)}
+              className="h-8 gap-1.5 text-xs rounded-xl border-border text-foreground hover:bg-muted/60 cursor-pointer"
+              title="Open Cancellation & Renegotiation Assistant"
             >
-              <Edit3 className="w-3.5 h-3.5" />
-              <span>Update Decision</span>
+              <FileText className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+              <span className="hidden sm:inline">Letter Assistant</span>
             </Button>
-          )}
+
+            {canEdit && !isEditing && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={startEditing}
+                className="h-8 gap-1.5 text-xs rounded-xl border-border cursor-pointer"
+              >
+                <Edit3 className="w-3.5 h-3.5" />
+                <span>Update Decision</span>
+              </Button>
+            )}
+          </div>
         </div>
       </CardHeader>
 
@@ -318,11 +347,11 @@ export function RenewalDecisionCard({
                 onChange={(e) => setFormDecision(e.target.value as RenewalDecision)}
                 className="w-full px-3 py-2 text-xs rounded-xl border border-input bg-background font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
               >
-                <option value="none">Unreviewed (Default)</option>
-                <option value="needs_review">Needs Review (Flag for team discussion)</option>
-                <option value="approved">Approved to Renew (Sign-off on next cycle)</option>
-                <option value="cancel">Marked to Cancel (Do not renew / stop charges)</option>
-                <option value="negotiate">In Negotiation (Request vendor discount or tier change)</option>
+                <option value="none" className="bg-card text-foreground py-1 font-medium">Unreviewed (Default)</option>
+                <option value="needs_review" className="bg-card text-foreground py-1 font-medium">Needs Review (Flag for team discussion)</option>
+                <option value="approved" className="bg-card text-foreground py-1 font-medium">Approved to Renew (Sign-off on next cycle)</option>
+                <option value="cancel" className="bg-card text-foreground py-1 font-medium">Marked to Cancel (Do not renew / stop charges)</option>
+                <option value="negotiate" className="bg-card text-foreground py-1 font-medium">In Negotiation (Request vendor discount or tier change)</option>
               </select>
             </div>
 
@@ -387,6 +416,25 @@ export function RenewalDecisionCard({
           </form>
         )}
       </CardContent>
+
+      <CancellationAssistantModal
+        isOpen={showAssistantModal}
+        onClose={() => setShowAssistantModal(false)}
+        defaultTab={decision === "negotiate" ? "renegotiation" : "cancellation"}
+        resource={{
+          id: resourceId,
+          name: resourceName || "Subscription / Contract",
+          provider,
+          renewalDate,
+          cancellationNoticeDays: noticeDays ? parseInt(noticeDays, 10) : null,
+          cancellationDeadline: deadline,
+          amountMinor,
+          currency,
+          totalSeats,
+          assignedSeats,
+          costPerSeatMinor,
+        }}
+      />
     </Card>
   );
 }

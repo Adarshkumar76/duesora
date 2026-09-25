@@ -49,10 +49,18 @@
 
 - [x] stable workspace API & developer keys;
 - [x] multi-stage Alpine Docker container;
-- [ ] automated backup / restore CLI tooling;
-- [ ] 2FA / SSO OIDC;
-- [ ] plugin architecture;
-- [ ] i18n localization;
-- [ ] third-party security audit.
+- [x] automated backup / restore / migration CLI tooling (`duesora doctor`, `migrate`, `backup`, `restore`);
+- [x] visual interactive dependency graph & blast radius explorer;
+- [x] license & seat utilization optimizer (idle seat waste detection & downsize suggestions);
+- [x] i18n localization (English, Spanish, German, French, Japanese);
+- [x] production security hardening & sliding-window rate limiting;
+- [x] scheduled executive renewal & cost digest engine;
+- [x] contract cancellation & renegotiation assistant;
+- [x] provider auto-discovery & sync engine (Cloudflare domain & DNS zones);
+- [x] document & invoice metadata extraction engine with user confirmation;
+- [x] outgoing webhook event dispatcher & delivery inspector;
+- [x] automated security & configuration auditor CLI (`duesora audit`);
+- [x] plugin architecture & SDK (extensible provider & notification registry, duesora plugins CLI);
+- [x] public API v1 with OpenAPI 3.1 specification & interactive explorer (/api/docs, /api/openapi.json).
 
 Roadmap items are intentions, not promised dates.

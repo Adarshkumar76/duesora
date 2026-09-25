@@ -95,6 +95,10 @@ describe("API: /api/workspaces/[workspaceId]/resources/[resourceId] Handlers", (
         decidedAt: null,
         createdAt: new Date(),
         updatedAt: new Date(),
+        seatTrackingEnabled: false,
+        totalSeats: null,
+        assignedSeats: null,
+        costPerSeatMinor: null,
         owner: null,
         tags: [],
       };
@@ -160,6 +164,10 @@ describe("API: /api/workspaces/[workspaceId]/resources/[resourceId] Handlers", (
         decidedAt: null,
         createdAt: new Date(),
         updatedAt: new Date(),
+        seatTrackingEnabled: false,
+        totalSeats: null,
+        assignedSeats: null,
+        costPerSeatMinor: null,
         owner: null,
         tags: [],
       };
@@ -240,6 +248,10 @@ describe("API: /api/workspaces/[workspaceId]/resources/[resourceId] Handlers", (
         cancellationDeadline: null,
         decidedByUserId: null,
         decidedAt: null,
+        seatTrackingEnabled: false,
+        totalSeats: null,
+        assignedSeats: null,
+        costPerSeatMinor: null,
         createdAt: new Date(),
         updatedAt: new Date(),
       });

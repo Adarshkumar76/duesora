@@ -21,11 +21,15 @@ import {
   Menu,
   X,
   Loader2,
+  BookOpen,
+  ExternalLink,
 } from "lucide-react";
 import { Logo } from "@/components/logo";
-import { NAV_ITEMS } from "./app-sidebar";
+import { NAV_ITEMS, NAV_ITEM_I18N_KEYS } from "./app-sidebar";
 import { BUY_ME_A_COFFEE_URL } from "@/lib/constants";
 import { CommandPalette } from "@/components/search/command-palette";
+import { LanguageSwitcher } from "@/components/i18n/language-switcher";
+import { useTranslation } from "@/components/i18n/i18n-provider";
 
 interface WorkspaceItem {
   id: string;
@@ -70,6 +74,7 @@ export function AppHeader({
   onSignOut,
 }: AppHeaderProps) {
   const pathname = usePathname();
+  const { t } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -250,7 +255,7 @@ export function AppHeader({
             className="relative flex items-center justify-between w-full max-w-[170px] sm:max-w-xs md:max-w-sm pl-8 sm:pl-9 pr-2.5 py-1.5 text-xs sm:text-sm bg-background border border-border/70 rounded-xl text-muted-foreground hover:text-foreground hover:border-emerald-500/40 transition-all shadow-2xs cursor-pointer text-left"
           >
             <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <span className="truncate">Search or jump to...</span>
+            <span className="truncate">{t("common.search")}</span>
             <kbd className="hidden sm:inline-flex items-center gap-1 text-[10px] font-semibold text-muted-foreground bg-muted px-1.5 py-0.5 rounded border border-border/60">
               <span>{isMac ? "⌘" : "Ctrl"}</span>
               <span>K</span>
@@ -270,6 +275,9 @@ export function AppHeader({
             <Coffee className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
             <span>Buy Me a Coffee</span>
           </a>
+
+          {/* Language Switcher */}
+          <LanguageSwitcher />
 
           {/* Dark Mode Toggle */}
           <button
@@ -307,7 +315,7 @@ export function AppHeader({
               <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] max-w-xs sm:max-w-sm sm:w-80 bg-card border border-border/80 rounded-2xl shadow-xl p-3 z-50 animate-in fade-in-0 zoom-in-95 duration-100">
                 <div className="flex items-center justify-between pb-2 mb-2 border-b border-border/50">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-sm font-bold text-foreground">Notifications</span>
+                    <span className="text-sm font-bold text-foreground">{t("nav.notifications")}</span>
                     {unreadCount > 0 && (
                       <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
                         {unreadCount} new
@@ -536,6 +544,9 @@ export function AppHeader({
             {NAV_ITEMS.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
+              const label = NAV_ITEM_I18N_KEYS[item.href]
+                ? t(NAV_ITEM_I18N_KEYS[item.href])
+                : item.label;
 
               return (
                 <Link
@@ -555,7 +566,7 @@ export function AppHeader({
                         : "text-muted-foreground"
                     }`}
                   />
-                  <span>{item.label}</span>
+                  <span>{label}</span>
                 </Link>
               );
             })}
@@ -569,6 +580,16 @@ export function AppHeader({
                 Active
               </span>
             </div>
+            <Link
+              href="/api/docs"
+              target="_blank"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl border border-border/80 bg-background text-foreground text-xs font-semibold hover:bg-muted/50 transition-colors shadow-2xs"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+              <span>API Documentation</span>
+              <ExternalLink className="w-3 h-3 text-muted-foreground ml-auto" />
+            </Link>
             <a
               href={BUY_ME_A_COFFEE_URL}
               target="_blank"

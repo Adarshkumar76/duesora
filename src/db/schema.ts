@@ -200,6 +200,15 @@ export const resources = pgTable("resources", {
     withTimezone: true,
   }),
 
+  // Seat & license utilization optimization
+  seatTrackingEnabled: boolean("seat_tracking_enabled").default(false).notNull(),
+
+  totalSeats: integer("total_seats"),
+
+  assignedSeats: integer("assigned_seats"),
+
+  costPerSeatMinor: integer("cost_per_seat_minor"),
+
   createdAt: timestamp("created_at", {
     withTimezone: true,
   })

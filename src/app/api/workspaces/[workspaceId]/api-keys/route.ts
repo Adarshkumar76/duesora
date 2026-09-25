@@ -6,6 +6,14 @@ import {
 } from "@/lib/auth/api-key";
 import { z } from "zod";
 
+import {
+  getClientIp,
+  checkRateLimit,
+  createRateLimitResponse,
+  RATE_LIMITS,
+} from "@/lib/security/rate-limiter";
+import { sanitizeString } from "@/lib/security/sanitize";
+
 interface RouteParams {
   params: Promise<{
     workspaceId: string;
@@ -36,6 +44,13 @@ export async function GET(_req: NextRequest, { params }: RouteParams) {
 }
 
 export async function POST(req: NextRequest, { params }: RouteParams) {
+  // Rate limit key generation per client IP
+  const clientIp = getClientIp(req);
+  const rateLimit = checkRateLimit(`apikeys:${clientIp}`, RATE_LIMITS.API_KEYS);
+  if (!rateLimit.success) {
+    return createRateLimitResponse(rateLimit);
+  }
+
   try {
     const session = await auth();
     if (!session?.user?.id) {
@@ -44,6 +59,9 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
 
     const { workspaceId } = await params;
     const body = await req.json();
+    if (body && typeof body.name === "string") {
+      body.name = sanitizeString(body.name);
+    }
     const parsed = createKeySchema.safeParse(body);
 
     if (!parsed.success) {

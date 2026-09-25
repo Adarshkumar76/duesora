@@ -111,6 +111,10 @@ describe("resource service", () => {
       decidedAt: null,
       createdAt: new Date(),
       updatedAt: new Date(),
+      seatTrackingEnabled: false,
+      totalSeats: null,
+      assignedSeats: null,
+      costPerSeatMinor: null,
       owner: null,
       tags: [],
     });

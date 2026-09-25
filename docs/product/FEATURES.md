@@ -65,7 +65,6 @@ Optional later:
 -   Slack;
 -   Discord;
 -   Telegram;
--   GitHub;
 -   cloud/provider adapters.
 
 ## Advanced
@@ -78,5 +77,4 @@ Optional later:
 -   CLI;
 -   plugin SDK;
 -   OIDC;
--   2FA;
 -   internationalization.

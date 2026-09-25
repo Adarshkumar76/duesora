@@ -14,10 +14,12 @@ import { ResourceCostHistoryCard } from "@/components/resources/resource-cost-hi
 import { ResourceDocumentsCard } from "@/components/resources/resource-documents-card";
 import { RenewalDecisionCard } from "@/components/resources/renewal-decision-card";
 import { ResourceDependenciesCard } from "@/components/resources/resource-dependencies-card";
+import { ResourceSeatUtilizationCard } from "@/components/resources/resource-seat-utilization-card";
 import { ResourceDetailsActions } from "@/components/resources/resource-details-actions";
 import { VendorLogo } from "@/components/resources/vendor-logo";
 import { listResourceDependencies } from "@/lib/resources/dependencies";
 import { listWorkspaceResources } from "@/lib/resources/service";
+import { calculateSeatMetrics } from "@/lib/resources/seats";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { TagBadge } from "@/components/tags/tag-badge";
 import {
@@ -27,8 +29,29 @@ import {
   Tag,
 } from "lucide-react";
 
+import type { Metadata } from "next";
+
 interface ResourceDetailsPageProps {
   params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: ResourceDetailsPageProps): Promise<Metadata> {
+  const { id } = await params;
+  try {
+    const session = await auth();
+    if (session?.user?.id) {
+      const workspaceId = (session.user as { workspaceId?: string }).workspaceId;
+      if (workspaceId) {
+        const item = await getWorkspaceResource(session.user.id, workspaceId, id);
+        if (item?.name) {
+          return { title: item.name };
+        }
+      }
+    }
+  } catch {}
+  return { title: "Resource Details" };
 }
 
 export default async function ResourceDetailsPage({
@@ -135,6 +158,18 @@ export default async function ResourceDetailsPage({
     resource.renewalDate &&
     new Date(resource.renewalDate) >= now &&
     new Date(resource.renewalDate) <= thirtyDaysLater;
+
+  const seatMetrics = calculateSeatMetrics({
+    resourceId: resource.id,
+    resourceName: resource.name,
+    type: resource.type,
+    seatTrackingEnabled: resource.seatTrackingEnabled ?? false,
+    totalSeats: resource.totalSeats ?? null,
+    assignedSeats: resource.assignedSeats ?? null,
+    costPerSeatMinor: resource.costPerSeatMinor ?? null,
+    currency: resource.currency,
+    billingCycle: resource.billingCycle,
+  });
 
   return (
     <div className="min-h-screen bg-slate-50/50 dark:bg-background flex flex-row">
@@ -386,8 +421,17 @@ export default async function ResourceDetailsPage({
               <ResourceDocumentsCard
                 workspaceId={activeWorkspace.id}
                 resourceId={resource.id}
+                resourceName={resource.name}
                 initialDocuments={attachedDocuments}
                 canManage={activeWorkspace.role !== "viewer"}
+              />
+
+              {/* Card 4: Seat & License Utilization Optimizer */}
+              <ResourceSeatUtilizationCard
+                workspaceId={activeWorkspace.id}
+                resourceId={resource.id}
+                initialMetrics={seatMetrics}
+                userRole={activeWorkspace.role}
               />
 
               {/* Card 4: Service Dependencies & Blast Radius */}
@@ -442,6 +486,13 @@ export default async function ResourceDetailsPage({
               <RenewalDecisionCard
                 resourceId={resource.id}
                 workspaceId={activeWorkspace.id}
+                resourceName={resource.name}
+                provider={resource.provider}
+                amountMinor={resource.amountMinor}
+                currency={resource.currency}
+                totalSeats={resource.totalSeats}
+                assignedSeats={resource.assignedSeats}
+                costPerSeatMinor={resource.costPerSeatMinor}
                 initialDecision={resource.renewalDecision}
                 initialNotes={resource.decisionNotes}
                 initialNoticeDays={resource.cancellationNoticeDays}

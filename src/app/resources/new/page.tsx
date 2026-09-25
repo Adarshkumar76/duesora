@@ -5,6 +5,12 @@ import { AppHeader } from "@/components/dashboard/app-header";
 import { resolveActiveWorkspace } from "@/lib/auth/active-workspace";
 import { ResourceForm } from "./resource-form";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Add Resource",
+};
+
 export default async function NewResourcePage() {
   const session = await auth();
 

@@ -63,6 +63,29 @@ export function SubscriptionsTable({
 
   const currentType = searchParams.get("type") || "all";
   const currentCycle = searchParams.get("cycle") || "all";
+  const currentPreset = searchParams.get("preset") || "all";
+  const [nowTime] = useState(() => Date.now());
+
+  // Filter items based on active preset
+  const displayItems = initialItems.filter((item) => {
+    if (currentPreset === "expiring_30d") {
+      if (!item.renewalDate) return false;
+      const diffDays = Math.ceil((new Date(item.renewalDate).getTime() - nowTime) / (1000 * 60 * 60 * 24));
+      return diffDays >= 0 && diffDays <= 30;
+    }
+    if (currentPreset === "high_spend") {
+      return (item.monthlyNormalizedMinor || 0) >= 10000; // >= $100/mo
+    }
+    if (currentPreset === "overdue") {
+      if (!item.renewalDate) return false;
+      const diffDays = Math.ceil((new Date(item.renewalDate).getTime() - nowTime) / (1000 * 60 * 60 * 24));
+      return diffDays < 0;
+    }
+    if (currentPreset === "auto_renew") {
+      return item.autoRenew === true;
+    }
+    return true;
+  });
 
   function formatTypeLabel(type: string) {
     switch (type) {
@@ -123,8 +146,7 @@ export function SubscriptionsTable({
 
   function formatRelativeRenewal(date: Date | null) {
     if (!date) return "No date set";
-    const now = new Date();
-    const diffDays = Math.ceil((date.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    const diffDays = Math.ceil((date.getTime() - nowTime) / (1000 * 60 * 60 * 24));
     if (diffDays < 0) return `${Math.abs(diffDays)}d overdue`;
     if (diffDays === 0) return "Renews today";
     if (diffDays === 1) return "Renews tomorrow";
@@ -223,9 +245,43 @@ export function SubscriptionsTable({
         </div>
       </div>
 
+      {/* Preset Filter Views */}
+      <div className="flex items-center gap-1.5 flex-wrap text-xs">
+        <span className="text-muted-foreground font-medium text-[11px] mr-1">Saved Views:</span>
+        {[
+          { id: "all", label: "All Active" },
+          { id: "expiring_30d", label: "🚨 Expiring < 30d" },
+          { id: "high_spend", label: "💸 High Spend (> $100/mo)" },
+          { id: "overdue", label: "⚠️ Overdue" },
+          { id: "auto_renew", label: "🔄 Auto-Renew Active" },
+        ].map((preset) => (
+          <button
+            key={preset.id}
+            type="button"
+            onClick={() => updateParam("preset", preset.id)}
+            className={`px-2.5 py-1 rounded-lg transition-all cursor-pointer text-xs font-medium ${
+              currentPreset === preset.id
+                ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/30 shadow-2xs"
+                : "bg-muted/40 text-muted-foreground hover:text-foreground border border-border/50"
+            }`}
+          >
+            {preset.label}
+          </button>
+        ))}
+        {currentPreset !== "all" && (
+          <button
+            type="button"
+            onClick={() => updateParam("preset", null)}
+            className="text-[11px] text-muted-foreground hover:text-foreground underline ml-1 cursor-pointer"
+          >
+            Reset view
+          </button>
+        )}
+      </div>
+
       {/* Main Table */}
       <div className="rounded-2xl border border-border/80 bg-card shadow-xs overflow-hidden">
-        {initialItems.length > 0 ? (
+        {displayItems.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead className="bg-muted/40 border-b border-border/60 text-xs font-semibold text-muted-foreground">
@@ -239,7 +295,7 @@ export function SubscriptionsTable({
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/40">
-                {initialItems.map((item) => (
+                {displayItems.map((item) => (
                   <tr
                     key={item.id}
                     className="hover:bg-muted/30 transition-colors group"
@@ -398,7 +454,7 @@ export function SubscriptionsTable({
                 No subscriptions found
               </h3>
               <p className="text-xs sm:text-sm text-muted-foreground">
-                {searchQuery || currentCycle !== "all" || currentType !== "all"
+                {searchQuery || currentCycle !== "all" || currentType !== "all" || currentPreset !== "all"
                   ? "No subscriptions match your current filter parameters."
                   : "Track software tools, cloud services, and recurring subscriptions to stay in control of your monthly and annual commitments."}
               </p>

@@ -63,7 +63,6 @@ IPv4 and IPv6 must both be handled.
 -   Rate-limit login/reset endpoints.
 -   Use strong password hashing if passwords are supported.
 -   Verify email changes.
--   Add 2FA later.
 -   Use OIDC/OAuth with minimal scopes when added.
 
 ## Secrets
