@@ -500,6 +500,16 @@ export function VisualDependencyGraph({
                         : "url(#arrow-default)"
                     }
                   />
+                  {isBlastImpact && (
+                    <circle r="3.5" fill="#F59E0B">
+                      <animateMotion dur="2.2s" repeatCount="indefinite" path={pathData} />
+                    </circle>
+                  )}
+                  {isUpstreamTrace && (
+                    <circle r="3" fill="#A855F7">
+                      <animateMotion dur="2.6s" repeatCount="indefinite" path={pathData} />
+                    </circle>
+                  )}
                   {edge.notes && (
                     <text
                       x={(startX + endX) / 2}

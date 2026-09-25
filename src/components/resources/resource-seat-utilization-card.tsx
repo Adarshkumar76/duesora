@@ -5,7 +5,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Users, AlertTriangle, CheckCircle2, TrendingDown, Edit3, X, Save, Loader2, Sparkles } from "lucide-react";
+import { Users, AlertTriangle, CheckCircle2, TrendingDown, Edit3, X, Save, Loader2, Sparkles, Zap } from "lucide-react";
 import type { SeatUtilizationMetrics } from "@/lib/resources/seats";
 
 interface ResourceSeatUtilizationCardProps {
@@ -26,6 +26,8 @@ export function ResourceSeatUtilizationCard({
   const [metrics, setMetrics] = useState<SeatUtilizationMetrics>(initialMetrics);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [trimming, setTrimming] = useState(false);
+  const [trimSuccess, setTrimSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Form states
@@ -34,6 +36,42 @@ export function ResourceSeatUtilizationCard({
   const [costPerSeat, setCostPerSeat] = useState(
     metrics.costPerSeat !== null ? metrics.costPerSeat.toString() : ""
   );
+
+  const handleAutonomousTrim = async () => {
+    if (!metrics.suggestedSeatDowngrade) return;
+    setTrimming(true);
+    setError(null);
+
+    try {
+      const res = await fetch(
+        `/api/workspaces/${workspaceId}/resources/${resourceId}/seats`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            seatTrackingEnabled: true,
+            totalSeats: metrics.suggestedSeatDowngrade,
+            assignedSeats: metrics.assignedSeats,
+            costPerSeatMinor: metrics.costPerSeat ? Math.round(metrics.costPerSeat * 100) : null,
+          }),
+        }
+      );
+
+      const json = await res.json();
+      if (!res.ok) {
+        throw new Error(json.error?.message || "Failed to trim seats");
+      }
+
+      setMetrics(json.data);
+      setTotalSeats(metrics.suggestedSeatDowngrade.toString());
+      setTrimSuccess(true);
+      setTimeout(() => setTrimSuccess(false), 4500);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to execute autonomous trim");
+    } finally {
+      setTrimming(false);
+    }
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -297,6 +335,49 @@ export function ResourceSeatUtilizationCard({
                 </p>
               </div>
             </div>
+
+            {/* 1-Click Autonomous Trim Action Banner */}
+            {canEdit && metrics.suggestedSeatDowngrade !== null && (
+              <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 animate-in fade-in duration-300">
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-amber-950 dark:text-amber-200">
+                    <Zap className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                    <span>Autonomous Trim Ready</span>
+                  </div>
+                  <p className="text-[11px] text-amber-800 dark:text-amber-300">
+                    Reduce contract by {metrics.idleSeats} idle seat{metrics.idleSeats > 1 ? "s" : ""} to match exact active demand ({metrics.assignedSeats} seats).
+                  </p>
+                </div>
+
+                <Button
+                  type="button"
+                  size="sm"
+                  disabled={trimming}
+                  onClick={handleAutonomousTrim}
+                  className="w-full sm:w-auto h-8 px-3.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs gap-1.5 cursor-pointer shadow-xs shrink-0"
+                >
+                  {trimming ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Trimming Seats...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Zap className="w-3.5 h-3.5" />
+                      <span>1-Click Trim to {metrics.suggestedSeatDowngrade} Seats</span>
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
+
+            {/* Trim Success Feedback */}
+            {trimSuccess && (
+              <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center gap-2 animate-in fade-in duration-200">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                <span>Capacity optimized! Allocation updated to match active users with zero wasted seats.</span>
+              </div>
+            )}
           </>
         )}
       </CardContent>
