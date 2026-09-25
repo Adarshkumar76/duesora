@@ -22,6 +22,7 @@ import {
   Loader2,
   UploadCloud,
   Cloud,
+  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ImportModal } from "@/components/resources/import-modal";
@@ -397,6 +398,32 @@ export function DomainsTable({
         </div>
       )}
 
+      {/* Live Autonomous Sweep Radar Banner */}
+      {isCheckingAll && (
+        <div className="relative overflow-hidden p-4 rounded-2xl border border-emerald-500/40 bg-emerald-500/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-in fade-in duration-300">
+          <div className="absolute inset-x-0 h-0.5 bg-linear-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_12px_rgba(52,211,153,0.9)] pointer-events-none animate-scan-beam" />
+          <div className="flex items-center gap-3">
+            <div className="relative w-10 h-10 rounded-full border border-emerald-500/40 bg-zinc-950 flex items-center justify-center shrink-0 overflow-hidden shadow-inner">
+              <div className="absolute inset-0 bg-linear-to-r from-transparent via-emerald-500/20 to-emerald-400/40 animate-radar-sweep pointer-events-none" />
+              <Globe className="w-5 h-5 text-emerald-400 relative z-10" />
+            </div>
+            <div className="space-y-0.5">
+              <p className="text-xs font-bold text-foreground flex items-center gap-2">
+                <span>Autonomous DNS &amp; TLS Handshake Sweep in Progress</span>
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+              </p>
+              <p className="text-[11px] text-muted-foreground">
+                Querying registry RDAP endpoints, validating TLS 1.3 certificates, and auditing DNSSEC chain.
+              </p>
+            </div>
+          </div>
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-mono font-bold">
+            <Zap className="w-3.5 h-3.5 animate-pulse" />
+            <span>Active Probe</span>
+          </div>
+        </div>
+      )}
+
       {/* Main Table Container */}
       <div className="rounded-2xl border border-border/80 bg-card shadow-xs overflow-hidden">
         {items.length > 0 ? (
@@ -558,7 +585,14 @@ export function DomainsTable({
 
                       {/* Monitor Status */}
                       <td className="py-3 px-4">
-                        {renderHealthBadge(item.monitor?.status)}
+                        {isChecking ? (
+                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 animate-pulse">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+                            <span>Probing TLS...</span>
+                          </span>
+                        ) : (
+                          renderHealthBadge(item.monitor?.status)
+                        )}
                       </td>
 
                       {/* Actions */}

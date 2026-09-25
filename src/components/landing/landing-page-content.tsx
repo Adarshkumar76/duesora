@@ -104,7 +104,10 @@ export function LandingPageContent({ user }: LandingPageContentProps) {
             </p>
             <div className="flex items-center gap-6 sm:gap-8 flex-wrap justify-center text-xs font-bold text-foreground/80">
               <span className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500" /> Next.js 15
+                <span className="w-2 h-2 rounded-full bg-emerald-500" /> Next.js 16
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-violet-500" /> React 19
               </span>
               <span className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-blue-500" /> PostgreSQL 16
@@ -122,11 +125,11 @@ export function LandingPageContent({ user }: LandingPageContentProps) {
           </div>
         </section>
 
-        {/* ================= RAMP-STYLE FINANCIAL & ASSET TELEMETRY ================= */}
+        {/* ================= AUTONOMOUS FINANCIAL & ASSET TELEMETRY ================= */}
         <section className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-12">
           <div className="text-center space-y-3 max-w-2xl mx-auto">
             <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-              Ramp-Style Financial Telemetry
+              Autonomous Financial Telemetry
             </span>
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
               Eliminate zombie SaaS and rogue renewals

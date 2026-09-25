@@ -88,7 +88,7 @@ export function TelemetryPipeline() {
     <section className="py-20 sm:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-12">
       <div className="text-center space-y-3 max-w-2xl mx-auto">
         <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-          Supabase &amp; Ramp Architecture
+          Distributed Telemetry Architecture
         </span>
         <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
           Autonomous telemetry in constant motion
