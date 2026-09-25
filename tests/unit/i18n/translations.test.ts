@@ -61,11 +61,11 @@ describe("Multi-Language Internationalization (i18n) Engine", () => {
       expect(getTranslation("de", "nav.dependencies")).toBe("Abhängigkeiten");
       expect(getTranslation("ja", "nav.dependencies")).toBe("依存関係マップ");
 
-      expect(getTranslation("en", "landing.headline")).toBe("Know what you own.");
-      expect(getTranslation("es", "landing.headline")).toBe("Conoce lo que posees.");
-      expect(getTranslation("de", "landing.headline")).toBe("Wisse, was du besitzt.");
-      expect(getTranslation("fr", "landing.headline")).toBe("Sachez ce que vous possédez.");
-      expect(getTranslation("ja", "landing.headline")).toBe("所有資産を可視化する。");
+      expect(getTranslation("en", "landing.headline")).toBe("Autonomous asset intelligence.");
+      expect(getTranslation("es", "landing.headline")).toBe("Inteligencia autónoma de activos.");
+      expect(getTranslation("de", "landing.headline")).toBe("Autonome Asset-Intelligence.");
+      expect(getTranslation("fr", "landing.headline")).toBe("Intelligence autonome des actifs.");
+      expect(getTranslation("ja", "landing.headline")).toBe("自律型アセットインテリジェンス。");
 
       expect(getTranslation("en", "landing.tabDomains")).toBe("Domains");
       expect(getTranslation("es", "landing.tabDomains")).toBe("Dominios");
