@@ -16,6 +16,7 @@ import {
   Lock,
   Zap,
   Heart,
+  BookOpen,
 } from "lucide-react";
 import { BUY_ME_A_COFFEE_URL, GITHUB_REPO_URL } from "@/lib/constants";
 import { Logo } from "@/components/logo";
@@ -313,7 +314,7 @@ export function LandingPageContent({ user }: LandingPageContentProps) {
             </span>
           </div>
 
-          <div className="flex items-center gap-6 text-xs font-semibold text-muted-foreground">
+          <div className="flex items-center gap-5 text-xs font-semibold text-muted-foreground flex-wrap justify-center">
             <a href="#features" className="hover:text-foreground transition-colors">
               {t("landing.features")}
             </a>
@@ -323,6 +324,16 @@ export function LandingPageContent({ user }: LandingPageContentProps) {
             <a href="#self-host" className="hover:text-foreground transition-colors">
               {t("landing.selfHost")}
             </a>
+            <Link href="/api/docs">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 rounded-lg border-border/70 bg-card hover:bg-muted/70 text-xs font-semibold gap-1.5 cursor-pointer shadow-2xs"
+              >
+                <BookOpen className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                <span>Docs & API</span>
+              </Button>
+            </Link>
             <a
               href={GITHUB_REPO_URL}
               target="_blank"

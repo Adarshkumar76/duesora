@@ -4,7 +4,7 @@ import { useState, useEffect, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
-import { Sun, Moon, Coffee, Menu, X, ArrowRight } from "lucide-react";
+import { Sun, Moon, Coffee, Menu, X, ArrowRight, BookOpen } from "lucide-react";
 import { BUY_ME_A_COFFEE_URL, GITHUB_REPO_URL } from "@/lib/constants";
 
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
@@ -106,6 +106,9 @@ export function LandingNavbar({ user }: LandingNavbarProps) {
           <a href="#self-host" className="hover:text-foreground transition-colors">
             {t("landing.selfHost")}
           </a>
+          <Link href="/api/docs" className="hover:text-foreground transition-colors">
+            Docs
+          </Link>
           <a
             href={GITHUB_REPO_URL}
             target="_blank"
@@ -119,6 +122,18 @@ export function LandingNavbar({ user }: LandingNavbarProps) {
 
         {/* Right Actions */}
         <div className="flex items-center gap-2 sm:gap-2.5">
+          {/* Docs Button */}
+          <Link href="/api/docs" className="hidden sm:inline-flex">
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-xl border-border/70 hover:bg-muted/50 text-xs font-semibold gap-1.5 shadow-2xs cursor-pointer"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+              <span>Docs</span>
+            </Button>
+          </Link>
+
           {/* Buy Me a Coffee */}
           <a
             href={BUY_ME_A_COFFEE_URL}
@@ -220,6 +235,14 @@ export function LandingNavbar({ user }: LandingNavbarProps) {
           >
             {t("landing.selfHost")}
           </a>
+          <Link
+            href="/api/docs"
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground py-1"
+          >
+            <BookOpen className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <span>Docs & API</span>
+          </Link>
           <a
             href={GITHUB_REPO_URL}
             target="_blank"
