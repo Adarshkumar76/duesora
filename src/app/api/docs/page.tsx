@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
+import { getAppBaseUrl } from "@/lib/url";
 
 interface EndpointDef {
   method: "GET" | "POST" | "PATCH" | "DELETE";
@@ -264,7 +265,7 @@ export default function ApiDocsPage() {
       ? `\n  -H "Content-Type: application/json" \\\n  -d '${selectedEndpoint.requestBody.replace(/\n\s*/g, " ")}' \\`
       : ""
   }
-  "${typeof window !== "undefined" ? window.location.origin : "http://localhost:3000"}${selectedEndpoint.path.replace(
+  "${getAppBaseUrl()}${selectedEndpoint.path.replace(
     "{id}",
     "res_example"
   )}"`;

@@ -1,5 +1,6 @@
 import type { RenewalAlertData, MonitorAlertData, TestAlertData, PriceChangeAlertData } from "./types";
 import { CURRENCY_SYMBOLS } from "@/lib/currency/rates";
+import { getAppBaseUrl } from "@/lib/url";
 
 const TIMEOUT_MS = 5000;
 
@@ -28,7 +29,7 @@ export function buildSlackRenewalMessage(data: RenewalAlertData): Record<string,
       })
     : "Not specified";
 
-  const appUrl = data.appUrl || "http://localhost:3000";
+  const appUrl = getAppBaseUrl(data.appUrl);
   const resourceLink = `${appUrl}/resources/${data.resourceId}`;
   const titlePrefix = isEscalated ? "[ESCALATION] " : "";
 
@@ -114,7 +115,7 @@ export function buildSlackMonitorMessage(data: MonitorAlertData): Record<string,
   const statusEmoji = isRecovery ? "🟢" : data.status === "critical" || data.status === "error" ? "🔴" : "⚠️";
   const statusTitle = isRecovery ? "SSL Certificate Recovered" : "SSL Health Alert";
 
-  const appUrl = data.appUrl || "http://localhost:3000";
+  const appUrl = getAppBaseUrl(data.appUrl);
   const resourceLink = `${appUrl}/resources/${data.resourceId}`;
 
   return {
@@ -228,7 +229,7 @@ export function buildSlackPriceIncreaseMessage(data: PriceChangeAlertData): Reco
     data.newBillingCycle ? ` / ${data.newBillingCycle}` : ""
   }`;
 
-  const appUrl = data.appUrl || "http://localhost:3000";
+  const appUrl = getAppBaseUrl(data.appUrl);
   const resourceLink = `${appUrl}/resources/${data.resourceId}`;
 
   return {

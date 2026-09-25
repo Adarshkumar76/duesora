@@ -11,6 +11,7 @@ import { requireWorkspaceRole } from "@/lib/auth/workspace";
 import { type WorkspaceRole } from "@/lib/auth/permissions";
 import { sendTeamInvitationEmail } from "@/lib/notifications/email";
 import { recordAuditEvent } from "@/lib/audit/service";
+import { getAppBaseUrl } from "@/lib/url";
 
 export interface TeamMemberItem {
   id: string;
@@ -147,7 +148,7 @@ export async function createWorkspaceInvitation({
     invitationId = inserted.id;
   }
 
-  const cleanAppUrl = (appUrl || process.env.NEXTAUTH_URL || "http://localhost:3000").replace(/\/$/, "");
+  const cleanAppUrl = getAppBaseUrl(appUrl);
   const inviteUrl = `${cleanAppUrl}/invite/${token}`;
 
   // 6. Send invitation email asynchronously

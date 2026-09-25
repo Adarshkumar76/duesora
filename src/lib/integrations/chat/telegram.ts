@@ -1,5 +1,6 @@
 import type { RenewalAlertData, MonitorAlertData, TestAlertData, PriceChangeAlertData } from "./types";
 import { CURRENCY_SYMBOLS } from "@/lib/currency/rates";
+import { getAppBaseUrl } from "@/lib/url";
 
 const TIMEOUT_MS = 5000;
 
@@ -40,7 +41,7 @@ export function buildTelegramRenewalMessage(data: RenewalAlertData): Record<stri
       })
     : "Not specified";
 
-  const appUrl = data.appUrl || "http://localhost:3000";
+  const appUrl = getAppBaseUrl(data.appUrl);
   const resourceLink = `${appUrl}/resources/${data.resourceId}`;
   const titlePrefix = isEscalated ? "<b>[ESCALATION]</b> " : "";
 
@@ -82,7 +83,7 @@ export function buildTelegramMonitorMessage(data: MonitorAlertData): Record<stri
     ? "Health Check Recovered"
     : `Monitor Degradation: ${data.status.toUpperCase()}`;
 
-  const appUrl = data.appUrl || "http://localhost:3000";
+  const appUrl = getAppBaseUrl(data.appUrl);
   const monitorLink = `${appUrl}/resources/${data.resourceId}`;
 
   const lines = [
@@ -152,7 +153,7 @@ export function buildTelegramPriceIncreaseMessage(
     data.newBillingCycle ? ` / ${data.newBillingCycle}` : ""
   }`;
 
-  const appUrl = data.appUrl || "http://localhost:3000";
+  const appUrl = getAppBaseUrl(data.appUrl);
   const resourceLink = `${appUrl}/resources/${data.resourceId}`;
 
   const lines = [

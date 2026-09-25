@@ -5,6 +5,7 @@ import type {
   PriceChangeAlertData,
 } from "./types";
 import { formatCurrencyMinor } from "@/lib/currency/rates";
+import { getAppBaseUrl } from "@/lib/url";
 
 export function buildNtfyRenewalPayload(data: RenewalAlertData): Record<string, unknown> {
   const amountStr =
@@ -26,7 +27,7 @@ export function buildNtfyRenewalPayload(data: RenewalAlertData): Record<string, 
   if (amountStr) message += `\nCost: ${amountStr}`;
 
   const isUrgent = data.daysRemaining <= 3;
-  const appUrl = data.appUrl || process.env.NEXTAUTH_URL || "http://localhost:3000";
+  const appUrl = getAppBaseUrl(data.appUrl);
   const actions = [
     {
       action: "view",

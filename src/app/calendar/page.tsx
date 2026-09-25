@@ -8,6 +8,7 @@ import { resources } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { generateCalendarToken } from "@/lib/calendar/token";
 import { CalendarView, type CalendarEventItem } from "@/components/calendar/calendar-view";
+import { getAppBaseUrl } from "@/lib/url";
 
 import type { Metadata } from "next";
 
@@ -58,7 +59,7 @@ export default async function CalendarPage() {
     }));
 
   const calendarToken = generateCalendarToken(activeWorkspace.id);
-  const appUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+  const appUrl = getAppBaseUrl();
 
   async function handleSignOut() {
     "use server";

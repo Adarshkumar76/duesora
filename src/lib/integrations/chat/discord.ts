@@ -1,5 +1,6 @@
 import type { RenewalAlertData, MonitorAlertData, TestAlertData, PriceChangeAlertData } from "./types";
 import { CURRENCY_SYMBOLS } from "@/lib/currency/rates";
+import { getAppBaseUrl } from "@/lib/url";
 
 const TIMEOUT_MS = 5000;
 
@@ -28,7 +29,7 @@ export function buildDiscordRenewalEmbed(data: RenewalAlertData): Record<string,
       })
     : "Not specified";
 
-  const appUrl = data.appUrl || "http://localhost:3000";
+  const appUrl = getAppBaseUrl(data.appUrl);
   const resourceLink = `${appUrl}/resources/${data.resourceId}`;
   const titlePrefix = isEscalated ? "🚨 [ESCALATION] " : isOverdue ? "🚨 " : "🔔 ";
 
@@ -61,7 +62,7 @@ export function buildDiscordMonitorEmbed(data: MonitorAlertData): Record<string,
   const color = isRecovery ? 0x10b981 : data.status === "critical" || data.status === "error" ? 0xef4444 : 0xf59e0b;
   const statusTitle = isRecovery ? "🟢 SSL Certificate Recovered" : "🚨 SSL Certificate Health Alert";
 
-  const appUrl = data.appUrl || "http://localhost:3000";
+  const appUrl = getAppBaseUrl(data.appUrl);
   const resourceLink = `${appUrl}/resources/${data.resourceId}`;
 
   return {
@@ -131,7 +132,7 @@ export function buildDiscordPriceIncreaseEmbed(data: PriceChangeAlertData): Reco
     data.newBillingCycle ? ` / ${data.newBillingCycle}` : ""
   }`;
 
-  const appUrl = data.appUrl || "http://localhost:3000";
+  const appUrl = getAppBaseUrl(data.appUrl);
   const resourceLink = `${appUrl}/resources/${data.resourceId}`;
 
   return {

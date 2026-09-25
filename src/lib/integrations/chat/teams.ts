@@ -1,5 +1,6 @@
 import type { RenewalAlertData, MonitorAlertData, TestAlertData, PriceChangeAlertData } from "./types";
 import { CURRENCY_SYMBOLS } from "@/lib/currency/rates";
+import { getAppBaseUrl } from "@/lib/url";
 
 const TIMEOUT_MS = 5000;
 
@@ -35,7 +36,7 @@ export function buildTeamsRenewalMessage(data: RenewalAlertData): Record<string,
       })
     : "Not specified";
 
-  const appUrl = data.appUrl || "http://localhost:3000";
+  const appUrl = getAppBaseUrl(data.appUrl);
   const resourceLink = `${appUrl}/resources/${data.resourceId}`;
   const titlePrefix = isEscalated ? "[ESCALATION] " : "";
 
@@ -100,7 +101,7 @@ export function buildTeamsMonitorMessage(data: MonitorAlertData): Record<string,
     ? "Health Check Recovered"
     : `Monitor Degradation: ${data.status.toUpperCase()}`;
 
-  const appUrl = data.appUrl || "http://localhost:3000";
+  const appUrl = getAppBaseUrl(data.appUrl);
   const monitorLink = `${appUrl}/resources/${data.resourceId}`;
 
   const facts: Array<{ name: string; value: string }> = [
@@ -189,7 +190,7 @@ export function buildTeamsPriceIncreaseMessage(data: PriceChangeAlertData): Reco
     data.newBillingCycle ? ` / ${data.newBillingCycle}` : ""
   }`;
 
-  const appUrl = data.appUrl || "http://localhost:3000";
+  const appUrl = getAppBaseUrl(data.appUrl);
   const resourceLink = `${appUrl}/resources/${data.resourceId}`;
 
   const facts: Array<{ name: string; value: string }> = [

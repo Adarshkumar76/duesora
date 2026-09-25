@@ -14,6 +14,7 @@ import { emitWorkspaceWebhook } from "@/lib/webhooks/dispatcher";
 import { recordAuditEvent } from "@/lib/audit/service";
 import { recordResourceCostChange } from "./cost-history";
 import { dispatchPriceIncreaseChatAlert } from "@/lib/integrations/chat/dispatcher";
+import { getAppBaseUrl } from "@/lib/url";
 
 export { getResourceById };
 
@@ -188,7 +189,7 @@ export async function updateWorkspaceResource(
                 newBillingCycle,
                 changePercentage: costEntry.changePercentage,
                 changeReason: input.changeReason || null,
-                appUrl: process.env.NEXTAUTH_URL || "http://localhost:3000",
+                appUrl: getAppBaseUrl(),
               }).catch(() => {});
             }
           })

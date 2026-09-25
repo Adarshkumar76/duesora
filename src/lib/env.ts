@@ -6,7 +6,7 @@ export const envSchema = z
     NODE_ENV: z
       .enum(["development", "production", "test"])
       .default("development"),
-    APP_URL: z.string().url().default("http://localhost:3000"),
+    APP_URL: z.string().optional(),
     DATABASE_URL: z
       .string()
       .min(1, "DATABASE_URL must be a non-empty string")
@@ -25,6 +25,14 @@ export const envSchema = z
   })
   .transform((data) => ({
     ...data,
+    APP_URL:
+      data.APP_URL ||
+      process.env.NEXTAUTH_URL ||
+      (process.env.VERCEL_PROJECT_PRODUCTION_URL
+        ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+        : process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : "http://localhost:3000"),
     DATABASE_URL:
       data.DATABASE_URL ||
       (data.NODE_ENV === "production"

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getAppBaseUrl } from "@/lib/url";
 
 export interface RateLimitResult {
   success: boolean;
@@ -107,7 +108,7 @@ export function createRateLimitResponse(
   result: RateLimitResult,
   requestUrl?: string
 ): NextResponse {
-  let fallbackUrl = "http://localhost:3000/login?error=TooManyRequests";
+  let fallbackUrl = `${getAppBaseUrl()}/login?error=TooManyRequests`;
   if (requestUrl) {
     try {
       const u = new URL(requestUrl);

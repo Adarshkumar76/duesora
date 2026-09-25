@@ -20,6 +20,12 @@ export const ALLOWED_DOCUMENT_MIME_TYPES = new Set([
  * Base root directory for uploaded files.
  */
 export function getStorageBaseDir(): string {
+  if (process.env.STORAGE_LOCAL_PATH) {
+    return path.resolve(process.env.STORAGE_LOCAL_PATH);
+  }
+  if (process.env.VERCEL) {
+    return path.join("/tmp", "storage", "uploads");
+  }
   return path.join(process.cwd(), "storage", "uploads");
 }
 

@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import { getAppBaseUrl } from "@/lib/url";
 
 export interface SendRenewalReminderEmailOptions {
   to: string;
@@ -69,7 +70,7 @@ export function formatReminderSubject(
 }
 
 export function renderRenewalEmailHtml(opts: SendRenewalReminderEmailOptions): string {
-  const appBaseUrl = opts.appUrl || process.env.NEXTAUTH_URL || "http://localhost:3000";
+  const appBaseUrl = getAppBaseUrl(opts.appUrl);
   const resourceUrl = `${appBaseUrl}/resources/${opts.resourceId}`;
 
   const formattedDate = new Intl.DateTimeFormat("en-US", {
@@ -179,7 +180,7 @@ export function renderRenewalEmailHtml(opts: SendRenewalReminderEmailOptions): s
 }
 
 export function renderRenewalEmailText(opts: SendRenewalReminderEmailOptions): string {
-  const appBaseUrl = opts.appUrl || process.env.NEXTAUTH_URL || "http://localhost:3000";
+  const appBaseUrl = getAppBaseUrl(opts.appUrl);
   const resourceUrl = `${appBaseUrl}/resources/${opts.resourceId}`;
   const formattedDate = new Intl.DateTimeFormat("en-US", {
     dateStyle: "medium",
@@ -295,7 +296,7 @@ export function formatMonitorSubject(opts: SendMonitorAlertEmailOptions): string
 }
 
 export function renderMonitorEmailHtml(opts: SendMonitorAlertEmailOptions): string {
-  const appBaseUrl = opts.appUrl || process.env.NEXTAUTH_URL || "http://localhost:3000";
+  const appBaseUrl = getAppBaseUrl(opts.appUrl);
   const resourceUrl = `${appBaseUrl}/resources/${opts.resourceId}`;
 
   const urgencyColor =
@@ -391,7 +392,7 @@ export function renderMonitorEmailHtml(opts: SendMonitorAlertEmailOptions): stri
 }
 
 export function renderMonitorEmailText(opts: SendMonitorAlertEmailOptions): string {
-  const appBaseUrl = opts.appUrl || process.env.NEXTAUTH_URL || "http://localhost:3000";
+  const appBaseUrl = getAppBaseUrl(opts.appUrl);
   const resourceUrl = `${appBaseUrl}/resources/${opts.resourceId}`;
 
   return `Duesora Health Monitor Alert: ${opts.hostname}
@@ -462,7 +463,7 @@ export interface SendTeamInvitationEmailOptions {
 }
 
 export function renderTeamInvitationEmailHtml(opts: SendTeamInvitationEmailOptions): string {
-  const appBaseUrl = opts.appUrl || process.env.NEXTAUTH_URL || "http://localhost:3000";
+  const appBaseUrl = getAppBaseUrl(opts.appUrl);
   const inviteUrl = `${appBaseUrl}/invite/${opts.inviteToken}`;
   const inviterText = opts.inviterName ? opts.inviterName : "A colleague";
 
@@ -516,7 +517,7 @@ export function renderTeamInvitationEmailHtml(opts: SendTeamInvitationEmailOptio
 }
 
 export function renderTeamInvitationEmailText(opts: SendTeamInvitationEmailOptions): string {
-  const appBaseUrl = opts.appUrl || process.env.NEXTAUTH_URL || "http://localhost:3000";
+  const appBaseUrl = getAppBaseUrl(opts.appUrl);
   const inviteUrl = `${appBaseUrl}/invite/${opts.inviteToken}`;
   const inviterText = opts.inviterName ? opts.inviterName : "A colleague";
 
