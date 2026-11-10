@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Duesora - Know what you own. Know what's due.",
-  description: "Track renewals, SaaS subscriptions, domains, and certificates with ease.",
+  description: "Track renewals, SaaS subscriptions, domains, and certificates in one deterministic ledger.",
 };
 
 export default async function Home() {
@@ -15,15 +15,11 @@ export default async function Home() {
   const user = session?.user;
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col selection:bg-emerald-500/20 selection:text-emerald-700 relative overflow-x-hidden">
-      {/* Subtle Background Radial Glows */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[550px] bg-emerald-500/10 dark:bg-emerald-500/15 blur-[120px] rounded-full pointer-events-none -z-10" />
-      <div className="absolute top-[800px] right-0 w-[500px] h-[500px] bg-teal-500/10 dark:bg-teal-500/10 blur-[130px] rounded-full pointer-events-none -z-10" />
-
-      {/* Sticky Glass Navbar */}
+    <div className="min-h-screen bg-background text-foreground flex flex-col selection:bg-teal-900/10 selection:text-teal-900 dark:selection:bg-teal-200/20 dark:selection:text-teal-200 relative">
+      {/* Sticky Top Header */}
       <LandingNavbar user={user} />
 
-      {/* Dynamic Translated Landing Content & Footer */}
+      {/* Main Editorial Content & Footer */}
       <LandingPageContent user={user} />
     </div>
   );

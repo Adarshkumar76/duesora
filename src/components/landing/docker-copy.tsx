@@ -16,21 +16,21 @@ export function DockerCopy() {
   };
 
   return (
-    <div className="rounded-2xl border border-border/80 bg-slate-950 text-slate-100 p-4 sm:p-5 shadow-xl font-mono text-xs sm:text-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-      <div className="flex items-center gap-3 overflow-x-auto w-full">
-        <Terminal className="w-4 h-4 text-emerald-400 shrink-0" />
-        <span className="text-emerald-400 select-none">$</span>
-        <code className="text-slate-200 select-all whitespace-nowrap">{command}</code>
+    <div className="rounded-[6px] border border-border bg-card p-3 sm:p-3.5 shadow-[0_1px_2px_rgba(0,0,0,0.03)] font-mono text-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <div className="flex items-center gap-2.5 overflow-x-auto w-full min-w-0">
+        <Terminal className="w-3.5 h-3.5 text-primary shrink-0" />
+        <span className="text-muted-foreground select-none">$</span>
+        <code className="text-foreground select-all whitespace-nowrap">{command}</code>
       </div>
       <button
         type="button"
         onClick={handleCopy}
-        className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-colors cursor-pointer border border-slate-700"
+        className="shrink-0 flex items-center gap-1.5 px-2.5 py-1.5 rounded-[5px] bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-semibold transition-colors cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.05)]"
       >
         {copied ? (
           <>
-            <Check className="w-3.5 h-3.5 text-emerald-400" />
-            <span className="text-emerald-400">{t("landing.copiedCommand")}</span>
+            <Check className="w-3.5 h-3.5" />
+            <span>{t("landing.copiedCommand")}</span>
           </>
         ) : (
           <>

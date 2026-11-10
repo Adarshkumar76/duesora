@@ -24,24 +24,18 @@ export const DUESORA_MARK_PATH =
 export function Logo({
   size = "md",
   variant = "mark",
-  color = "#B0F028",
+  color = "#0F766E",
   className = "",
   withGlow = false,
   ...props
 }: LogoProps) {
-  const pixelSize = typeof size === "number" ? size : sizeMap[size] || 36;
+  const pixelSize = typeof size === "number" ? size : sizeMap[size] || 32;
 
   if (variant === "full") {
     const height = pixelSize;
     return (
-      <div className={`inline-flex items-center gap-3 font-sans select-none ${className}`}>
+      <div className={`inline-flex items-center gap-2.5 font-sans select-none ${className}`}>
         <div className="relative flex items-center justify-center">
-          {withGlow && (
-            <div
-              className="absolute -inset-1 rounded-full blur-md opacity-60 pointer-events-none"
-              style={{ backgroundColor: color }}
-            />
-          )}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 1000 1000"
@@ -56,8 +50,8 @@ export function Logo({
           </svg>
         </div>
         <span
-          className="font-extrabold tracking-tight text-foreground leading-none"
-          style={{ fontSize: `${height * 0.78}px` }}
+          className="font-bold tracking-tight text-foreground leading-none"
+          style={{ fontSize: `${height * 0.72}px`, letterSpacing: "-0.03em" }}
         >
           Duesora
         </span>
@@ -67,17 +61,11 @@ export function Logo({
 
   if (variant === "icon" || variant === "icon-light") {
     const isDark = variant === "icon";
-    const bgColor = isDark ? "#0C0E0B" : "#B0F028";
-    const markColor = isDark ? "#B0F028" : "#0C0E0B";
+    const bgColor = isDark ? "#18181B" : "#FAF9F6";
+    const markColor = isDark ? "#0F766E" : "#18181B";
 
     return (
       <div className="relative inline-flex items-center justify-center">
-        {withGlow && (
-          <div
-            className="absolute -inset-2 rounded-2xl blur-lg opacity-50 pointer-events-none"
-            style={{ backgroundColor: "#B0F028" }}
-          />
-        )}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 1000 1000"
@@ -87,8 +75,8 @@ export function Logo({
           aria-label="Duesora App Icon"
           {...props}
         >
-          <rect width="1000" height="1000" rx="225" fill={bgColor} />
-          <g transform="translate(100, 100) scale(0.8)">
+          <rect width="1000" height="1000" rx="160" fill={bgColor} />
+          <g transform="translate(120, 120) scale(0.76)">
             <path d={DUESORA_MARK_PATH} fill={markColor} fillRule="evenodd" />
           </g>
         </svg>
@@ -98,20 +86,15 @@ export function Logo({
 
   return (
     <div className="relative inline-flex items-center justify-center">
-      {withGlow && (
-        <div
-          className="absolute -inset-2 rounded-full blur-xl opacity-50 pointer-events-none"
-          style={{ backgroundColor: color }}
-        />
-      )}
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 1000 1000"
         width={pixelSize}
         height={pixelSize}
-        fill="none"
         className={className}
-        aria-label="Duesora logo"
+        fill="none"
+        aria-hidden="true"
+        focusable="false"
         {...props}
       >
         <path d={DUESORA_MARK_PATH} fill={color} fillRule="evenodd" />
