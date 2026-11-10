@@ -19,9 +19,6 @@ import {
   Heart,
   BookOpen,
   Sliders,
-  ArrowRight,
-  Database,
-  Server,
   Layers,
 } from "lucide-react";
 import { BUY_ME_A_COFFEE_URL, GITHUB_REPO_URL } from "@/lib/constants";

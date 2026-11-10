@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import {
   Globe,
   RefreshCw,
@@ -671,9 +672,9 @@ export function HeroPreview() {
           <span className="text-[11px]">Next probe in <span className="font-mono tabular-nums font-semibold text-foreground">00:04:12</span></span>
         </div>
 
-        <a href="/api/docs" className="text-[11px] font-medium text-primary hover:underline">
+        <Link href="/api/docs" className="text-[11px] font-medium text-primary hover:underline">
           API Specs &rarr;
-        </a>
+        </Link>
       </div>
     </div>
   );

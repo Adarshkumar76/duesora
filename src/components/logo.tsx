@@ -26,7 +26,7 @@ export function Logo({
   variant = "mark",
   color = "#0F766E",
   className = "",
-  withGlow = false,
+  withGlow: _withGlow = false,
   ...props
 }: LogoProps) {
   const pixelSize = typeof size === "number" ? size : sizeMap[size] || 32;

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Check, ShieldCheck, Database, Terminal, Bell } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import { GITHUB_REPO_URL } from "@/lib/constants";
 import { HeroPreview } from "@/components/landing/hero-preview";
 import { useTranslation } from "@/components/i18n/i18n-provider";
