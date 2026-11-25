@@ -1,12 +1,9 @@
 # Self-Hosted Software Terms Note
 
-The Duesora source code is distributed under the MIT License in
+The Duesora source code and software are proprietary, governed by
 `LICENSE`.
 
-This document is informational and does not add restrictions to the
-MIT-licensed software.
-
-Self-hosters are responsible for:
+Self-hosters operating private instances are responsible for:
 
 -   securing their deployment;
 -   configuring backups;

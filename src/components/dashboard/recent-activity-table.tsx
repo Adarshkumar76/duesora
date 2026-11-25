@@ -21,15 +21,15 @@ export function RecentActivityTable({ items = [] }: RecentActivityTableProps) {
   const hasItems = displayItems.length > 0;
 
   return (
-    <Card className="rounded-2xl border border-border/80 bg-card shadow-xs overflow-hidden">
-      <CardHeader className="pb-4 flex flex-row items-center justify-between">
-        <CardTitle className="text-base font-bold text-foreground">
+    <Card className="rounded-[8px] border border-border bg-card shadow-[0_1px_2px_rgba(0,0,0,0.02)] overflow-hidden">
+      <CardHeader className="pb-3 px-5 pt-4 flex flex-row items-center justify-between border-b border-border">
+        <CardTitle className="text-sm font-semibold text-foreground">
           Recent Activity
         </CardTitle>
         {hasItems && (
           <Link
             href="/resources"
-            className="text-xs font-semibold text-emerald-600 hover:text-emerald-700 transition-colors"
+            className="text-xs font-semibold text-primary hover:underline transition-colors"
           >
             View All &rarr;
           </Link>
@@ -79,19 +79,19 @@ export function RecentActivityTable({ items = [] }: RecentActivityTableProps) {
                       </td>
 
                       {/* Category Badge */}
-                      <td className="py-3.5 px-6">
-                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200/50 dark:border-emerald-800/40">
+                      <td className="py-3 px-6">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-[11px] font-mono bg-muted text-foreground border border-border">
                           {item.category}
                         </span>
                       </td>
 
                       {/* Renewal Date */}
-                      <td className="py-3.5 px-6 text-muted-foreground text-xs sm:text-sm">
+                      <td className="py-3 px-6 text-muted-foreground text-xs font-mono tabular-nums">
                         {item.renewalDate}
                       </td>
 
                       {/* Amount */}
-                      <td className="py-3.5 px-6 font-semibold text-foreground">
+                      <td className="py-3 px-6 font-semibold font-mono tabular-nums text-foreground text-xs">
                         {item.amount > 0 ? (
                           `${currencySymbol}${item.amount.toLocaleString("en-US", {
                             minimumFractionDigits: 2,
@@ -103,20 +103,20 @@ export function RecentActivityTable({ items = [] }: RecentActivityTableProps) {
                       </td>
 
                       {/* Status Badge */}
-                      <td className="py-3.5 px-6 text-right sm:text-left">
+                      <td className="py-3 px-6 text-right sm:text-left">
                         {isExpiring ? (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100/80 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300/40">
-                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[4px] text-[10px] font-mono border bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-900/60">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
                             Expiring
                           </span>
                         ) : isInactive ? (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/60">
-                            <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[4px] text-[10px] font-mono border bg-muted text-muted-foreground border-border">
+                            <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground" />
                             Inactive
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100/80 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300/40">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400" />
+                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[4px] text-[10px] font-mono border bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-900/60">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                             Active
                           </span>
                         )}

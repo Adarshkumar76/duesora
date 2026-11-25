@@ -1,6 +1,6 @@
 # Import and Export
 
-Data portability is a core open-source principle.
+Data portability and sovereign ownership are core Duesora principles.
 
 ## Export
 

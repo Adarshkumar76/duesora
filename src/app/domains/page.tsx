@@ -105,9 +105,9 @@ export default async function DomainsPage({ searchParams }: DomainsPageProps) {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <Globe className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                <Globe className="w-5 h-5 text-primary" />
                 <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-                  Domains & SSL Monitoring
+                  Domains &amp; SSL Monitoring
                 </h1>
               </div>
               <p className="text-sm text-muted-foreground">
@@ -121,9 +121,9 @@ export default async function DomainsPage({ searchParams }: DomainsPageProps) {
                 <Link href="/resources/new?type=domain">
                   <Button
                     size="sm"
-                    className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs gap-1.5 text-xs font-medium cursor-pointer"
+                    className="h-9 px-3.5 rounded-[6px] bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_1px_2px_rgba(0,0,0,0.05)] gap-1.5 text-xs font-semibold cursor-pointer"
                   >
-                    <Plus className="w-4 h-4" />
+                    <Plus className="w-3.5 h-3.5" />
                     <span>Add Domain</span>
                   </Button>
                 </Link>

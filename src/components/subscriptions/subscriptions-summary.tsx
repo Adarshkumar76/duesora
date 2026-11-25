@@ -30,7 +30,7 @@ export function SubscriptionsSummary({ metrics }: SubscriptionsSummaryProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {/* Monthly Recurring Spend */}
-      <div className="rounded-2xl border border-border/80 bg-card p-4 sm:p-5 shadow-xs transition-all hover:border-emerald-500/30">
+      <div className="rounded-[8px] border border-border bg-card p-4 sm:p-5 shadow-[0_1px_2px_rgba(0,0,0,0.02)] transition-all hover:border-emerald-500/30">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             Monthly Run-Rate
@@ -51,7 +51,7 @@ export function SubscriptionsSummary({ metrics }: SubscriptionsSummaryProps) {
       </div>
 
       {/* Annual Projected Spend */}
-      <div className="rounded-2xl border border-border/80 bg-card p-4 sm:p-5 shadow-xs transition-all hover:border-blue-500/30">
+      <div className="rounded-[8px] border border-border bg-card p-4 sm:p-5 shadow-[0_1px_2px_rgba(0,0,0,0.02)] transition-all hover:border-blue-500/30">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             Annual Forecast
@@ -72,7 +72,7 @@ export function SubscriptionsSummary({ metrics }: SubscriptionsSummaryProps) {
       </div>
 
       {/* Active Subscriptions Count */}
-      <div className="rounded-2xl border border-border/80 bg-card p-4 sm:p-5 shadow-xs transition-all hover:border-purple-500/30">
+      <div className="rounded-[8px] border border-border bg-card p-4 sm:p-5 shadow-[0_1px_2px_rgba(0,0,0,0.02)] transition-all hover:border-purple-500/30">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             Active Subscriptions
@@ -95,7 +95,7 @@ export function SubscriptionsSummary({ metrics }: SubscriptionsSummaryProps) {
       </div>
 
       {/* Highest Cost Commitment */}
-      <div className="rounded-2xl border border-border/80 bg-card p-4 sm:p-5 shadow-xs transition-all hover:border-amber-500/30">
+      <div className="rounded-[8px] border border-border bg-card p-4 sm:p-5 shadow-[0_1px_2px_rgba(0,0,0,0.02)] transition-all hover:border-amber-500/30">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             Top Expense

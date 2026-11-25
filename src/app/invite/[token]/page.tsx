@@ -3,6 +3,7 @@ import { getInvitationByToken } from "@/lib/team/service";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { InviteAcceptCard } from "./invite-accept-card";
 import { Users, AlertCircle, Shield, Building2 } from "lucide-react";
+import { Logo } from "@/components/logo";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -19,24 +20,24 @@ export default async function InvitePage({ params }: InvitePageProps) {
   if (!inviteResult.valid || !inviteResult.invitation) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-background text-foreground">
-        <Card className="max-w-md w-full rounded-2xl border border-border/80 shadow-lg text-center p-6 space-y-4">
-          <div className="w-12 h-12 rounded-2xl bg-destructive/10 text-destructive flex items-center justify-center mx-auto">
-            <AlertCircle className="w-6 h-6" />
+        <Card className="max-w-md w-full rounded-[8px] border border-border bg-card shadow-[0_1px_3px_rgba(0,0,0,0.03)] text-center p-6 space-y-4">
+          <div className="w-10 h-10 rounded-[6px] bg-destructive/10 text-destructive flex items-center justify-center mx-auto">
+            <AlertCircle className="w-5 h-5" />
           </div>
           <CardHeader className="p-0">
-            <CardTitle className="text-lg font-bold text-foreground">
+            <CardTitle className="text-base sm:text-lg font-bold text-foreground">
               Invitation Invalid or Expired
             </CardTitle>
             <CardDescription className="text-xs text-muted-foreground mt-1">
               {inviteResult.reason || "This invitation link is no longer active."}
             </CardDescription>
           </CardHeader>
-          <CardContent className="p-0 pt-3">
+          <CardContent className="p-0 pt-2">
             <Link
               href="/"
-              className="inline-block px-4 py-2 rounded-xl text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+              className="inline-block px-3.5 py-2 rounded-[6px] text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-[0_1px_2px_rgba(0,0,0,0.05)]"
             >
-              Go to Duesora Home
+              Back to Home
             </Link>
           </CardContent>
         </Card>
@@ -48,41 +49,44 @@ export default async function InvitePage({ params }: InvitePageProps) {
   const isLoggedIn = Boolean(session?.user?.id);
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-background text-foreground selection:bg-emerald-500/20">
-      <div className="max-w-md w-full space-y-6">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-background text-foreground selection:bg-teal-900/10 selection:text-teal-900 dark:selection:bg-teal-200/20 dark:selection:text-teal-200">
+      <div className="max-w-md w-full space-y-4">
         {/* Brand */}
         <div className="text-center space-y-1">
-          <span className="text-2xl font-bold tracking-tight text-foreground">
-            Due<span className="text-emerald-500">sora</span>
-          </span>
-          <p className="text-xs text-muted-foreground">Modern IT Asset & Renewal Management</p>
+          <div className="flex justify-center mb-1">
+            <Link href="/" className="inline-flex items-center gap-2 group">
+              <Logo size={28} color="#0F766E" />
+              <span className="text-base font-bold tracking-tight text-foreground">Duesora</span>
+            </Link>
+          </div>
+          <p className="text-xs text-muted-foreground">Renewal, Expiry &amp; Ownership Management</p>
         </div>
 
         {/* Invitation Card */}
-        <Card className="rounded-2xl border border-border/80 bg-card shadow-xl overflow-hidden">
-          <CardHeader className="text-center pb-4 border-b border-border/40">
-            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto mb-3">
-              <Users className="w-6 h-6" />
+        <Card className="rounded-[8px] border border-border bg-card shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden">
+          <CardHeader className="text-center pb-4 border-b border-border/60">
+            <div className="w-10 h-10 rounded-[6px] bg-primary/10 text-primary flex items-center justify-center mx-auto mb-2">
+              <Users className="w-5 h-5" />
             </div>
-            <CardTitle className="text-lg font-bold text-foreground">
-              You&apos;ve Been Invited!
+            <CardTitle className="text-base sm:text-lg font-bold text-foreground">
+              Workspace Invitation
             </CardTitle>
-            <CardDescription className="text-xs text-muted-foreground mt-1">
+            <CardDescription className="text-xs text-muted-foreground mt-0.5">
               <strong>{invitation.inviterName}</strong> invited you to collaborate in:
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="pt-5 space-y-5">
+          <CardContent className="pt-4 space-y-4">
             {/* Workspace Info Box */}
-            <div className="p-4 rounded-xl bg-muted/40 border border-border/60 space-y-2">
+            <div className="p-3.5 rounded-[6px] bg-muted/30 border border-border space-y-1.5 text-left">
               <div className="flex items-center gap-2">
-                <Building2 className="w-4 h-4 text-emerald-600" />
-                <span className="text-sm font-bold text-foreground">{invitation.workspace.name}</span>
+                <Building2 className="w-4 h-4 text-primary shrink-0" />
+                <span className="text-xs sm:text-sm font-bold text-foreground">{invitation.workspace.name}</span>
               </div>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Shield className="w-3.5 h-3.5 text-blue-500" />
+                <Shield className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                 <span>
-                  Role: <strong className="uppercase text-foreground">{invitation.role}</strong>
+                  Role: <strong className="uppercase font-mono text-foreground text-[11px]">{invitation.role}</strong>
                 </span>
               </div>
             </div>

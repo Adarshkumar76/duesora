@@ -1,31 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Check } from "lucide-react";
-import { GITHUB_REPO_URL } from "@/lib/constants";
+import { ArrowRight, CheckCircle2, Shield, Lock, Terminal } from "lucide-react";
 import { HeroPreview } from "@/components/landing/hero-preview";
-import { useTranslation } from "@/components/i18n/i18n-provider";
-
-function GithubIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      width="14"
-      height="14"
-      stroke="currentColor"
-      strokeWidth="2"
-      fill="none"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      {...props}
-    >
-      <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
-      <path d="M9 18c-4.51 2-5-2-7-2" />
-    </svg>
-  );
-}
 
 interface LandingHeroProps {
   user?: {
@@ -35,58 +13,30 @@ interface LandingHeroProps {
 }
 
 export function LandingHero({ user }: LandingHeroProps) {
-  const { t } = useTranslation();
-  const [rotatingIndex, setRotatingIndex] = useState(0);
-
-  const rotatingPhrases = [
-    t("landing.zeroSurpriseRenewals"),
-    t("landing.zeroExpiredSsl"),
-    t("landing.zeroWastedSeats"),
-    t("landing.zeroDnsDowntime"),
-  ];
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setRotatingIndex((prev) => (prev + 1) % rotatingPhrases.length);
-    }, 3600);
-    return () => clearInterval(timer);
-  }, [rotatingPhrases.length]);
-
   return (
-    <section className="pt-8 sm:pt-12 pb-14 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <section className="pt-12 sm:pt-16 pb-12 sm:pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-        {/* Left Column: Editorial Headline & Value Proposition */}
+        {/* Left Column: Clear, Honest Value Proposition */}
         <div className="lg:col-span-5 space-y-6 text-left">
-          {/* Eyebrow marker */}
-          <div className="flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-            <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground font-semibold">
-              Autonomous Renewal &amp; Asset Ledger
-            </span>
-          </div>
-
-          {/* Main Headline */}
-          <div className="space-y-3">
+          {/* Main Headline & Description */}
+          <div className="space-y-3.5">
             <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-bold tracking-tight text-foreground leading-[1.12]">
-              <span className="block">{t("landing.headline")}</span>
-              <span className="block mt-1 text-primary">
-                {rotatingPhrases[rotatingIndex]}
-              </span>
+              Never miss a renewal again.
             </h1>
             <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
-              {t("landing.subheadline")}
+              Keep your domains, subscriptions, certificates, and important deadlines in one place. Know what is due, what it costs, and when to take action.
             </p>
           </div>
 
-          {/* Action Button Cluster */}
+          {/* Action CTAs */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 pt-1">
             {user ? (
               <Link href="/dashboard">
                 <Button
                   size="lg"
-                  className="w-full sm:w-auto h-9.5 px-4 rounded-[6px] bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-semibold gap-1.5 shadow-[0_1px_2px_rgba(0,0,0,0.06)] cursor-pointer"
+                  className="w-full sm:w-auto h-10 px-5 rounded-[6px] bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-semibold gap-2 shadow-[0_1px_2px_rgba(0,0,0,0.06)] cursor-pointer"
                 >
-                  <span>{t("landing.goToDashboard")}</span>
+                  <span>Go to Dashboard</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Button>
               </Link>
@@ -95,98 +45,72 @@ export function LandingHero({ user }: LandingHeroProps) {
                 <Link href="/register">
                   <Button
                     size="lg"
-                    className="w-full sm:w-auto h-9.5 px-4 rounded-[6px] bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-semibold gap-1.5 shadow-[0_1px_2px_rgba(0,0,0,0.06)] cursor-pointer"
+                    className="w-full sm:w-auto h-10 px-5 rounded-[6px] bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-semibold gap-2 shadow-[0_1px_2px_rgba(0,0,0,0.06)] cursor-pointer"
                   >
-                    <span>{t("landing.startTrackingFree")}</span>
+                    <span>Get Started</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Button>
                 </Link>
 
-                <Link href="/login">
+                <Link href="/api/docs" className="w-full sm:w-auto">
                   <Button
                     variant="outline"
                     size="lg"
-                    className="w-full sm:w-auto h-9.5 px-3.5 rounded-[6px] text-xs font-medium cursor-pointer"
+                    className="w-full sm:w-auto h-10 px-4 rounded-[6px] text-xs font-medium border-border hover:bg-muted text-foreground cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
                   >
-                    <span>{t("landing.signIn")}</span>
+                    <span>API Documentation</span>
                   </Button>
                 </Link>
               </>
             )}
-
-            <a
-              href={GITHUB_REPO_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-1.5 h-9.5 px-3 rounded-[6px] border border-border bg-card hover:bg-muted text-foreground text-xs font-medium transition-colors shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
-            >
-              <GithubIcon className="w-3.5 h-3.5" />
-              <span>{t("landing.starOnGithub")}</span>
-            </a>
           </div>
 
-          {/* Key Specifications & Proof Points */}
-          <div className="pt-2 border-t border-border/80 grid grid-cols-2 gap-3 text-left">
+          {/* Authentic Proof Points */}
+          <div className="pt-5 border-t border-border grid grid-cols-2 gap-4 text-left">
             <div className="space-y-0.5">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block">
-                {t("landing.bento2Tag")}
+              <span className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-primary shrink-0" />
+                <span>Zero Hidden Fees</span>
               </span>
-              <p className="text-xs font-semibold text-foreground tabular-nums">
-                100% {t("landing.bento2Accuracy")}
+              <p className="text-[11px] text-muted-foreground pl-5">
+                Full-featured tool for your entire team.
               </p>
-              <p className="text-[11px] text-muted-foreground">Integer minor units</p>
             </div>
 
             <div className="space-y-0.5">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block">
-                {t("landing.tabDomains")}
+              <span className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                <Lock className="w-3.5 h-3.5 text-primary shrink-0" />
+                <span>Self-Hosted &amp; Private</span>
               </span>
-              <p className="text-xs font-semibold text-foreground tabular-nums">
-                Sub-Second RDAP
+              <p className="text-[11px] text-muted-foreground pl-5">
+                Run locally or on your VPS. Zero telemetry.
               </p>
-              <p className="text-[11px] text-muted-foreground">ICANN &amp; TLS 1.3</p>
             </div>
 
             <div className="space-y-0.5">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block">
-                {t("landing.selfHost")}
+              <span className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                <Terminal className="w-3.5 h-3.5 text-primary shrink-0" />
+                <span>1-Command Setup</span>
               </span>
-              <p className="text-xs font-semibold text-foreground">
-                {t("landing.freeForever")}
+              <p className="text-[11px] text-muted-foreground pl-5">
+                Docker Compose ready in 30 seconds.
               </p>
-              <p className="text-[11px] text-muted-foreground">PostgreSQL &amp; Docker</p>
             </div>
 
             <div className="space-y-0.5">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block">
-                Escalation
+              <span className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                <Shield className="w-3.5 h-3.5 text-primary shrink-0" />
+                <span>Multi-Channel Alerts</span>
               </span>
-              <p className="text-xs font-semibold text-foreground tabular-nums">
-                T-30d → T-7d → T-24h
+              <p className="text-[11px] text-muted-foreground pl-5">
+                Email, Slack, Discord, Telegram, and ntfy.
               </p>
-              <p className="text-[11px] text-muted-foreground">Slack, Discord, Email</p>
             </div>
-          </div>
-
-          {/* Social Proof Line */}
-          <div className="flex items-center gap-4 text-[11px] text-muted-foreground pt-1 flex-wrap">
-            <span className="flex items-center gap-1">
-              <Check className="w-3.5 h-3.5 text-primary" />
-              <span>{t("landing.freeForever")}</span>
-            </span>
-            <span className="flex items-center gap-1">
-              <Check className="w-3.5 h-3.5 text-primary" />
-              <span>{t("landing.noTelemetry")}</span>
-            </span>
-            <span className="flex items-center gap-1">
-              <Check className="w-3.5 h-3.5 text-primary" />
-              <span>{t("landing.accurateMath")}</span>
-            </span>
           </div>
         </div>
 
-        {/* Right Column: Interactive Product Console */}
-        <div className="lg:col-span-7 w-full">
+        {/* Right Column: Authentic Live Product Preview */}
+        <div className="lg:col-span-7">
           <HeroPreview />
         </div>
       </div>

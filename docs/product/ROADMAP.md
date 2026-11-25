@@ -52,7 +52,6 @@
 - [x] automated backup / restore / migration CLI tooling (`duesora doctor`, `migrate`, `backup`, `restore`);
 - [x] visual interactive dependency graph & blast radius explorer;
 - [x] license & seat utilization optimizer (idle seat waste detection & downsize suggestions);
-- [x] i18n localization (English, Spanish, German, French, Japanese);
 - [x] production security hardening & sliding-window rate limiting;
 - [x] scheduled executive renewal & cost digest engine;
 - [x] contract cancellation & renegotiation assistant;

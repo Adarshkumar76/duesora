@@ -518,7 +518,7 @@ export function ChatIntegrations({
               )}
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Free open-source HTTP push notifications for phones and desktop.
+              Self-hosted HTTP push notifications for phones and desktop.
             </p>
           </div>
           <Button

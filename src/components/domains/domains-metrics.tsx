@@ -12,7 +12,7 @@ export function DomainsMetrics({ metrics }: DomainsMetricsProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {/* Total Domains & SSL */}
-      <div className="rounded-2xl border border-border/80 bg-card p-4 sm:p-5 shadow-xs transition-all hover:border-emerald-500/30">
+      <div className="rounded-[8px] border border-border bg-card p-4 sm:p-5 shadow-[0_1px_2px_rgba(0,0,0,0.02)] transition-all hover:border-emerald-500/30">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             Total Assets
@@ -35,7 +35,7 @@ export function DomainsMetrics({ metrics }: DomainsMetricsProps) {
       </div>
 
       {/* SSL Certificates Valid */}
-      <div className="rounded-2xl border border-border/80 bg-card p-4 sm:p-5 shadow-xs transition-all hover:border-blue-500/30">
+      <div className="rounded-[8px] border border-border bg-card p-4 sm:p-5 shadow-[0_1px_2px_rgba(0,0,0,0.02)] transition-all hover:border-blue-500/30">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             Valid SSL Certificates
@@ -58,7 +58,7 @@ export function DomainsMetrics({ metrics }: DomainsMetricsProps) {
       </div>
 
       {/* Expiring Soon */}
-      <div className="rounded-2xl border border-border/80 bg-card p-4 sm:p-5 shadow-xs transition-all hover:border-amber-500/30">
+      <div className="rounded-[8px] border border-border bg-card p-4 sm:p-5 shadow-[0_1px_2px_rgba(0,0,0,0.02)] transition-all hover:border-amber-500/30">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             Expiring &lt; 30 Days
@@ -81,7 +81,7 @@ export function DomainsMetrics({ metrics }: DomainsMetricsProps) {
       </div>
 
       {/* Monitor Health */}
-      <div className="rounded-2xl border border-border/80 bg-card p-4 sm:p-5 shadow-xs transition-all hover:border-purple-500/30">
+      <div className="rounded-[8px] border border-border bg-card p-4 sm:p-5 shadow-[0_1px_2px_rgba(0,0,0,0.02)] transition-all hover:border-purple-500/30">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             Monitor Health

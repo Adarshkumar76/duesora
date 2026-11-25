@@ -6,16 +6,15 @@
 
 **Know what you own. Know what's due.**
 
-A free, open-source renewal, expiry, ownership, and recurring-cost management platform for developers, teams, agencies, and modern businesses.
+A unified renewal, expiry, ownership, and recurring-cost management platform for developers, teams, agencies, and modern businesses.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License: Proprietary](https://img.shields.io/badge/License-Proprietary-darkred.svg)](LICENSE)
 [![Next.js](https://img.shields.io/badge/Next.js-16.3-black?logo=next.js)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19-61dafb?logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178c6?logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?logo=postgresql)](https://www.postgresql.org/)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Donate-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/adarshk3113)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
 </div>
 
@@ -139,7 +138,7 @@ Complete operational and architecture guides are available in the [`docs/`](docs
 | 🛠️ **Development** | Contribution workflows, coding conventions, and testing | [Engineering Standards](docs/development/ENGINEERING_STANDARDS.md) • [Testing](docs/development/TESTING.md) • [Branching](docs/development/BRANCHING_AND_CONTRIBUTION_WORKFLOW.md) |
 | ⚙️ **Operations** | Self-hosting, container deployments, and maintenance | [Deployment Guide](docs/operations/DEPLOYMENT.md) • [Docker](docs/operations/DOCKER.md) • [CI/CD](docs/operations/CI_CD.md) • [Backup & Restore](docs/operations/BACKUP_RESTORE.md) |
 | 📜 **ADRs** | Architectural Decision Records | [ADR Index](docs/adr/README.md) • [PostgreSQL (0001)](docs/adr/0001-use-postgresql.md) • [SSRF Isolation (0002)](docs/adr/0002-security-first-monitor-workers.md) |
-| ⚖️ **Legal & Governance** | Open source hygiene, privacy, and community leadership | [Privacy Principles](docs/legal/PRIVACY.md) • [Self-Hosted Terms](docs/legal/TERMS_SELF_HOSTED.md) • [Governance](docs/community/GOVERNANCE.md) |
+| ⚖️ **Legal & Governance** | Privacy architecture, data sovereignty, and security | [Privacy Principles](docs/legal/PRIVACY.md) • [Self-Hosted Terms](docs/legal/TERMS_SELF_HOSTED.md) • [Governance](docs/community/GOVERNANCE.md) |
 
 For a complete catalog, see the [Documentation Index](docs/README.md).
 
@@ -151,21 +150,8 @@ Security is fundamental to Duesora. If you discover a vulnerability or security 
 
 ---
 
-## 🤝 Contributing
+## ⚖️ License & Proprietary Rights
 
-We welcome community contributions! Please check out our [Contributing Guidelines](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md) before submitting pull requests.
-
----
-
-## ☕ Support & Sponsorship
-
-If Duesora helps you track your assets and prevent unexpected renewals, consider supporting its open-source development:
-
-[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Support%20Project-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/adarshk3113)
-
----
-
-## ⚖️ License
-
-Duesora is open-source software licensed under the [MIT License](LICENSE).  
+Copyright (c) 2026 Adarsh Kumar. All rights reserved.
+Duesora is proprietary software. Unauthorized copying, distribution, or reproduction is strictly prohibited.
 Brand assets, names, and logos are governed by our [Trademark Policy](TRADEMARK.md).

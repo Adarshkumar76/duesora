@@ -55,13 +55,13 @@ export function BudgetProgressCard({
   // Unconfigured state banner
   if (!status.hasBudgetConfigured) {
     return (
-      <div className="rounded-2xl border border-dashed border-border/90 bg-card/60 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="rounded-[8px] border border-dashed border-border bg-card p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
         <div className="flex items-start gap-3">
-          <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-muted-foreground flex items-center justify-center shrink-0 mt-0.5">
-            <Wallet className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+          <div className="w-8 h-8 rounded-[6px] bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
+            <Wallet className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-foreground">
+            <h3 className="text-xs sm:text-sm font-semibold text-foreground">
               Track Workspace Budget Ceilings
             </h3>
             <p className="text-xs text-muted-foreground max-w-xl mt-0.5">
@@ -70,7 +70,7 @@ export function BudgetProgressCard({
           </div>
         </div>
         <Link href="/settings">
-          <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-border/80 bg-background hover:bg-muted text-xs font-semibold text-foreground transition-colors shadow-2xs shrink-0 cursor-pointer">
+          <button className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] border border-border bg-card hover:bg-muted text-xs font-semibold text-foreground transition-colors shadow-2xs shrink-0 cursor-pointer">
             <Sliders className="w-3.5 h-3.5 text-muted-foreground" />
             <span>Configure Budget</span>
           </button>
@@ -81,23 +81,23 @@ export function BudgetProgressCard({
 
   return (
     <div
-      className={`rounded-2xl border p-4 sm:p-5 transition-all shadow-xs ${
+      className={`rounded-[8px] border p-4 sm:p-5 transition-all shadow-[0_1px_2px_rgba(0,0,0,0.02)] ${
         isExceeded
           ? "border-rose-500/40 bg-rose-50/30 dark:bg-rose-950/20"
           : isWarning
           ? "border-amber-500/40 bg-amber-50/30 dark:bg-amber-950/20"
-          : "border-border/80 bg-card"
+          : "border-border bg-card"
       }`}
     >
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-2.5">
           <div
-            className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+            className={`w-8 h-8 rounded-[6px] flex items-center justify-center shrink-0 ${
               isExceeded
                 ? "bg-rose-500 text-white"
                 : isWarning
                 ? "bg-amber-500 text-white"
-                : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                : "bg-primary/10 text-primary"
             }`}
           >
             {isExceeded ? (

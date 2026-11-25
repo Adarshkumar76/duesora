@@ -103,13 +103,13 @@ export function SettingsTabsView({
                 onClick={() => handleTabChange(tab.id)}
                 className={`pb-3 text-sm transition-all relative cursor-pointer font-medium ${
                   isActive
-                    ? "text-emerald-700 dark:text-emerald-300 font-semibold"
+                    ? "text-primary font-semibold"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <span>{tab.label}</span>
                 {isActive && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-600 dark:bg-emerald-400 rounded-full" />
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full" />
                 )}
               </button>
             );

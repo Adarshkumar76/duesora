@@ -16,9 +16,8 @@ reproduction steps.
 
 ## Supporting the Project
 
-If Duesora provides value to you or your organization, you can sponsor and support its continued open-source development:
+If Duesora provides value to you or your organization, you can support its continued development:
 
 - ☕ **Buy Me a Coffee**: [buymeacoffee.com/adarshk3113](https://buymeacoffee.com/adarshk3113)
 
-Community support is best-effort. The MIT license does not provide a
-warranty or guaranteed support SLA.
+Standard support is provided on a best-effort basis without warranty or guaranteed SLA.

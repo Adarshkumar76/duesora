@@ -52,7 +52,7 @@ describe("Cancellation & Renegotiation Assistant", () => {
         cancellationNoticeDays: 30,
         contactName: "Alex Mercer",
         organizationName: "Acme Corp",
-        reason: "Migrating to open-source self-hosted telemetry.",
+        reason: "Migrating to private self-hosted telemetry.",
         includeDataDeletionClause: true,
       });
 
@@ -63,7 +63,7 @@ describe("Cancellation & Renegotiation Assistant", () => {
       expect(letter.body).toContain("Acme Corp");
       expect(letter.body).toContain("Alex Mercer");
       expect(letter.body).toContain("30-day written notice period");
-      expect(letter.body).toContain("Migrating to open-source self-hosted telemetry.");
+      expect(letter.body).toContain("Migrating to private self-hosted telemetry.");
       expect(letter.body).toContain("Data Deletion & Privacy Compliance");
       expect(letter.body).toContain("GDPR, CCPA, and SOC 2");
     });

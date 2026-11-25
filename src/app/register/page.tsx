@@ -113,26 +113,26 @@ function RegisterForm() {
   };
 
   return (
-    <Card className="w-full max-w-md border-border/70 shadow-2xl bg-card">
-      <CardHeader className="space-y-3 text-center pb-6">
-        <div className="flex justify-center">
-          <Link href="/" className="inline-flex items-center gap-2">
-            <Logo size={44} withGlow />
+    <Card className="w-full max-w-md border border-border rounded-[8px] shadow-[0_1px_3px_rgba(0,0,0,0.03)] bg-card text-left">
+      <CardHeader className="space-y-2 text-center pb-5">
+        <div className="flex justify-center mb-1">
+          <Link href="/" className="inline-flex items-center gap-2 group">
+            <Logo size={32} color="#0F766E" className="transition-transform group-hover:scale-105 duration-150" />
           </Link>
         </div>
-        <CardTitle className="text-2xl font-bold tracking-tight">
-          Create your account
+        <CardTitle className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
+          Create your Duesora account
         </CardTitle>
-        <CardDescription className="text-sm text-muted-foreground">
-          Get started with your free self-hosted Duesora workspace in seconds
+        <CardDescription className="text-xs sm:text-sm text-muted-foreground">
+          Free and open-source renewal &amp; expiry management
         </CardDescription>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className="space-y-4">
         {displayError && (
           <div
             role="alert"
-            className="flex items-center gap-2.5 p-3.5 mb-5 rounded-lg text-sm bg-destructive/10 text-destructive border border-destructive/20 animate-in fade-in"
+            className="flex items-center gap-2.5 p-3 rounded-[6px] text-xs bg-destructive/10 text-destructive border border-destructive/20 animate-in fade-in"
           >
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{displayError}</span>
@@ -142,127 +142,134 @@ function RegisterForm() {
         {/* 1-Click Social Sign-Up */}
         <SocialAuthButtons callbackUrl={callbackUrl} disabled={loading} />
 
-        <div className="relative my-5">
+        <div className="relative my-4">
           <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-border/80" />
+            <span className="w-full border-t border-border" />
           </div>
-          <div className="relative flex justify-center text-[11px] uppercase tracking-wider">
+          <div className="relative flex justify-center text-[10px] uppercase font-mono tracking-wider">
             <span className="bg-card px-2.5 text-muted-foreground font-semibold">
-              Or register with email
+              Or with email
             </span>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3.5">
           <div className="space-y-1.5">
-            <Label htmlFor="name">Full Name</Label>
+            <Label htmlFor="name" className="text-xs font-medium text-foreground">
+              Full name
+            </Label>
             <Input
               id="name"
               type="text"
-              placeholder="Alex Rivers"
+              placeholder="Jane Doe"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
               autoComplete="name"
               disabled={loading}
-              className="h-10"
+              className="h-9.5 text-xs rounded-[6px]"
             />
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="email">Email address</Label>
+            <Label htmlFor="email" className="text-xs font-medium text-foreground">
+              Email address
+            </Label>
             <Input
               id="email"
               type="email"
-              placeholder="alex@company.com"
+              placeholder="name@company.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
               autoComplete="email"
               disabled={loading}
-              className="h-10"
+              className="h-9.5 text-xs rounded-[6px]"
             />
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="password">Password</Label>
-            <div className="relative">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="password" className="text-xs font-medium text-foreground">
+                Password
+              </Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  autoComplete="new-password"
+                  disabled={loading}
+                  className="h-9.5 text-xs rounded-[6px] pr-9"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus:outline-none cursor-pointer"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-3.5 h-3.5" />
+                  ) : (
+                    <Eye className="w-3.5 h-3.5" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="confirmPassword" className="text-xs font-medium text-foreground">
+                Confirm
+              </Label>
               <Input
-                id="password"
+                id="confirmPassword"
                 type={showPassword ? "text" : "password"}
-                placeholder="At least 8 characters"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 autoComplete="new-password"
                 disabled={loading}
-                className="pr-10 h-10"
+                className="h-9.5 text-xs rounded-[6px]"
               />
-              <button
-                type="button"
-                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-muted-foreground hover:text-foreground"
-                onClick={() => setShowPassword(!showPassword)}
-                tabIndex={-1}
-              >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4" />
-                ) : (
-                  <Eye className="h-4 w-4" />
-                )}
-                <span className="sr-only">
-                  {showPassword ? "Hide password" : "Show password"}
-                </span>
-              </button>
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="confirmPassword">Confirm Password</Label>
-            <Input
-              id="confirmPassword"
-              type={showPassword ? "text" : "password"}
-              placeholder="Confirm your password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-              autoComplete="new-password"
-              disabled={loading}
-              className="h-10"
-            />
-          </div>
-
-          <div className="flex items-start gap-2.5 pt-1">
+          <div className="flex items-start gap-2 pt-1">
             <input
+              id="acceptedTerms"
               type="checkbox"
-              id="terms"
               checked={acceptedTerms}
               onChange={(e) => setAcceptedTerms(e.target.checked)}
-              disabled={loading}
-              className="mt-0.5 rounded border-input text-primary focus:ring-primary h-4 w-4 shrink-0"
               required
+              disabled={loading}
+              className="mt-0.5 w-3.5 h-3.5 rounded-[3px] border-border text-primary focus:ring-primary cursor-pointer accent-teal-700"
             />
-            <Label htmlFor="terms" className="text-xs text-muted-foreground leading-relaxed cursor-pointer">
-              I agree to the self-hosted terms, zero-telemetry privacy principles, and project license.
+            <Label htmlFor="acceptedTerms" className="text-[11px] text-muted-foreground leading-normal cursor-pointer">
+              I agree to the terms of service and privacy principles.
             </Label>
           </div>
 
           <Button
             type="submit"
-            className="w-full h-10 font-medium mt-2"
+            className="w-full h-9.5 rounded-[6px] text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-[0_1px_2px_rgba(0,0,0,0.05)] cursor-pointer mt-1"
             disabled={loading}
           >
             {loading ? (
               <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" />
                 Creating workspace...
               </>
             ) : (
-              "Create Account & Workspace"
+              "Create Free Account"
             )}
           </Button>
         </form>
 
-        <div className="mt-6 text-center text-xs text-muted-foreground">
+        <div className="pt-2 text-center text-xs text-muted-foreground border-t border-border/60">
           Already have an account?{" "}
           <Link
             href={
@@ -282,8 +289,8 @@ function RegisterForm() {
 
 export default function RegisterPage() {
   return (
-    <main className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
-      <Suspense fallback={<div className="text-sm text-muted-foreground">Loading...</div>}>
+    <main className="min-h-screen bg-background flex flex-col items-center justify-center p-4 selection:bg-teal-900/10 selection:text-teal-900 dark:selection:bg-teal-200/20 dark:selection:text-teal-200">
+      <Suspense fallback={<div className="text-xs font-mono text-muted-foreground">Loading workspace...</div>}>
         <RegisterForm />
       </Suspense>
     </main>

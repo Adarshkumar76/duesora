@@ -1,16 +1,15 @@
 export const openApiSpec = {
   openapi: "3.1.0",
   info: {
-    title: "Duesora Public REST API",
+    title: "Duesora REST API",
     version: "1.0.0",
     description:
       "Operational inventory API for subscriptions, domains, and renewals. Authenticated via workspace developer keys (`due_live_...`).",
     contact: {
-      name: "Duesora Core Team",
-      url: "https://github.com/Adarshkumar76/duesora",
+      name: "Duesora Support",
     },
     license: {
-      name: "MIT",
+      name: "Proprietary",
     },
   },
   servers: [

@@ -25,21 +25,21 @@ export function RenewalsChart({ data = [], currency = "USD" }: RenewalsChartProp
   const currencySymbol = currency === "INR" ? "₹" : currency === "EUR" ? "€" : currency === "GBP" ? "£" : "$";
 
   return (
-    <Card className="rounded-2xl border border-border/80 bg-card shadow-xs flex flex-col h-full">
-      <CardHeader className="pb-4">
+    <Card className="rounded-[8px] border border-border bg-card shadow-[0_1px_2px_rgba(0,0,0,0.02)] flex flex-col h-full">
+      <CardHeader className="pb-3 px-5 pt-4 border-b border-border">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-base font-bold text-foreground">
+          <CardTitle className="text-sm font-semibold text-foreground">
             Renewals Overview
           </CardTitle>
           {/* Legend */}
-          <div className="flex items-center gap-4 text-xs">
+          <div className="flex items-center gap-3 text-xs">
             <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-xs bg-emerald-600 dark:bg-emerald-500" />
-              <span className="text-muted-foreground font-medium">Actual</span>
+              <span className="w-2.5 h-2.5 rounded-[2px] bg-primary" />
+              <span className="text-muted-foreground font-medium text-[11px]">Actual</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-xs bg-slate-400 dark:bg-slate-600" />
-              <span className="text-muted-foreground font-medium">Projected</span>
+              <span className="w-2.5 h-2.5 rounded-[2px] bg-muted-foreground/40" />
+              <span className="text-muted-foreground font-medium text-[11px]">Projected</span>
             </div>
           </div>
         </div>

@@ -62,7 +62,7 @@ export default async function NewResourcePage() {
           </div>
 
           {/* Clean Form Card */}
-          <div className="rounded-2xl border border-border/80 bg-card p-6 sm:p-8 shadow-xs">
+          <div className="rounded-[8px] border border-border bg-card p-6 sm:p-8 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
             <ResourceForm workspaceId={activeWorkspace.id} />
           </div>
         </main>

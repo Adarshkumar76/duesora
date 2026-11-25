@@ -182,13 +182,13 @@ export function ResourceForm({ workspaceId }: ResourceFormProps) {
       {/* Two-Column Grid matching mockup 06_add_resource_page.jpg */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Column 1: Resource Information */}
-        <Card className="rounded-2xl border border-border/80 bg-card shadow-xs">
-          <CardHeader className="pb-4">
+        <Card className="rounded-[8px] border border-border bg-card shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+          <CardHeader className="pb-3 border-b border-border">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base font-bold text-foreground">
+              <CardTitle className="text-sm font-semibold text-foreground">
                 Resource Information
               </CardTitle>
-              <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+              <span className="text-[11px] font-mono font-medium px-2 py-0.5 rounded-[4px] bg-primary/10 text-primary border border-primary/20">
                 {config.typeLabel}
               </span>
             </div>
@@ -365,10 +365,10 @@ export function ResourceForm({ workspaceId }: ResourceFormProps) {
         </Card>
 
         {/* Column 2: Pricing & Renewal */}
-        <Card className="rounded-2xl border border-border/80 bg-card shadow-xs">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-base font-bold text-foreground">
-              Pricing & Renewal
+        <Card className="rounded-[8px] border border-border bg-card shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+          <CardHeader className="pb-3 border-b border-border">
+            <CardTitle className="text-sm font-semibold text-foreground">
+              Pricing &amp; Renewal
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -568,14 +568,14 @@ export function ResourceForm({ workspaceId }: ResourceFormProps) {
         </Card>
       </div>
 
-      {/* Bottom Actions matching mockup */}
-      <div className="flex items-center justify-end gap-3 pt-2">
+      {/* Bottom Actions */}
+      <div className="flex items-center justify-end gap-2.5 pt-2">
         <Link href="/resources">
           <Button
             type="button"
             variant="outline"
             disabled={loading}
-            className="rounded-xl border-border/80 px-6 font-medium text-xs sm:text-sm"
+            className="h-9 px-4 rounded-[6px] border-border text-foreground text-xs font-medium cursor-pointer"
           >
             Cancel
           </Button>
@@ -583,9 +583,9 @@ export function ResourceForm({ workspaceId }: ResourceFormProps) {
         <Button
           type="submit"
           disabled={loading}
-          className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white px-6 font-medium text-xs sm:text-sm shadow-xs"
+          className="h-9 px-5 rounded-[6px] bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-semibold shadow-[0_1px_2px_rgba(0,0,0,0.05)] cursor-pointer"
         >
-          {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+          {loading && <Loader2 className="w-3.5 h-3.5 mr-2 animate-spin" />}
           Save Resource
         </Button>
       </div>

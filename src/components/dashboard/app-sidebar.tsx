@@ -21,8 +21,6 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-import { useTranslation } from "@/components/i18n/i18n-provider";
-
 // Shared reactive module store for sidebar collapsed state across page transitions
 let globalCollapsed: boolean | null = null;
 const listeners = new Set<() => void>();
@@ -84,22 +82,8 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Settings", href: "/settings", icon: Settings },
 ];
 
-export const NAV_ITEM_I18N_KEYS: Record<string, string> = {
-  "/dashboard": "nav.dashboard",
-  "/resources": "nav.resources",
-  "/domains": "nav.domains",
-  "/subscriptions": "nav.subscriptions",
-  "/renewals": "nav.renewals",
-  "/dependencies": "nav.dependencies",
-  "/calendar": "nav.calendar",
-  "/reports": "nav.reports",
-  "/notifications": "nav.notifications",
-  "/settings": "nav.settings",
-};
-
 export function AppSidebar() {
   const pathname = usePathname();
-  const { t } = useTranslation();
   const isCollapsed = useSyncExternalStore(
     subscribeSidebar,
     getSidebarCollapsedSnapshot,
@@ -143,9 +127,7 @@ export function AppSidebar() {
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
-          const label = NAV_ITEM_I18N_KEYS[item.href]
-            ? t(NAV_ITEM_I18N_KEYS[item.href])
-            : item.label;
+          const label = item.label;
 
           return (
             <Link

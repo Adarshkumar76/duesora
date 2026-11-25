@@ -78,7 +78,7 @@ Compliance, privacy standards, community governance, and self-hosted terms.
 Key community documents maintained directly at the project root:
 
 - [README.md](../README.md) — Project homepage, quickstart, overview, and features
-- [LICENSE](../LICENSE) — MIT License
+- [LICENSE](../LICENSE) — Proprietary License
 - [SECURITY.md](../SECURITY.md) — Vulnerability reporting policy and security disclosures
 - [SUPPORT.md](../SUPPORT.md) — Community support channels and troubleshooting
 - [TRADEMARK.md](../TRADEMARK.md) — Brand and trademark guidelines

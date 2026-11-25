@@ -217,38 +217,38 @@ export default async function ResourceDetailsPage({
             />
           </div>
 
-          {/* Hero Resource Summary Card matching mockup 07_resource_details_page.jpg */}
-          <Card className="rounded-2xl border border-border/80 bg-card shadow-xs overflow-hidden">
+          {/* Hero Resource Summary Card */}
+          <Card className="rounded-[8px] border border-border bg-card shadow-[0_1px_2px_rgba(0,0,0,0.02)] overflow-hidden">
             {/* Header: Icon, Name & Status */}
-            <div className="p-6 border-b border-border/60 flex items-center justify-between flex-wrap gap-3">
+            <div className="p-5 border-b border-border flex items-center justify-between flex-wrap gap-3">
               <div className="flex items-center gap-3">
                 <VendorLogo
                   name={resource.name}
                   type={resource.type}
                   domain={resource.websiteUrl}
-                  className="w-10 h-10 rounded-xl"
+                  className="w-9 h-9 rounded-[6px]"
                   size={20}
                 />
                 <div className="flex items-center gap-2.5 flex-wrap">
-                  <h2 className="text-xl sm:text-2xl font-bold text-foreground">
+                  <h2 className="text-lg sm:text-xl font-bold text-foreground">
                     {resource.name}
                   </h2>
                   {resource.status === "active" ? (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100/80 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-300/40">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-[11px] font-mono border bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-900/60 font-semibold">
                       Active
                     </span>
                   ) : resource.status === "expired" ? (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100/80 dark:bg-red-950/60 text-red-800 dark:text-red-300 border border-red-300/40">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-[11px] font-mono border bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-900/60 font-semibold">
                       Expired
                     </span>
                   ) : (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300/40">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-[11px] font-mono border bg-muted text-muted-foreground border-border font-semibold">
                       Inactive
                     </span>
                   )}
                   {isExpiringSoon && (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100/80 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-300/40">
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[4px] text-[11px] font-mono border bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-900/60 font-semibold">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
                       Within 30 Days
                     </span>
                   )}
@@ -302,7 +302,7 @@ export default async function ResourceDetailsPage({
             {/* Left Column (Span 7) */}
             <div className="lg:col-span-7 space-y-6">
               {/* Card 1: General Information */}
-              <Card className="rounded-2xl border border-border/80 bg-card shadow-xs">
+              <Card className="rounded-[8px] border border-border bg-card shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base font-bold text-foreground">
                     General Information
@@ -376,7 +376,7 @@ export default async function ResourceDetailsPage({
               </Card>
 
               {/* Card: Tags */}
-              <Card className="rounded-2xl border border-border/80 bg-card shadow-xs">
+              <Card className="rounded-[8px] border border-border bg-card shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
                 <CardHeader className="pb-3 flex flex-row items-center justify-between space-y-0">
                   <CardTitle className="text-base font-bold text-foreground flex items-center gap-2">
                     <Tag className="w-4 h-4 text-emerald-600" />
@@ -403,7 +403,7 @@ export default async function ResourceDetailsPage({
               </Card>
 
               {/* Card 2: Notes / Description */}
-              <Card className="rounded-2xl border border-border/80 bg-card shadow-xs">
+              <Card className="rounded-[8px] border border-border bg-card shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base font-bold text-foreground">
                     Notes / Description
@@ -452,7 +452,7 @@ export default async function ResourceDetailsPage({
             {/* Right Column (Span 5) */}
             <div className="lg:col-span-5 space-y-6">
               {/* Card 3: Renewal Information */}
-              <Card className="rounded-2xl border border-border/80 bg-card shadow-xs">
+              <Card className="rounded-[8px] border border-border bg-card shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base font-bold text-foreground">
                     Renewal Information
@@ -510,7 +510,7 @@ export default async function ResourceDetailsPage({
               />
 
               {/* Card 5: Recent Activity Timeline matching mockup */}
-              <Card className="rounded-2xl border border-border/80 bg-card shadow-xs">
+              <Card className="rounded-[8px] border border-border bg-card shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base font-bold text-foreground flex items-center gap-2">
                     <Clock className="w-4 h-4 text-emerald-600" />

@@ -2,7 +2,7 @@
 
 ## Current model
 
-Duesora begins as a maintainer-led open-source project.
+Duesora is a maintainer-led project.
 
 ## Roles
 

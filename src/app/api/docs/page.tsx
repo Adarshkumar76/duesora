@@ -273,33 +273,31 @@ export default function ApiDocsPage() {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Header */}
-      <header className="border-b border-border/80 bg-card/60 backdrop-blur-md sticky top-0 z-30 px-6 py-3.5 flex items-center justify-between">
+      <header className="border-b border-border bg-card sticky top-0 z-30 px-6 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Link href="/dashboard" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white shadow-sm shrink-0">
-              <Logo size={18} color="#FFFFFF" />
-            </div>
-            <span className="font-bold text-base tracking-tight text-foreground">
-              Duesora <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">API v1</span>
+          <Link href="/dashboard" className="flex items-center gap-2 group">
+            <Logo size={22} color="#0F766E" />
+            <span className="font-semibold text-sm tracking-tight text-foreground">
+              Duesora <span className="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded-[4px] bg-primary/10 text-primary border border-primary/20">API v1</span>
             </span>
           </Link>
           <span className="text-muted-foreground text-xs hidden sm:inline">•</span>
           <span className="text-xs text-muted-foreground hidden sm:inline">Developer Reference</span>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2">
           {/* Dark / Light Mode Toggle */}
           <button
             type="button"
             onClick={toggleTheme}
             aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
             title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-            className="w-8 h-8 rounded-lg border border-border/70 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shadow-2xs cursor-pointer"
+            className="w-8 h-8 rounded-[6px] border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/70 transition-colors cursor-pointer"
           >
             {theme === "dark" ? (
-              <Sun className="w-4 h-4 text-amber-400 animate-in spin-in-90 duration-200" />
+              <Sun className="w-3.5 h-3.5 text-amber-500" />
             ) : (
-              <Moon className="w-4 h-4 text-slate-700 animate-in spin-in-90 duration-200" />
+              <Moon className="w-3.5 h-3.5 text-foreground" />
             )}
           </button>
 
@@ -307,15 +305,15 @@ export default function ApiDocsPage() {
             href="/api/openapi.json"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs font-semibold px-2.5 sm:px-3 py-1.5 rounded-lg border border-border/70 hover:bg-muted/60 transition-colors flex items-center gap-1.5"
+            className="text-xs font-medium px-2.5 py-1.5 rounded-[6px] border border-border hover:bg-muted/60 transition-colors flex items-center gap-1.5"
             title="Open OpenAPI JSON Specification"
           >
             <Code2 className="w-3.5 h-3.5 text-muted-foreground" />
             <span className="hidden sm:inline">OpenAPI Spec</span>
             <ExternalLink className="w-3 h-3 text-muted-foreground hidden sm:inline" />
           </a>
-          <Link href="/settings#api-keys">
-            <Button size="sm" variant="outline" className="gap-1.5 text-xs h-8 px-2.5 sm:px-3">
+          <Link href="/settings#integrations">
+            <Button size="sm" variant="outline" className="gap-1.5 text-xs h-8 px-2.5 sm:px-3 rounded-[6px]">
               <Key className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Get API Key</span>
               <span className="sm:hidden">Keys</span>

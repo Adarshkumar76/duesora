@@ -150,9 +150,9 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
                 <Link href="/resources/new">
                   <Button
                     size="sm"
-                    className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs gap-1.5 text-xs font-medium cursor-pointer"
+                    className="h-9 px-3.5 rounded-[6px] bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_1px_2px_rgba(0,0,0,0.05)] gap-1.5 text-xs font-semibold cursor-pointer"
                   >
-                    <Plus className="w-4 h-4" />
+                    <Plus className="w-3.5 h-3.5" />
                     <span>Add Resource</span>
                   </Button>
                 </Link>
@@ -178,7 +178,7 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
                   href={`/resources?${tabParams.toString()}`}
                   className={`pb-3 font-medium transition-colors border-b-2 whitespace-nowrap ${
                     isActive
-                      ? "border-emerald-600 text-emerald-700 dark:text-emerald-400 font-semibold"
+                      ? "border-primary text-primary font-semibold"
                       : "border-transparent text-muted-foreground hover:text-foreground"
                   }`}
                 >
@@ -189,7 +189,7 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
           </div>
 
           {/* Resources Table or Empty State Card */}
-          <div className="rounded-2xl border border-border/80 bg-card shadow-xs overflow-hidden">
+          <div className="rounded-[8px] border border-border bg-card shadow-[0_1px_2px_rgba(0,0,0,0.02)] overflow-hidden">
             {items.length > 0 ? (
               <>
                 <ResourcesTable
@@ -214,7 +214,7 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
             ) : (
               /* High-fidelity Empty State */
               <div className="py-16 px-6 flex flex-col items-center justify-center text-center space-y-4">
-                <div className="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                <div className="w-12 h-12 rounded-[8px] bg-primary/10 border border-border flex items-center justify-center text-primary">
                   {isFiltered ? (
                     <SearchX className="w-7 h-7" />
                   ) : (

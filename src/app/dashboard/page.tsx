@@ -13,8 +13,7 @@ import { getWorkspaceDashboardData } from "@/lib/dashboard/service";
 import { getWorkspaceBudgetStatus } from "@/lib/budgets/service";
 import { BudgetProgressCard } from "@/components/dashboard/budget-progress-card";
 import { Button } from "@/components/ui/button";
-import { Plus, Coffee, Sparkles } from "lucide-react";
-import { BUY_ME_A_COFFEE_URL } from "@/lib/constants";
+import { Plus, Sparkles, Calendar } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -98,24 +97,25 @@ export default async function DashboardPage() {
 
             {/* Dashboard Action Buttons */}
             <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
-              {/* Buy Me a Coffee Badge / Button */}
-              <a
-                href={BUY_ME_A_COFFEE_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-300 dark:border-amber-800/60 bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-300 text-xs font-semibold hover:bg-amber-100 dark:hover:bg-amber-900/60 transition-colors shadow-2xs"
-              >
-                <Coffee className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-                <span>Buy Me a Coffee</span>
-              </a>
+              {/* Calendar Quick Action */}
+              <Link href="/calendar">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-9 px-3 rounded-[6px] text-xs font-medium border-border hover:bg-muted text-foreground gap-1.5 shadow-[0_1px_2px_rgba(0,0,0,0.02)] cursor-pointer"
+                >
+                  <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
+                  <span>View Calendar</span>
+                </Button>
+              </Link>
 
               {/* Add Resource CTA */}
               <Link href="/resources/new">
                 <Button
                   size="sm"
-                  className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs gap-1.5 text-xs font-semibold"
+                  className="h-9 px-3.5 rounded-[6px] bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-semibold gap-1.5 shadow-[0_1px_2px_rgba(0,0,0,0.05)] cursor-pointer"
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="w-3.5 h-3.5" />
                   <span>Add Resource</span>
                 </Button>
               </Link>
@@ -124,13 +124,13 @@ export default async function DashboardPage() {
 
           {/* Empty workspace welcome banner if 0 resources exist */}
           {isWorkspaceEmpty && (
-            <div className="rounded-2xl border border-emerald-200 dark:border-emerald-900/50 bg-emerald-50/60 dark:bg-emerald-950/20 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="rounded-[8px] border border-border bg-card p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
               <div className="flex items-start gap-3">
-                <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 mt-0.5">
-                  <Sparkles className="w-5 h-5" />
+                <div className="w-8 h-8 rounded-[6px] bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
+                  <Sparkles className="w-4 h-4" />
                 </div>
-                <div className="space-y-0.5">
-                  <h2 className="text-sm font-bold text-foreground">
+                <div className="space-y-0.5 text-left">
+                  <h2 className="text-sm font-semibold text-foreground">
                     Get started with your first resource
                   </h2>
                   <p className="text-xs text-muted-foreground max-w-xl">
@@ -141,10 +141,10 @@ export default async function DashboardPage() {
               <Link href="/resources/new">
                 <Button
                   size="sm"
-                  className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs shrink-0 gap-1.5"
+                  className="h-8.5 px-3 rounded-[6px] bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-semibold shadow-xs shrink-0 gap-1.5 cursor-pointer"
                 >
-                  <Plus className="w-4 h-4" />
-                  Add Resource
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add Resource</span>
                 </Button>
               </Link>
             </div>

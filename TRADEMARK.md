@@ -1,7 +1,6 @@
 # Duesora Name and Logo Policy
 
-The source code is licensed under the MIT License. The project name,
-logo, and other brand assets are separate from the software license.
+The Duesora software, source code, project name, logo, and brand assets are proprietary and protected.
 
 Until a formal trademark policy is adopted:
 

@@ -41,12 +41,12 @@ export function CategoryDonut({ categories = [] }: CategoryDonutProps) {
   });
 
   return (
-    <Card className="rounded-2xl border border-border/80 bg-card shadow-xs flex flex-col h-full">
-      <CardHeader className="pb-4">
-        <CardTitle className="text-base font-bold text-foreground flex items-center justify-between">
+    <Card className="rounded-[8px] border border-border bg-card shadow-[0_1px_2px_rgba(0,0,0,0.02)] flex flex-col h-full">
+      <CardHeader className="pb-3 px-5 pt-4 border-b border-border">
+        <CardTitle className="text-sm font-semibold text-foreground flex items-center justify-between">
           <span>Top Categories</span>
           {hasData && (
-            <span className="text-xs font-normal text-muted-foreground">
+            <span className="text-xs font-normal text-muted-foreground font-mono">
               {totalCount} total resources
             </span>
           )}

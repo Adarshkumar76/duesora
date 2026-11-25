@@ -30,7 +30,6 @@ The project should use Semantic Versioning after releases become public.
 - **Scheduled Executive Renewal & Cost Digest Engine**: Daily/weekly cost summary generator computing 7-day and 30-day upcoming commitments, seat bloat waste savings, and secure cron endpoint (`/api/cron/digest`).
 - **Production Security Hardening & Rate Limiter**: Sliding-window rate limiter protecting authentication endpoints (`/api/auth/*`), input sanitization against CRLF/XSS, and security fuzz tests.
 - **License & Seat Optimization Engine**: Active seat tracking, utilization percentages, idle seat bloat alerts, and recommended cost reductions.
-- **Internationalization (i18n)**: Seamless multi-language switcher supporting English, Spanish, German, French, and Japanese across all pages and navigation elements.
 - **Plugin Architecture & SDK**: Extensible modular plugin runtime (`src/lib/plugins/`) with provider and notification adapters, reference plugins for Cloudflare and ntfy.sh, and `duesora plugins` inspection CLI.
 - **Public API v1 & Interactive OpenAPI Docs**: Bearer token authenticated REST API (`/api/v1/resources`, `/api/v1/renewals`), OpenAPI 3.1 specification (`/api/openapi.json`), and interactive documentation explorer (`/api/docs`).
 - **Document & Invoice Metadata Extraction Engine**: Rule-based currency, date, vendor, and amount minor parsing from invoices and contracts with user confirmation modal.

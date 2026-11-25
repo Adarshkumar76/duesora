@@ -33,7 +33,7 @@ export function RenewalsMetrics({ metrics }: RenewalsMetricsProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {/* Overdue */}
-      <div className="rounded-2xl border border-border/80 bg-card p-4 sm:p-5 shadow-xs transition-all hover:border-rose-500/30">
+      <div className="rounded-[8px] border border-border bg-card p-4 sm:p-5 shadow-[0_1px_2px_rgba(0,0,0,0.02)] transition-all hover:border-rose-500/30">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             Overdue Commitments
@@ -56,7 +56,7 @@ export function RenewalsMetrics({ metrics }: RenewalsMetricsProps) {
       </div>
 
       {/* Critical: Next 7 Days */}
-      <div className="rounded-2xl border border-border/80 bg-card p-4 sm:p-5 shadow-xs transition-all hover:border-amber-500/30">
+      <div className="rounded-[8px] border border-border bg-card p-4 sm:p-5 shadow-[0_1px_2px_rgba(0,0,0,0.02)] transition-all hover:border-amber-500/30">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             Due in 7 Days
@@ -79,7 +79,7 @@ export function RenewalsMetrics({ metrics }: RenewalsMetricsProps) {
       </div>
 
       {/* Upcoming: Next 30 Days */}
-      <div className="rounded-2xl border border-border/80 bg-card p-4 sm:p-5 shadow-xs transition-all hover:border-emerald-500/30">
+      <div className="rounded-[8px] border border-border bg-card p-4 sm:p-5 shadow-[0_1px_2px_rgba(0,0,0,0.02)] transition-all hover:border-emerald-500/30">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             Due in 30 Days
@@ -102,7 +102,7 @@ export function RenewalsMetrics({ metrics }: RenewalsMetricsProps) {
       </div>
 
       {/* Horizon: Next 90 Days */}
-      <div className="rounded-2xl border border-border/80 bg-card p-4 sm:p-5 shadow-xs transition-all hover:border-blue-500/30">
+      <div className="rounded-[8px] border border-border bg-card p-4 sm:p-5 shadow-[0_1px_2px_rgba(0,0,0,0.02)] transition-all hover:border-blue-500/30">
         <div className="flex items-center justify-between">
           <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
             90-Day Outlook

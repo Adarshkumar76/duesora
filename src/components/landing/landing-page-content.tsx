@@ -3,27 +3,29 @@
 import { useState } from "react";
 import Link from "next/link";
 import { LandingHero } from "@/components/landing/landing-hero";
-import { TelemetryPipeline } from "@/components/landing/telemetry-pipeline";
-import { InteractiveTabs } from "@/components/landing/interactive-tabs";
 import { DockerCopy } from "@/components/landing/docker-copy";
 import { Button } from "@/components/ui/button";
 import {
+  Globe,
+  Lock,
+  CreditCard,
+  Server,
+  Cloud,
+  Key,
+  FileText,
+  ShieldCheck,
+  Cpu,
+  Bookmark,
   Bell,
   Coins,
-  ShieldCheck,
   Building2,
-  Coffee,
+  Calendar,
   CheckCircle2,
-  Lock,
-  Zap,
-  Heart,
+  ChevronDown,
+  ArrowRight,
   BookOpen,
-  Sliders,
-  Layers,
 } from "lucide-react";
-import { BUY_ME_A_COFFEE_URL, GITHUB_REPO_URL } from "@/lib/constants";
 import { Logo } from "@/components/logo";
-import { useTranslation } from "@/components/i18n/i18n-provider";
 
 interface LandingPageContentProps {
   user?: {
@@ -33,487 +35,360 @@ interface LandingPageContentProps {
 }
 
 export function LandingPageContent({ user }: LandingPageContentProps) {
-  const { t } = useTranslation();
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
-  // Seat calculator
-  const [teamSize, setTeamSize] = useState<number>(20);
-  const estimatedSavings = Math.round(teamSize * 185);
+  const toggleFaq = (idx: number) => {
+    setOpenFaqIndex((prev) => (prev === idx ? null : idx));
+  };
 
-  // Decision filter
-  const [decisionFilter, setDecisionFilter] = useState<"all" | "keep" | "review" | "cancel">("all");
-
-  const sampleContracts = [
+  const trackableCategories = [
     {
-      name: "Figma Organization Plan",
-      category: "Design",
-      cost: "$90.00/mo",
-      seats: "18 / 24 active",
-      decision: "review",
-      savings: "Save $360/yr",
-      badge: "6 Idle Seats",
-      action: "Trim Seats",
+      title: "Domain Names",
+      desc: "Monitor ICANN expirations, registrar renewal dates, and auto-renew status across Namecheap, Cloudflare, GoDaddy, and Route 53.",
+      icon: Globe,
     },
     {
-      name: "Datadog APM Staging Cluster",
-      category: "Monitoring",
-      cost: "$240.00/mo",
-      seats: "Legacy environment",
-      decision: "cancel",
-      savings: "Save $2,880/yr",
-      badge: "Zero Traffic in 45d",
-      action: "Decommission",
+      title: "SSL & TLS Certificates",
+      desc: "Track Let's Encrypt 90-day certificates, custom Wildcard certificates, and intermediate chains before browser warnings trigger.",
+      icon: Lock,
     },
     {
-      name: "Google Workspace Enterprise",
-      category: "Productivity",
-      cost: "$72.00/mo",
-      seats: "12 / 12 active",
-      decision: "keep",
-      savings: "Fully Utilized",
-      badge: "Essential",
-      action: "Auto-renew",
+      title: "SaaS Subscriptions",
+      desc: "Manage recurring subscriptions for Figma, Linear, GitHub, Slack, Notion, and Google Workspace with seat counts and monthly costs.",
+      icon: CreditCard,
     },
     {
-      name: "AWS US-East Production RDS",
-      category: "Infrastructure",
-      cost: "$114.50/mo",
-      seats: "PostgreSQL 16 Multi-AZ",
-      decision: "keep",
-      savings: "Reserved Instance",
-      badge: "Production Core",
-      action: "Auto-renew",
+      title: "Hosting & VPS",
+      desc: "Keep track of dedicated servers, Hetzner boxes, DigitalOcean droplets, Vercel deployments, and monthly billing cycles.",
+      icon: Server,
+    },
+    {
+      title: "Cloud Infrastructure",
+      desc: "Catalog AWS RDS databases, Google Cloud instances, S3 storage commitments, and Reserved Instance renewal windows.",
+      icon: Cloud,
+    },
+    {
+      title: "API Plans & Credits",
+      desc: "Track OpenAI, Anthropic, Resend, Twilio, and Stripe credits, prepaid balances, and monthly plan renewals.",
+      icon: Key,
+    },
+    {
+      title: "Software Licenses",
+      desc: "Record JetBrains, Ableton, Adobe, and desktop developer software licenses, seat allocations, and upgrade renewal dates.",
+      icon: Cpu,
+    },
+    {
+      title: "Vendor Contracts & MSAs",
+      desc: "Store master service agreements, notice period deadlines, auto-renew opt-out clauses, and key contact details.",
+      icon: FileText,
+    },
+    {
+      title: "Warranties & Equipment",
+      desc: "Track company hardware warranties, AppleCare coverage, office leases, and physical equipment support contracts.",
+      icon: ShieldCheck,
+    },
+    {
+      title: "Custom Resources",
+      desc: "Define custom tracking items for compliance deadlines, trademark renewals, tax filings, or specialized industry certificates.",
+      icon: Bookmark,
     },
   ];
 
-  const filteredContracts =
-    decisionFilter === "all"
-      ? sampleContracts
-      : sampleContracts.filter((c) => c.decision === decisionFilter);
+  const faqs = [
+    {
+      question: "How is Duesora deployed and hosted?",
+      answer: "Duesora is self-hostable software designed for private infrastructure. You can run it on your own servers with zero vendor lock-in, recurring SaaS subscription fees, or feature gates.",
+    },
+    {
+      question: "How do I self-host Duesora?",
+      answer: "You can run Duesora with a single Docker command using Docker Compose. A pre-built container image and compose configuration are provided, requiring only standard PostgreSQL and environment variables.",
+    },
+    {
+      question: "Can I import my existing spreadsheet or data?",
+      answer: "Yes. Duesora includes a built-in CSV import and export tool. You can map your existing spreadsheets into Duesora with columns for name, category, renewal date, cost, and provider.",
+    },
+    {
+      question: "Which notification channels are supported for alerts?",
+      answer: "Duesora supports automated multi-channel notifications via Email (SMTP or Resend), Discord Webhooks, Slack Incoming Webhooks, Telegram Bots, Microsoft Teams, custom Webhooks, and self-hosted ntfy servers.",
+    },
+    {
+      question: "Can I sync renewals with my calendar?",
+      answer: "Yes. Every workspace generates a private, tokenized .ics iCalendar subscription link that you can subscribe to in Google Calendar, Apple Calendar, or Microsoft Outlook.",
+    },
+    {
+      question: "Does Duesora send any data back to external servers?",
+      answer: "No. Duesora does not contain any third-party tracking scripts, analytics cookies, or telemetry pings. When you self-host Duesora, your database and asset data remain entirely within your private environment.",
+    },
+  ];
 
   return (
     <>
       <main className="flex-1">
-        {/* ================= HERO SECTION (Asymmetric Split Layout) ================= */}
+        {/* ================= HERO SECTION ================= */}
         <LandingHero user={user} />
 
-        {/* ================= TECHNICAL SPECIFICATIONS RIBBON ================= */}
-        <section className="border-y border-border bg-card/60 py-4 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <p className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground font-semibold">
-              {t("landing.techStackTitle")}
-            </p>
-            <div className="flex items-center gap-3 sm:gap-4 flex-wrap text-xs font-mono text-foreground/80">
-              <span className="px-2 py-0.5 rounded-[4px] bg-muted border border-border">Next.js 16</span>
-              <span className="px-2 py-0.5 rounded-[4px] bg-muted border border-border">React 19</span>
-              <span className="px-2 py-0.5 rounded-[4px] bg-muted border border-border">PostgreSQL 16</span>
-              <span className="px-2 py-0.5 rounded-[4px] bg-muted border border-border">Drizzle ORM</span>
-              <span className="px-2 py-0.5 rounded-[4px] bg-muted border border-border">Tailwind v4</span>
-              <span className="px-2 py-0.5 rounded-[4px] bg-muted border border-border">Docker Ready</span>
-            </div>
-          </div>
-        </section>
-
-        {/* ================= FINANCIAL TELEMETRY & DECISION ENGINE ================= */}
-        <section className="py-14 sm:py-18 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8 text-left">
+        {/* ================= WHAT YOU CAN TRACK ================= */}
+        <section id="track" className="py-14 sm:py-18 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-10 text-left border-t border-border">
           <div className="space-y-2 max-w-2xl">
-            <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-              <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground font-semibold">
-                Autonomous Financial Telemetry
-              </span>
-            </div>
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-              Eliminate zombie SaaS and rogue renewals
+              What you can track with Duesora
             </h2>
-            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-              Modern companies lose thousands annually to unattended trials and forgotten seat licenses. Duesora enforces structured decision workflows.
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              From everyday SaaS subscriptions to critical production TLS certificates, Duesora gives you one single place to record ownership, renewal dates, and costs.
             </p>
           </div>
 
-          {/* Interactive Decision Matrix & Waste Calculator Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-            {/* Left Col: Interactive Decision Matrix (Col 7) */}
-            <div className="lg:col-span-7 rounded-[8px] border border-border bg-card p-5 sm:p-6 shadow-[0_1px_2px_rgba(0,0,0,0.02)] space-y-5">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-border/80">
-                <div>
-                  <h3 className="text-sm font-semibold tracking-tight text-foreground">
-                    The Renewal Decision Engine
-                  </h3>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Classify contracts ahead of billing: Keep, Renegotiate Seats, or Cancel.
-                  </p>
-                </div>
-
-                {/* Filter buttons */}
-                <div className="flex items-center gap-1 bg-muted/60 p-0.5 rounded-[6px] border border-border text-xs shrink-0">
-                  {(["all", "keep", "review", "cancel"] as const).map((filter) => (
-                    <button
-                      key={filter}
-                      type="button"
-                      onClick={() => setDecisionFilter(filter)}
-                      className={`px-2 py-0.5 rounded-[4px] text-[11px] font-mono uppercase tracking-wider transition-colors cursor-pointer ${
-                        decisionFilter === filter
-                          ? "bg-card text-foreground shadow-[0_1px_2px_rgba(0,0,0,0.03)] font-semibold border border-border/60"
-                          : "text-muted-foreground hover:text-foreground"
-                      }`}
-                    >
-                      {filter}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Contracts List */}
-              <div className="space-y-2">
-                {filteredContracts.map((contract) => (
-                  <div
-                    key={contract.name}
-                    className="p-3 rounded-[6px] border border-border bg-background hover:bg-muted/40 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-2.5"
-                  >
-                    <div className="space-y-0.5 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-semibold text-xs text-foreground">{contract.name}</span>
-                        <span
-                          className={`px-1.5 py-0.5 rounded-[4px] text-[10px] font-mono border ${
-                            contract.decision === "cancel"
-                              ? "bg-rose-500/10 text-rose-700 dark:text-rose-300 border-rose-500/30"
-                              : contract.decision === "review"
-                              ? "bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/30"
-                              : "bg-teal-500/10 text-teal-800 dark:text-teal-300 border-teal-500/30"
-                          }`}
-                        >
-                          {contract.badge}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-muted-foreground">
-                        {contract.category} · {contract.seats}
-                      </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {trackableCategories.map((cat) => {
+              const Icon = cat.icon;
+              return (
+                <div
+                  key={cat.title}
+                  className="p-4 sm:p-5 rounded-[8px] border border-border bg-card hover:border-foreground/20 transition-colors space-y-2 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-[6px] bg-muted/80 border border-border flex items-center justify-center shrink-0 text-primary">
+                      <Icon className="w-4 h-4" />
                     </div>
-
-                    <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0">
-                      <div className="text-right">
-                        <span className="text-xs font-mono tabular-nums font-semibold text-foreground block">
-                          {contract.cost}
-                        </span>
-                        <span className="text-[10px] font-mono text-primary font-medium">
-                          {contract.savings}
-                        </span>
-                      </div>
-
-                      <span className="px-2.5 py-1 rounded-[5px] text-xs font-medium bg-card border border-border text-foreground shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
-                        {contract.action}
-                      </span>
-                    </div>
+                    <h3 className="font-semibold text-sm text-foreground">
+                      {cat.title}
+                    </h3>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Right Col: Interactive Seat Waste Calculator (Col 5) */}
-            <div className="lg:col-span-5 rounded-[8px] border border-border bg-card p-5 sm:p-6 shadow-[0_1px_2px_rgba(0,0,0,0.02)] flex flex-col justify-between space-y-5">
-              <div className="space-y-1.5">
-                <div className="flex items-center gap-2">
-                  <Sliders className="w-4 h-4 text-primary" />
-                  <h3 className="text-sm font-semibold tracking-tight text-foreground">
-                    Interactive Waste Calculator
-                  </h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    {cat.desc}
+                  </p>
                 </div>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  Adjust team headcount to forecast annual subscription waste Duesora prevents through license audits.
-                </p>
-              </div>
-
-              {/* Slider Controller */}
-              <div className="space-y-3 p-4 rounded-[6px] border border-border bg-muted/20">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-muted-foreground">Team Headcount</span>
-                  <span className="text-xs font-mono tabular-nums font-bold text-foreground bg-card px-2 py-0.5 rounded-[4px] border border-border">
-                    {teamSize} Members
-                  </span>
-                </div>
-
-                <input
-                  type="range"
-                  min="5"
-                  max="150"
-                  step="5"
-                  value={teamSize}
-                  onChange={(e) => setTeamSize(Number(e.target.value))}
-                  className="w-full h-1.5 bg-muted rounded-lg appearance-none cursor-pointer accent-teal-700"
-                />
-
-                <div className="flex justify-between text-[10px] font-mono text-muted-foreground">
-                  <span>5 members</span>
-                  <span>75 members</span>
-                  <span>150+ scale</span>
-                </div>
-              </div>
-
-              {/* Result Card */}
-              <div className="p-3.5 rounded-[6px] border border-border bg-muted/30 space-y-1 text-left">
-                <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground block">
-                  Estimated Annual Capital Saved
-                </span>
-                <p className="text-2xl font-bold font-mono tabular-nums text-foreground">
-                  ${estimatedSavings.toLocaleString()}
-                  <span className="text-xs font-normal text-muted-foreground ml-1">/ year</span>
-                </p>
-                <p className="text-[11px] text-muted-foreground">
-                  Based on 1.8 unused seats per 10 employees across industry SaaS subscriptions.
-                </p>
-              </div>
-            </div>
+              );
+            })}
           </div>
         </section>
 
-        {/* ================= TELEMETRY PIPELINE IN MOTION ================= */}
-        <TelemetryPipeline />
-
-        {/* ================= SYSTEM CAPABILITIES / EDITORIAL GRID ================= */}
-        <section id="features" className="py-14 sm:py-18 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8 text-left">
-          <div className="space-y-2 max-w-2xl">
-            <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-              <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground font-semibold">
-                {t("landing.featuresTag")}
-              </span>
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-              {t("landing.featuresTitle")}
-            </h2>
-            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-              {t("landing.featuresSubtitle")}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
-            {/* Bento Card 1: Multi-Stage Escalation Ladder (Col 7) */}
-            <div className="md:col-span-7 rounded-[8px] border border-border bg-card p-5 sm:p-6 shadow-[0_1px_2px_rgba(0,0,0,0.02)] flex flex-col justify-between space-y-5">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-primary">
-                  <Bell className="w-4 h-4" />
-                  <span className="text-xs font-mono font-semibold uppercase tracking-wider">
-                    Escalation Pipeline
-                  </span>
-                </div>
-                <h3 className="text-base font-bold tracking-tight text-foreground">
-                  {t("landing.bento1Title")}
-                </h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {t("landing.bento1Desc")}
-                </p>
-              </div>
-
-              {/* Timeline Simulation */}
-              <div className="rounded-[6px] border border-border bg-muted/20 p-3.5 space-y-2">
-                <div className="flex items-center justify-between text-xs font-semibold">
-                  <span className="font-mono text-foreground text-xs">
-                    duesora.com (GoDaddy Domain)
-                  </span>
-                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-[4px] bg-card border border-border text-foreground">
-                    {t("landing.bento1Badge")}
-                  </span>
-                </div>
-                <div className="w-full bg-border/60 h-1.5 rounded-full overflow-hidden">
-                  <div className="bg-primary h-full rounded-full w-4/5" />
-                </div>
-                <p className="text-[11px] text-muted-foreground">
-                  {t("landing.bento1Note")}
-                </p>
-              </div>
-            </div>
-
-            {/* Bento Card 2: Multi-Currency Minor-Integer Math (Col 5) */}
-            <div className="md:col-span-5 rounded-[8px] border border-border bg-card p-5 sm:p-6 shadow-[0_1px_2px_rgba(0,0,0,0.02)] flex flex-col justify-between space-y-5">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-primary">
-                  <Coins className="w-4 h-4" />
-                  <span className="text-xs font-mono font-semibold uppercase tracking-wider">
-                    Deterministic Math
-                  </span>
-                </div>
-                <h3 className="text-base font-bold tracking-tight text-foreground">
-                  {t("landing.bento2Title")}
-                </h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {t("landing.bento2Desc")}
-                </p>
-              </div>
-
-              <div className="rounded-[6px] border border-border bg-muted/20 p-3.5 space-y-1.5 font-mono text-xs">
-                <div className="flex justify-between text-muted-foreground text-[11px]">
-                  <span>{t("landing.bento2Tag")}</span>
-                  <span className="text-primary font-medium">{t("landing.bento2Accuracy")}</span>
-                </div>
-                <p className="text-foreground font-semibold tabular-nums">
-                  amount_minor: 124875 → $1,248.75
-                </p>
-                <p className="text-[10px] text-muted-foreground">
-                  Zero float rounding drift across multi-currency conversions.
-                </p>
-              </div>
-            </div>
-
-            {/* Bento Card 3: Multi-Tenant Workspaces (Col 5) */}
-            <div className="md:col-span-5 rounded-[8px] border border-border bg-card p-5 sm:p-6 shadow-[0_1px_2px_rgba(0,0,0,0.02)] flex flex-col justify-between space-y-5">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-primary">
-                  <Building2 className="w-4 h-4" />
-                  <span className="text-xs font-mono font-semibold uppercase tracking-wider">
-                    Access Isolation
-                  </span>
-                </div>
-                <h3 className="text-base font-bold tracking-tight text-foreground">
-                  {t("landing.bento3Title")}
-                </h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {t("landing.bento3Desc")}
-                </p>
-              </div>
-
-              <div className="space-y-1.5 text-xs">
-                <div className="flex items-center justify-between p-2.5 rounded-[5px] bg-background border border-border">
-                  <span className="font-medium text-foreground">Acme Agency Workspace</span>
-                  <span className="px-1.5 py-0.5 rounded-[4px] text-[10px] font-mono bg-muted text-foreground border border-border">
-                    Owner
-                  </span>
-                </div>
-                <div className="flex items-center justify-between p-2.5 rounded-[5px] bg-background border border-border">
-                  <span className="font-medium text-foreground">Personal Side Projects</span>
-                  <span className="px-1.5 py-0.5 rounded-[4px] text-[10px] font-mono bg-muted text-muted-foreground border border-border">
-                    Admin
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Bento Card 4: Automated SSL & Domain Health (Col 7) */}
-            <div className="md:col-span-7 rounded-[8px] border border-border bg-card p-5 sm:p-6 shadow-[0_1px_2px_rgba(0,0,0,0.02)] flex flex-col justify-between space-y-5">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-primary">
-                  <ShieldCheck className="w-4 h-4" />
-                  <span className="text-xs font-mono font-semibold uppercase tracking-wider">
-                    Autonomous Probes
-                  </span>
-                </div>
-                <h3 className="text-base font-bold tracking-tight text-foreground">
-                  {t("landing.bento4Title")}
-                </h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {t("landing.bento4Desc")}
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                <div className="p-3 rounded-[6px] border border-border bg-muted/20 space-y-1">
-                  <span className="text-[10px] font-mono uppercase text-muted-foreground block">
-                    {t("landing.bento4CertChain")}
-                  </span>
-                  <p className="text-xs font-semibold text-primary flex items-center gap-1.5">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    <span>{t("landing.bento4CertValid")}</span>
-                  </p>
-                </div>
-                <div className="p-3 rounded-[6px] border border-border bg-muted/20 space-y-1">
-                  <span className="text-[10px] font-mono uppercase text-muted-foreground block">
-                    {t("landing.bento4AutoRenew")}
-                  </span>
-                  <p className="text-xs font-mono font-semibold text-foreground">
-                    {t("landing.bento4AutoRenewVal")}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ================= CATEGORY SHOWCASE ================= */}
-        <section id="categories" className="py-14 sm:py-18 bg-muted/20 border-y border-border px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto space-y-8 text-left">
+        {/* ================= HOW DUESORA WORKS ================= */}
+        <section id="how-it-works" className="py-14 sm:py-18 bg-muted/20 border-y border-border px-4 sm:px-6 lg:px-8 text-left">
+          <div className="max-w-7xl mx-auto space-y-10">
             <div className="space-y-2 max-w-2xl">
-              <div className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-                <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground font-semibold">
-                  {t("landing.categoriesTag")}
-                </span>
-              </div>
               <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-                {t("landing.categoriesTitle")}
+                How Duesora works
               </h2>
-              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                {t("landing.categoriesSubtitle")}
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Simple, straightforward steps to eliminate surprise charges and expired infrastructure.
               </p>
             </div>
 
-            <InteractiveTabs />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Step 1 */}
+              <div className="p-6 rounded-[8px] border border-border bg-card space-y-3.5 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-xs font-semibold text-primary">
+                    01
+                  </span>
+                  <span className="text-xs text-muted-foreground font-mono">Input</span>
+                </div>
+                <h3 className="text-base font-semibold text-foreground">
+                  Add what you own
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Enter your domains, subscriptions, licenses, and certificates through a clean form or bulk-import your existing records using CSV.
+                </p>
+              </div>
+
+              {/* Step 2 */}
+              <div className="p-6 rounded-[8px] border border-border bg-card space-y-3.5 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-xs font-semibold text-primary">
+                    02
+                  </span>
+                  <span className="text-xs text-muted-foreground font-mono">Ownership</span>
+                </div>
+                <h3 className="text-base font-semibold text-foreground">
+                  Set deadlines and owners
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Specify renewal intervals, notice period deadlines (e.g. 30 days before auto-renew), costs, and designate who on your team is responsible.
+                </p>
+              </div>
+
+              {/* Step 3 */}
+              <div className="p-6 rounded-[8px] border border-border bg-card space-y-3.5 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-xs font-semibold text-primary">
+                    03
+                  </span>
+                  <span className="text-xs text-muted-foreground font-mono">Action</span>
+                </div>
+                <h3 className="text-base font-semibold text-foreground">
+                  Get notified before charges
+                </h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Receive alerts in Slack, Discord, Telegram, or email well before billing takes place. Review unused seats, renegotiate, or cancel on time.
+                </p>
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* ================= SELF-HOSTING & OPEN SOURCE ================= */}
-        <section id="self-host" className="py-14 sm:py-18 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8 text-left">
+        {/* ================= CORE FEATURES OVERVIEW ================= */}
+        <section id="features" className="py-14 sm:py-18 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-10 text-left">
           <div className="space-y-2 max-w-2xl">
-            <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-              <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground font-semibold">
-                {t("landing.selfHostTag")}
-              </span>
-            </div>
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-              {t("landing.selfHostTitle")}
+              Built for precision and clarity
             </h2>
-            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-              {t("landing.selfHostSubtitle")}
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              No bloated enterprise gimmicks. Just the tools you need to stay organized and financially disciplined.
             </p>
           </div>
 
-          {/* Docker Run Box */}
-          <div className="max-w-4xl">
-            <DockerCopy />
-          </div>
-
-          {/* Value Props Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-            <div className="p-4 rounded-[8px] border border-border bg-card space-y-1.5 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
-              <Lock className="w-4 h-4 text-primary" />
-              <h4 className="text-xs font-semibold text-foreground">{t("landing.zeroTrackingTitle")}</h4>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                {t("landing.zeroTrackingDesc")}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {/* Feature 1: Cost Tracking */}
+            <div className="p-6 rounded-[8px] border border-border bg-card space-y-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+              <div className="flex items-center gap-2.5 text-primary">
+                <Coins className="w-5 h-5" />
+                <h3 className="text-base font-semibold text-foreground">
+                  Predictable Cost &amp; Recurring Spend Tracking
+                </h3>
+              </div>
+              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                Track costs across multiple currencies (USD, EUR, GBP, INR) with deterministic integer-minor arithmetic. See your total monthly and annual recurring commitments at a glance without float rounding errors.
               </p>
             </div>
 
-            <div className="p-4 rounded-[8px] border border-border bg-card space-y-1.5 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
-              <Zap className="w-4 h-4 text-primary" />
-              <h4 className="text-xs font-semibold text-foreground">{t("landing.lightningFastTitle")}</h4>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                {t("landing.lightningFastDesc")}
+            {/* Feature 2: Multi-Channel Reminders */}
+            <div className="p-6 rounded-[8px] border border-border bg-card space-y-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+              <div className="flex items-center gap-2.5 text-primary">
+                <Bell className="w-5 h-5" />
+                <h3 className="text-base font-semibold text-foreground">
+                  Multi-Channel Notification Dispatch
+                </h3>
+              </div>
+              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                Connect your team’s existing communication tools. Send upcoming renewal digests and critical expiration warnings to Slack channels, Discord servers, Telegram groups, ntfy topics, or via SMTP email.
               </p>
             </div>
 
-            <div className="p-4 rounded-[8px] border border-border bg-card space-y-1.5 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
-              <Layers className="w-4 h-4 text-primary" />
-              <h4 className="text-xs font-semibold text-foreground">{t("landing.freeForeverTitle")}</h4>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                {t("landing.freeForeverDesc")}
+            {/* Feature 3: Workspace Teams & Roles */}
+            <div className="p-6 rounded-[8px] border border-border bg-card space-y-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+              <div className="flex items-center gap-2.5 text-primary">
+                <Building2 className="w-5 h-5" />
+                <h3 className="text-base font-semibold text-foreground">
+                  Workspaces &amp; Role-Based Access Control
+                </h3>
+              </div>
+              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                Organize assets across isolated workspaces for different companies, clients, or personal projects. Invite team members with Owner, Admin, Member, or Viewer roles to delegate ownership responsibly.
+              </p>
+            </div>
+
+            {/* Feature 4: Calendar Sync */}
+            <div className="p-6 rounded-[8px] border border-border bg-card space-y-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+              <div className="flex items-center gap-2.5 text-primary">
+                <Calendar className="w-5 h-5" />
+                <h3 className="text-base font-semibold text-foreground">
+                  Live Calendar Integration (.ics)
+                </h3>
+              </div>
+              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                Never miss an event on your personal schedule. Subscribe to your workspace’s dynamic .ics feed directly in Google Calendar, Apple Calendar, or Outlook to view upcoming deadlines alongside your meetings.
               </p>
             </div>
           </div>
         </section>
 
-        {/* ================= RESTRAINED PRE-FOOTER CTA ================= */}
-        <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        {/* ================= PRIVATE DEPLOYMENT & SELF-HOSTING ================= */}
+        <section id="self-host" className="py-14 sm:py-18 bg-muted/20 border-y border-border px-4 sm:px-6 lg:px-8 text-left">
+          <div className="max-w-7xl mx-auto space-y-8">
+            <div className="space-y-2 max-w-2xl">
+              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+                Run it on your own terms
+              </h2>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Deploy Duesora anywhere Docker runs. Keep your internal infrastructure inventory and renewal dates completely confidential.
+              </p>
+            </div>
+
+            {/* Docker Run Copy Widget */}
+            <div className="max-w-3xl">
+              <DockerCopy />
+            </div>
+
+            {/* Value Pillars */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="p-5 rounded-[8px] border border-border bg-card space-y-2 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+                <h4 className="text-xs font-semibold text-foreground flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary" />
+                  <span>Full Data Sovereignty</span>
+                </h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Your data is stored in your own PostgreSQL instance. No vendor lock-in and no cloud telemetry.
+                </p>
+              </div>
+
+              <div className="p-5 rounded-[8px] border border-border bg-card space-y-2 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+                <h4 className="text-xs font-semibold text-foreground flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary" />
+                  <span>Private &amp; Customizable</span>
+                </h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Configure and extend the platform to fit your company’s workflow within your private environment.
+                </p>
+              </div>
+
+              <div className="p-5 rounded-[8px] border border-border bg-card space-y-2 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+                <h4 className="text-xs font-semibold text-foreground flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-primary" />
+                  <span>Lightweight &amp; Fast</span>
+                </h4>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  Built on modern Next.js 16, React 19, and Drizzle ORM for instant page transitions and minimal resource consumption.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ================= FREQUENTLY ASKED QUESTIONS ================= */}
+        <section id="faq" className="py-14 sm:py-18 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto space-y-8 text-left">
+          <div className="space-y-2">
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+              Frequently asked questions
+            </h2>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Clear answers to common questions about Duesora, licensing, and deployment.
+            </p>
+          </div>
+
+          <div className="divide-y divide-border border border-border rounded-[8px] bg-card overflow-hidden">
+            {faqs.map((faq, idx) => (
+              <div key={faq.question} className="p-4 sm:p-5">
+                <button
+                  type="button"
+                  onClick={() => toggleFaq(idx)}
+                  className="w-full flex items-center justify-between text-left gap-4 font-semibold text-sm text-foreground hover:text-primary transition-colors cursor-pointer"
+                >
+                  <span>{faq.question}</span>
+                  <ChevronDown
+                    className={`w-4 h-4 text-muted-foreground shrink-0 transition-transform duration-200 ${openFaqIndex === idx ? "rotate-180 text-primary" : ""
+                      }`}
+                  />
+                </button>
+                {openFaqIndex === idx && (
+                  <p className="pt-3 text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                    {faq.answer}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ================= CALL TO ACTION ================= */}
+        <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
           <div className="rounded-[8px] border border-border bg-card p-6 sm:p-10 shadow-[0_1px_3px_rgba(0,0,0,0.03)] text-left flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-2 max-w-xl">
-              <div className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground font-semibold">
-                  Deterministic Control
-                </span>
-              </div>
               <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-                {t("landing.preFooterTitle")}
+                Start tracking your renewals today
               </h2>
               <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                {t("landing.preFooterSubtitle")}
+                Take control of your domains, subscriptions, and certificates in minutes. Private and self-hostable.
               </p>
             </div>
 
@@ -521,27 +396,29 @@ export function LandingPageContent({ user }: LandingPageContentProps) {
               <Link href="/register">
                 <Button
                   size="lg"
-                  className="w-full sm:w-auto h-9.5 px-4 rounded-[6px] bg-primary text-primary-foreground hover:bg-primary/90 font-semibold text-xs shadow-[0_1px_2px_rgba(0,0,0,0.05)] cursor-pointer"
+                  className="w-full sm:w-auto h-10 px-5 rounded-[6px] bg-primary text-primary-foreground hover:bg-primary/90 font-semibold text-xs shadow-[0_1px_2px_rgba(0,0,0,0.05)] cursor-pointer"
                 >
-                  {t("landing.createFreeWorkspace")}
+                  <span>Get Started</span>
+                  <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
                 </Button>
               </Link>
 
-              <a
-                href={BUY_ME_A_COFFEE_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 h-9.5 px-3.5 rounded-[6px] border border-border bg-card hover:bg-muted text-foreground text-xs font-medium transition-colors shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
-              >
-                <Coffee className="w-3.5 h-3.5 text-muted-foreground" />
-                <span>{t("landing.support")}</span>
-              </a>
+              <Link href="/api/docs" className="w-full sm:w-auto">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="w-full sm:w-auto h-10 px-4 rounded-[6px] border border-border bg-card hover:bg-muted text-foreground text-xs font-medium transition-colors shadow-[0_1px_2px_rgba(0,0,0,0.02)] cursor-pointer"
+                >
+                  <BookOpen className="w-3.5 h-3.5 mr-1.5 text-primary" />
+                  <span>API Documentation</span>
+                </Button>
+              </Link>
             </div>
           </div>
         </section>
       </main>
 
-      {/* ================= EDITORIAL FOOTER ================= */}
+      {/* ================= CLEAN FOOTER ================= */}
       <footer className="border-t border-border bg-card/60 py-8 px-4 sm:px-6 lg:px-8 text-left">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
           <div className="flex items-center gap-3">
@@ -550,40 +427,30 @@ export function LandingPageContent({ user }: LandingPageContentProps) {
               Duesora
             </span>
             <span className="text-xs text-muted-foreground">
-              &copy; {new Date().getFullYear()} Duesora. {t("landing.allRightsReserved")}
+              &copy; {new Date().getFullYear()} Duesora. All rights reserved.
             </span>
           </div>
 
           <div className="flex items-center gap-5 text-xs font-medium text-muted-foreground flex-wrap">
-            <a href="#features" className="hover:text-foreground transition-colors">
-              {t("landing.features")}
+            <a href="#track" className="hover:text-foreground transition-colors">
+              What to Track
             </a>
-            <a href="#categories" className="hover:text-foreground transition-colors">
-              {t("landing.categories")}
+            <a href="#how-it-works" className="hover:text-foreground transition-colors">
+              How It Works
+            </a>
+            <a href="#features" className="hover:text-foreground transition-colors">
+              Features
             </a>
             <a href="#self-host" className="hover:text-foreground transition-colors">
-              {t("landing.selfHost")}
+              Self-Host
+            </a>
+            <a href="#faq" className="hover:text-foreground transition-colors">
+              FAQ
             </a>
             <Link href="/api/docs" className="hover:text-foreground transition-colors flex items-center gap-1">
               <BookOpen className="w-3 h-3 text-primary" />
-              <span>Documentation</span>
+              <span>API Documentation</span>
             </Link>
-            <a
-              href={GITHUB_REPO_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-foreground transition-colors"
-            >
-              {t("landing.github")}
-            </a>
-            <a
-              href={BUY_ME_A_COFFEE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-foreground transition-colors"
-            >
-              {t("landing.support")}
-            </a>
           </div>
 
           <div className="text-xs text-muted-foreground flex items-center gap-1">
@@ -593,9 +460,7 @@ export function LandingPageContent({ user }: LandingPageContentProps) {
               rel="noopener noreferrer"
               href="https://adarshportfolio.onrender.com/"
             >
-              <span>{t("landing.builtWith")}</span>
-              <Heart className="w-3 h-3 text-rose-500 fill-rose-500" />
-              <span>{t("landing.by")}</span>
+              <span>Built by</span>
               <span className="font-medium underline underline-offset-2">Adarsh Kumar</span>
             </a>
           </div>
