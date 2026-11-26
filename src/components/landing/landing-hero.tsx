@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CheckCircle2, Shield, Lock, Terminal } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { HeroPreview } from "@/components/landing/hero-preview";
 
 interface LandingHeroProps {
@@ -15,12 +15,12 @@ interface LandingHeroProps {
 export function LandingHero({ user }: LandingHeroProps) {
   return (
     <section className="pt-12 sm:pt-16 pb-12 sm:pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
         {/* Left Column: Clear, Honest Value Proposition */}
-        <div className="lg:col-span-5 space-y-6 text-left">
+        <div className="lg:col-span-7 space-y-6 text-left">
           {/* Main Headline & Description */}
-          <div className="space-y-3.5">
-            <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-bold tracking-tight text-foreground leading-[1.12]">
+          <div className="space-y-3.5 max-w-xl">
+            <h1 className="text-3xl sm:text-4xl lg:text-[46px] font-serif font-normal tracking-tight text-foreground leading-[1.1]">
               Never miss a renewal again.
             </h1>
             <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
@@ -64,53 +64,10 @@ export function LandingHero({ user }: LandingHeroProps) {
               </>
             )}
           </div>
-
-          {/* Authentic Proof Points */}
-          <div className="pt-5 border-t border-border grid grid-cols-2 gap-4 text-left">
-            <div className="space-y-0.5">
-              <span className="text-xs font-semibold text-foreground flex items-center gap-1.5">
-                <CheckCircle2 className="w-3.5 h-3.5 text-primary shrink-0" />
-                <span>Zero Hidden Fees</span>
-              </span>
-              <p className="text-[11px] text-muted-foreground pl-5">
-                Full-featured tool for your entire team.
-              </p>
-            </div>
-
-            <div className="space-y-0.5">
-              <span className="text-xs font-semibold text-foreground flex items-center gap-1.5">
-                <Lock className="w-3.5 h-3.5 text-primary shrink-0" />
-                <span>Self-Hosted &amp; Private</span>
-              </span>
-              <p className="text-[11px] text-muted-foreground pl-5">
-                Run locally or on your VPS. Zero telemetry.
-              </p>
-            </div>
-
-            <div className="space-y-0.5">
-              <span className="text-xs font-semibold text-foreground flex items-center gap-1.5">
-                <Terminal className="w-3.5 h-3.5 text-primary shrink-0" />
-                <span>1-Command Setup</span>
-              </span>
-              <p className="text-[11px] text-muted-foreground pl-5">
-                Docker Compose ready in 30 seconds.
-              </p>
-            </div>
-
-            <div className="space-y-0.5">
-              <span className="text-xs font-semibold text-foreground flex items-center gap-1.5">
-                <Shield className="w-3.5 h-3.5 text-primary shrink-0" />
-                <span>Multi-Channel Alerts</span>
-              </span>
-              <p className="text-[11px] text-muted-foreground pl-5">
-                Email, Slack, Discord, Telegram, and ntfy.
-              </p>
-            </div>
-          </div>
         </div>
 
-        {/* Right Column: Authentic Live Product Preview */}
-        <div className="lg:col-span-7">
+        {/* Right Column: Clean, Compact Asset Ledger Preview */}
+        <div className="lg:col-span-5">
           <HeroPreview />
         </div>
       </div>

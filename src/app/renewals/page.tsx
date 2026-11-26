@@ -85,7 +85,7 @@ export default async function RenewalsPage({ searchParams }: RenewalsPageProps) 
   }
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground selection:bg-emerald-500/20">
+    <div className="flex min-h-screen bg-background text-foreground selection:bg-primary/20">
       {/* Sidebar */}
       <AppSidebar />
 
@@ -103,9 +103,9 @@ export default async function RenewalsPage({ searchParams }: RenewalsPageProps) 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <RefreshCw className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-                  Renewals & Expiry Pipeline
+                <RefreshCw className="w-5 h-5 text-primary" />
+                <h1 className="text-2xl sm:text-3xl font-serif font-normal tracking-tight text-foreground">
+                  Renewals &amp; Expiry Pipeline
                 </h1>
               </div>
               <p className="text-sm text-muted-foreground">

@@ -120,11 +120,11 @@ function RegisterForm() {
             <Logo size={32} color="#0F766E" className="transition-transform group-hover:scale-105 duration-150" />
           </Link>
         </div>
-        <CardTitle className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
+        <CardTitle className="text-xl sm:text-2xl font-serif font-normal tracking-tight text-foreground">
           Create your Duesora account
         </CardTitle>
         <CardDescription className="text-xs sm:text-sm text-muted-foreground">
-          Free and open-source renewal &amp; expiry management
+          Self-hosted renewal &amp; asset management
         </CardDescription>
       </CardHeader>
 
@@ -264,7 +264,7 @@ function RegisterForm() {
                 Creating workspace...
               </>
             ) : (
-              "Create Free Account"
+              "Create Account →"
             )}
           </Button>
         </form>

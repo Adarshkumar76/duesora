@@ -227,14 +227,14 @@ export function SubscriptionsTable({
                 onClick={() => setIsImportModalOpen(true)}
                 className="rounded-xl border-border/80 shadow-2xs gap-1.5 text-xs font-semibold hover:bg-muted/70 cursor-pointer h-8"
               >
-                <UploadCloud className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                <UploadCloud className="w-3.5 h-3.5 text-primary" />
                 <span>Import Subscriptions</span>
               </Button>
 
               <Link href="/resources/new?type=subscription">
                 <Button
                   size="sm"
-                  className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs gap-1.5 text-xs font-semibold cursor-pointer h-8"
+                  className="rounded-[6px] bg-primary hover:bg-primary/90 text-primary-foreground shadow-xs gap-1.5 text-xs font-semibold cursor-pointer h-8"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add Subscription</span>
@@ -464,7 +464,7 @@ export function SubscriptionsTable({
                 <Link href="/resources/new?type=subscription">
                   <Button
                     size="sm"
-                    className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs gap-1.5 text-xs font-medium cursor-pointer"
+                    className="rounded-[6px] bg-primary hover:bg-primary/90 text-primary-foreground shadow-xs gap-1.5 text-xs font-semibold cursor-pointer"
                   >
                     <Plus className="w-4 h-4" />
                     <span>Add First Subscription</span>

@@ -36,7 +36,7 @@ export default async function NewResourcePage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50/50 dark:bg-background flex flex-row">
+    <div className="min-h-screen bg-background flex flex-row">
       {/* Sidebar */}
       <AppSidebar />
 
@@ -52,7 +52,7 @@ export default async function NewResourcePage() {
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-5xl w-full mx-auto space-y-6">
           {/* Header Bar matching mockup 06_add_resource_page.jpg */}
           <div className="space-y-1">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+            <h1 className="text-2xl sm:text-3xl font-serif font-normal tracking-tight text-foreground">
               Add Resource
             </h1>
             <p className="text-sm text-muted-foreground">

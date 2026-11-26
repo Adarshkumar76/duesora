@@ -407,7 +407,7 @@ export function RenewalDecisionCard({
                 type="submit"
                 size="sm"
                 disabled={submitting}
-                className="h-8 gap-1.5 text-xs font-semibold rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white"
+                className="h-8 gap-1.5 text-xs font-semibold rounded-[6px] bg-primary hover:bg-primary/90 text-primary-foreground"
               >
                 {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 {submitting ? "Saving..." : "Save Decision"}

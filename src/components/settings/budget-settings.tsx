@@ -119,7 +119,7 @@ export function BudgetSettings({
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="p-2 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-xl">
+            <div className="p-2 bg-primary/10 text-primary rounded-[6px]">
               <Wallet className="w-5 h-5" />
             </div>
             <div>
@@ -286,7 +286,7 @@ export function BudgetSettings({
                   value={monthlyBudget}
                   onChange={(e) => setMonthlyBudget(e.target.value)}
                   disabled={!canEdit || loading}
-                  className="w-full pl-8 pr-3 py-2 bg-background border border-border/80 rounded-xl text-sm focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 disabled:opacity-50"
+                  className="w-full pl-8 pr-3 py-2 bg-background border border-border/80 rounded-[6px] text-sm focus:outline-hidden focus:ring-2 focus:ring-primary/20 focus:border-primary disabled:opacity-50"
                 />
               </div>
             </div>
@@ -308,7 +308,7 @@ export function BudgetSettings({
                   value={annualBudget}
                   onChange={(e) => setAnnualBudget(e.target.value)}
                   disabled={!canEdit || loading}
-                  className="w-full pl-8 pr-3 py-2 bg-background border border-border/80 rounded-xl text-sm focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 disabled:opacity-50"
+                  className="w-full pl-8 pr-3 py-2 bg-background border border-border/80 rounded-[6px] text-sm focus:outline-hidden focus:ring-2 focus:ring-primary/20 focus:border-primary disabled:opacity-50"
                 />
               </div>
             </div>
@@ -326,7 +326,7 @@ export function BudgetSettings({
                   value={currency}
                   onChange={(e) => setCurrency(e.target.value)}
                   disabled={!canEdit || loading}
-                  className="w-full pl-9 pr-3 py-2 bg-background border border-border/80 rounded-xl text-sm focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 disabled:opacity-50"
+                  className="w-full pl-9 pr-3 py-2 bg-background border border-border/80 rounded-[6px] text-sm focus:outline-hidden focus:ring-2 focus:ring-primary/20 focus:border-primary disabled:opacity-50"
                 >
                   <option value="USD">USD ($) - US Dollar</option>
                   <option value="EUR">EUR (€) - Euro</option>
@@ -355,7 +355,7 @@ export function BudgetSettings({
                   value={thresholdPct}
                   onChange={(e) => setThresholdPct(Number(e.target.value))}
                   disabled={!canEdit || loading}
-                  className="w-full accent-emerald-600 h-2 bg-muted rounded-lg cursor-pointer"
+                  className="w-full accent-primary h-2 bg-muted rounded-lg cursor-pointer"
                 />
               </div>
               <p className="text-[11px] text-muted-foreground">
@@ -365,9 +365,9 @@ export function BudgetSettings({
           </div>
 
           {/* Alert Emails Toggle */}
-          <div className="pt-2 flex items-center justify-between p-3.5 rounded-xl border border-border/80 bg-muted/20">
+          <div className="pt-2 flex items-center justify-between p-3.5 rounded-[6px] border border-border/80 bg-muted/20">
             <div className="flex items-center gap-2.5">
-              <BellRing className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              <BellRing className="w-4 h-4 text-primary" />
               <div>
                 <p className="text-xs font-bold text-foreground">
                   Threshold Warning Notifications
@@ -382,7 +382,7 @@ export function BudgetSettings({
               checked={alertEmails}
               onChange={(e) => setAlertEmails(e.target.checked)}
               disabled={!canEdit || loading}
-              className="w-4 h-4 rounded-sm border-border text-emerald-600 focus:ring-emerald-500 accent-emerald-600 cursor-pointer"
+              className="w-4 h-4 rounded-sm border-border text-primary focus:ring-primary accent-primary cursor-pointer"
             />
           </div>
 
@@ -406,7 +406,7 @@ export function BudgetSettings({
               <Button
                 type="submit"
                 disabled={loading}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold shadow-xs gap-1.5"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-[6px] text-xs font-semibold shadow-xs gap-1.5"
               >
                 {loading ? (
                   <>

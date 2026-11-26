@@ -172,7 +172,7 @@ export default async function ResourceDetailsPage({
   });
 
   return (
-    <div className="min-h-screen bg-slate-50/50 dark:bg-background flex flex-row">
+    <div className="min-h-screen bg-background flex flex-row">
       {/* Sidebar */}
       <AppSidebar />
 
@@ -204,7 +204,7 @@ export default async function ResourceDetailsPage({
           {/* Page Title & Action Buttons */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+              <h1 className="text-2xl sm:text-3xl font-serif font-normal tracking-tight text-foreground">
                 Resource Details
               </h1>
             </div>

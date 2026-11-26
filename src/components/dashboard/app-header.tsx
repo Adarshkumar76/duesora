@@ -237,7 +237,7 @@ export function AppHeader({
 
           {/* Mobile Brand Logo (< lg viewports) */}
           <Link href="/dashboard" className="lg:hidden shrink-0 flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white shadow-sm">
+            <div className="w-8 h-8 rounded-[6px] bg-primary flex items-center justify-center text-primary-foreground shadow-xs">
               <Logo size={18} color="#FFFFFF" />
             </div>
           </Link>
@@ -247,7 +247,7 @@ export function AppHeader({
             type="button"
             onClick={() => setCommandPaletteOpen(true)}
             title={`Search resources, pages, and commands (${isMac ? "⌘K" : "Ctrl+K / Win+K"} or /)`}
-            className="relative flex items-center justify-between w-full max-w-[170px] sm:max-w-xs md:max-w-sm pl-8 sm:pl-9 pr-2.5 py-1.5 text-xs sm:text-sm bg-background border border-border/70 rounded-xl text-muted-foreground hover:text-foreground hover:border-emerald-500/40 transition-all shadow-2xs cursor-pointer text-left"
+            className="relative flex items-center justify-between w-full max-w-[170px] sm:max-w-xs md:max-w-sm pl-8 sm:pl-9 pr-2.5 py-1.5 text-xs sm:text-sm bg-background border border-border/70 rounded-[6px] text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all shadow-2xs cursor-pointer text-left"
           >
             <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <span className="truncate">Search resources, pages, commands...</span>
@@ -266,12 +266,12 @@ export function AppHeader({
             onClick={toggleTheme}
             aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
             title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-            className="w-9 h-9 rounded-xl border border-border/70 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shadow-2xs cursor-pointer"
+            className="w-8 h-8 rounded-[6px] border border-border/70 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shadow-2xs cursor-pointer"
           >
             {theme === "dark" ? (
-              <Sun className="w-4 h-4 text-amber-400 animate-in spin-in-90 duration-200" />
+              <Sun className="w-3.5 h-3.5 text-amber-400 animate-in spin-in-90 duration-200" />
             ) : (
-              <Moon className="w-4 h-4 text-slate-700 animate-in spin-in-90 duration-200" />
+              <Moon className="w-3.5 h-3.5 text-slate-700 animate-in spin-in-90 duration-200" />
             )}
           </button>
 
@@ -281,11 +281,11 @@ export function AppHeader({
               type="button"
               onClick={() => setNotificationsOpen((prev) => !prev)}
               aria-label="Notifications"
-              className="w-9 h-9 rounded-xl border border-border/70 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shadow-2xs relative cursor-pointer"
+              className="w-8 h-8 rounded-[6px] border border-border/70 flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors shadow-2xs relative cursor-pointer"
             >
               <Bell className="w-4 h-4" />
               {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-600 text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-background">
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary text-white text-[10px] font-bold flex items-center justify-center ring-2 ring-background">
                   {unreadCount}
                 </span>
               )}
@@ -298,7 +298,7 @@ export function AppHeader({
                   <div className="flex items-center gap-1.5">
                     <span className="text-sm font-bold text-foreground">Notifications</span>
                     {unreadCount > 0 && (
-                      <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                      <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-primary/10 text-primary">
                         {unreadCount} new
                       </span>
                     )}
@@ -307,7 +307,7 @@ export function AppHeader({
                     <button
                       type="button"
                       onClick={handleMarkAllRead}
-                      className="text-[11px] font-medium text-emerald-600 hover:text-emerald-700 flex items-center gap-1 cursor-pointer"
+                      className="text-[11px] font-medium text-primary hover:text-primary/80 flex items-center gap-1 cursor-pointer"
                     >
                       <CheckCheck className="w-3 h-3" />
                       Mark all read
@@ -334,7 +334,7 @@ export function AppHeader({
                           href={targetHref}
                           onClick={() => setNotificationsOpen(false)}
                           className={`flex items-start gap-2.5 p-2 rounded-xl transition-colors text-left ${isUnread
-                            ? "bg-emerald-50/40 dark:bg-emerald-950/20 hover:bg-emerald-50/80 dark:hover:bg-emerald-950/40"
+                            ? "bg-primary/5 hover:bg-primary/10"
                             : "hover:bg-muted/50"
                             }`}
                         >
@@ -343,7 +343,7 @@ export function AppHeader({
                               ? "bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400"
                               : notif.severity === "warning"
                                 ? "bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400"
-                                : "bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400"
+                                : "bg-primary/10 text-primary"
                               }`}
                           >
                             {notif.severity === "critical" ? (
@@ -358,7 +358,7 @@ export function AppHeader({
                             <div className="flex items-center justify-between gap-1">
                               <p className="font-semibold text-foreground truncate">{notif.title}</p>
                               {isUnread && (
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
+                                <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
                               )}
                             </div>
                             <p className="text-muted-foreground text-[11px] line-clamp-2">
@@ -392,7 +392,7 @@ export function AppHeader({
               className="flex items-center gap-2 pl-1 pr-1.5 sm:pl-1.5 sm:pr-2 py-1 rounded-xl hover:bg-muted/50 transition-colors border border-transparent hover:border-border/60 cursor-pointer"
             >
               {/* User Avatar */}
-              <div className="w-8 h-8 rounded-full bg-emerald-700 text-white font-semibold text-xs flex items-center justify-center overflow-hidden ring-1 ring-border shadow-xs shrink-0">
+              <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground font-semibold text-xs flex items-center justify-center overflow-hidden ring-1 ring-border shadow-xs shrink-0">
                 {userInitials || <User className="w-4 h-4" />}
               </div>
               <span className="hidden sm:inline text-sm font-medium text-foreground">
@@ -415,12 +415,12 @@ export function AppHeader({
                   <p className="px-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-1">
                     Active Workspace
                   </p>
-                  <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-emerald-50/70 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-300 text-xs font-medium">
+                  <div className="flex items-center justify-between px-3 py-1.5 rounded-[6px] bg-primary/10 text-primary text-xs font-medium">
                     <div className="flex items-center gap-2 truncate">
                       <Building2 className="w-3.5 h-3.5 shrink-0" />
                       <span className="truncate">{currentWorkspace.name}</span>
                     </div>
-                    <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <Check className="w-3.5 h-3.5 text-primary shrink-0" />
                   </div>
 
                   {workspaces
@@ -501,7 +501,7 @@ export function AppHeader({
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex items-center gap-2.5"
               >
-                <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white shadow-sm">
+                <div className="w-8 h-8 rounded-[6px] bg-primary flex items-center justify-center text-primary-foreground shadow-xs">
                   <Logo size={18} color="#FFFFFF" />
                 </div>
                 <span className="font-bold text-lg tracking-tight text-foreground">
@@ -530,14 +530,14 @@ export function AppHeader({
                     key={item.href}
                     href={item.href}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${isActive
-                      ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 font-semibold shadow-2xs"
+                    className={`flex items-center gap-2.5 px-3 py-2 rounded-[6px] text-xs font-medium transition-all ${isActive
+                      ? "bg-accent text-accent-foreground font-semibold border border-primary/20 shadow-2xs"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                       }`}
                   >
                     <Icon
                       className={`w-4 h-4 ${isActive
-                        ? "text-emerald-600 dark:text-emerald-400"
+                        ? "text-primary"
                         : "text-muted-foreground"
                         }`}
                     />
@@ -559,9 +559,9 @@ export function AppHeader({
                 href="/api/docs"
                 target="_blank"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl border border-border/80 bg-background text-foreground text-xs font-semibold hover:bg-muted/50 transition-colors shadow-2xs"
+                className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-[6px] border border-border/80 bg-background text-foreground text-xs font-semibold hover:bg-muted/50 transition-colors shadow-2xs"
               >
-                <BookOpen className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                <BookOpen className="w-3.5 h-3.5 text-primary" />
                 <span>API Documentation</span>
                 <ExternalLink className="w-3 h-3 text-muted-foreground ml-auto" />
               </Link>

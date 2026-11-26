@@ -61,9 +61,9 @@ export function LandingNavbar({ user }: LandingNavbarProps) {
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur-sm transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
         {/* Brand Logo */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           <Link href="/" className="flex items-center gap-2 group">
-            <Logo size={24} color="#0F766E" className="transition-transform group-hover:scale-105 duration-150" />
+            <Logo size={22} color="#0F766E" className="transition-transform group-hover:scale-105 duration-150" />
             <span className="font-semibold tracking-tight text-sm text-foreground">
               Duesora
             </span>

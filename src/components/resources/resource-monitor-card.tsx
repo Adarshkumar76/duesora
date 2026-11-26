@@ -155,7 +155,7 @@ export function ResourceMonitorCard({
               size="sm"
               onClick={handleCheckNow}
               disabled={checking}
-              className="rounded-xl text-xs font-semibold h-8.5 px-3.5 bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs cursor-pointer"
+              className="rounded-[6px] text-xs font-semibold h-8.5 px-3.5 bg-primary hover:bg-primary/90 text-primary-foreground shadow-xs cursor-pointer"
             >
               {checking ? (
                 <>

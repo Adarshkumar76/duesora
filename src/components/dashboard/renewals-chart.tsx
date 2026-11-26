@@ -84,11 +84,11 @@ export function RenewalsChart({ data = [], currency = "USD" }: RenewalsChartProp
                   className="flex flex-col items-center gap-2 group cursor-pointer"
                 >
                   <div className="flex items-end gap-1 h-36">
-                    {/* Actual Bar (Emerald Green) */}
+                    {/* Actual Bar (Teal Primary #0F766E) */}
                     <div
                       style={{ height: `${actualHeight}%` }}
-                      className={`w-2 sm:w-3.5 rounded-t-sm bg-emerald-600 dark:bg-emerald-500 transition-all duration-300 ${
-                        isHovered ? "ring-2 ring-emerald-400 opacity-100 scale-y-105 origin-bottom" : "group-hover:opacity-90"
+                      className={`w-2 sm:w-3.5 rounded-t-sm bg-primary transition-all duration-300 ${
+                        isHovered ? "ring-2 ring-primary/40 opacity-100 scale-y-105 origin-bottom" : "group-hover:opacity-90"
                       }`}
                     />
                     {/* Projected Bar (Slate Gray) */}

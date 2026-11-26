@@ -111,7 +111,7 @@ export function AppSidebar() {
           className="flex items-center gap-2.5"
           title={isCollapsed ? "Duesora" : undefined}
         >
-          <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white shadow-sm shrink-0">
+          <div className="w-8 h-8 rounded-[6px] bg-primary flex items-center justify-center text-primary-foreground shadow-xs shrink-0">
             <Logo size={18} color="#FFFFFF" />
           </div>
           {!isCollapsed && (
@@ -135,16 +135,16 @@ export function AppSidebar() {
               href={item.href}
               title={isCollapsed ? label : undefined}
               className={`flex items-center ${
-                isCollapsed ? "justify-center px-2 py-2.5" : "px-3.5 py-2.5 gap-3"
-              } rounded-xl text-sm font-medium transition-all ${
+                isCollapsed ? "justify-center px-2 py-2" : "px-3 py-2 gap-2.5"
+              } rounded-[6px] text-xs font-medium transition-all ${
                 isActive
-                  ? "bg-emerald-50 text-emerald-800 font-semibold shadow-xs dark:bg-emerald-950/40 dark:text-emerald-300"
+                  ? "bg-accent text-accent-foreground font-semibold border border-primary/20 shadow-xs"
                   : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
               }`}
             >
               <Icon
                 className={`w-4 h-4 shrink-0 ${
-                  isActive ? "text-emerald-700 dark:text-emerald-300" : "text-muted-foreground"
+                  isActive ? "text-primary" : "text-muted-foreground"
                 }`}
               />
               {!isCollapsed && <span className="truncate">{label}</span>}
@@ -161,10 +161,10 @@ export function AppSidebar() {
           target="_blank"
           title="API Documentation"
           className={`flex items-center ${
-            isCollapsed ? "justify-center px-2" : "gap-3 px-3.5"
-          } py-2 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors`}
+            isCollapsed ? "justify-center px-2" : "gap-2.5 px-3"
+          } py-2 rounded-[6px] text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors`}
         >
-          <BookOpen className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+          <BookOpen className="w-4 h-4 shrink-0 text-primary" />
           {!isCollapsed && (
             <>
               <span className="truncate">API Docs</span>
@@ -179,8 +179,8 @@ export function AppSidebar() {
           onClick={toggleCollapse}
           title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           className={`w-full flex items-center ${
-            isCollapsed ? "justify-center px-2" : "gap-3 px-3.5"
-          } py-2 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors cursor-pointer`}
+            isCollapsed ? "justify-center px-2" : "gap-2.5 px-3"
+          } py-2 rounded-[6px] text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors cursor-pointer`}
         >
           {isCollapsed ? (
             <ChevronRight className="w-4 h-4 shrink-0" />

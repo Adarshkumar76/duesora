@@ -101,7 +101,7 @@ function LoginForm() {
             <Logo size={32} color="#0F766E" className="transition-transform group-hover:scale-105 duration-150" />
           </Link>
         </div>
-        <CardTitle className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
+        <CardTitle className="text-xl sm:text-2xl font-serif font-normal tracking-tight text-foreground">
           Sign in to Duesora
         </CardTitle>
         <CardDescription className="text-xs sm:text-sm text-muted-foreground">
@@ -202,7 +202,7 @@ function LoginForm() {
                 Signing in...
               </>
             ) : (
-              "Sign In"
+              "Sign In →"
             )}
           </Button>
         </form>

@@ -77,10 +77,10 @@ export function WorkspaceSettingsForm({ workspace, user }: WorkspaceSettingsForm
   return (
     <div className="space-y-6">
       {/* Workspace General Settings Card */}
-      <Card className="rounded-2xl border border-border/80 bg-card shadow-xs">
+      <Card className="rounded-[8px] border border-border bg-card shadow-xs">
         <CardHeader className="pb-4 border-b border-border/50">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-600">
+            <div className="w-8 h-8 rounded-[6px] bg-primary/10 flex items-center justify-center text-primary">
               <Building2 className="w-4 h-4" />
             </div>
             <div>
@@ -97,14 +97,14 @@ export function WorkspaceSettingsForm({ workspace, user }: WorkspaceSettingsForm
         <CardContent className="pt-5">
           <form onSubmit={handleSave} className="space-y-4">
             {error && (
-              <div className="p-3 rounded-xl bg-destructive/10 text-destructive text-xs font-medium border border-destructive/20 flex items-center gap-2">
+              <div className="p-3 rounded-[6px] bg-destructive/10 text-destructive text-xs font-medium border border-destructive/20 flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{error}</span>
               </div>
             )}
 
             {success && (
-              <div className="p-3 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-medium border border-emerald-500/20 flex items-center gap-2">
+              <div className="p-3 rounded-[6px] bg-primary/10 text-primary text-xs font-medium border border-primary/20 flex items-center gap-2">
                 <Check className="w-4 h-4 shrink-0" />
                 <span>Workspace settings saved successfully!</span>
               </div>
@@ -120,7 +120,7 @@ export function WorkspaceSettingsForm({ workspace, user }: WorkspaceSettingsForm
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. Acme Corp"
-                  className="w-full px-3.5 py-2 text-sm bg-background border border-border/70 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 font-medium text-foreground disabled:opacity-60"
+                  className="w-full px-3.5 py-2 text-sm bg-background border border-border/70 rounded-[6px] focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-medium text-foreground disabled:opacity-60"
                   required
                 />
               </div>
@@ -132,7 +132,7 @@ export function WorkspaceSettingsForm({ workspace, user }: WorkspaceSettingsForm
                   type="text"
                   disabled
                   value={workspace.slug || "personal"}
-                  className="w-full px-3.5 py-2 text-sm bg-muted/40 border border-border/60 rounded-xl font-mono text-muted-foreground cursor-not-allowed"
+                  className="w-full px-3.5 py-2 text-sm bg-muted/40 border border-border/60 rounded-[6px] font-mono text-muted-foreground cursor-not-allowed"
                 />
               </div>
 
@@ -146,7 +146,7 @@ export function WorkspaceSettingsForm({ workspace, user }: WorkspaceSettingsForm
                   disabled={!canEdit}
                   value={currency}
                   onChange={(e) => setCurrency(e.target.value)}
-                  className="w-full px-3.5 py-2 text-sm bg-background border border-border/70 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 text-foreground cursor-pointer disabled:opacity-60"
+                  className="w-full px-3.5 py-2 text-sm bg-background border border-border/70 rounded-[6px] focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-foreground cursor-pointer disabled:opacity-60"
                 >
                   <option value="USD">USD ($) - United States Dollar</option>
                   <option value="INR">INR (₹) - Indian Rupee</option>
@@ -168,7 +168,7 @@ export function WorkspaceSettingsForm({ workspace, user }: WorkspaceSettingsForm
                   disabled={!canEdit}
                   value={timezone}
                   onChange={(e) => setTimezone(e.target.value)}
-                  className="w-full px-3.5 py-2 text-sm bg-background border border-border/70 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 text-foreground cursor-pointer disabled:opacity-60"
+                  className="w-full px-3.5 py-2 text-sm bg-background border border-border/70 rounded-[6px] focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-foreground cursor-pointer disabled:opacity-60"
                 >
                   <option value="UTC">UTC (Coordinated Universal Time)</option>
                   <option value="Asia/Kolkata">Asia/Kolkata (IST - UTC+5:30)</option>
@@ -187,7 +187,7 @@ export function WorkspaceSettingsForm({ workspace, user }: WorkspaceSettingsForm
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="rounded-xl text-xs font-semibold h-9 px-4 bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs cursor-pointer"
+                  className="rounded-[6px] text-xs font-semibold h-9 px-4 bg-primary hover:bg-primary/90 text-primary-foreground shadow-xs cursor-pointer"
                 >
                   {loading ? (
                     <>

@@ -86,7 +86,7 @@ export default async function ReportsPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground selection:bg-emerald-500/20">
+    <div className="flex min-h-screen bg-background text-foreground selection:bg-primary/20">
       {/* Sidebar */}
       <AppSidebar />
 

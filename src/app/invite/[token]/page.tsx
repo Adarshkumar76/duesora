@@ -68,7 +68,7 @@ export default async function InvitePage({ params }: InvitePageProps) {
             <div className="w-10 h-10 rounded-[6px] bg-primary/10 text-primary flex items-center justify-center mx-auto mb-2">
               <Users className="w-5 h-5" />
             </div>
-            <CardTitle className="text-base sm:text-lg font-bold text-foreground">
+            <CardTitle className="text-base sm:text-lg font-serif font-normal text-foreground">
               Workspace Invitation
             </CardTitle>
             <CardDescription className="text-xs text-muted-foreground mt-0.5">

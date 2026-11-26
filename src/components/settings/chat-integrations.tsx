@@ -968,7 +968,7 @@ export function ChatIntegrations({
                     type="submit"
                     size="sm"
                     disabled={creating}
-                    className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs cursor-pointer gap-1.5"
+                    className="rounded-[6px] bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold shadow-xs cursor-pointer gap-1.5"
                   >
                     {creating && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                     <span>Save Channel</span>

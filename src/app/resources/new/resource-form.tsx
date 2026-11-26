@@ -554,7 +554,7 @@ export function ResourceForm({ workspaceId }: ResourceFormProps) {
                 aria-checked={autoRenew}
                 onClick={() => setAutoRenew((prev) => !prev)}
                 className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                  autoRenew ? "bg-emerald-600" : "bg-muted"
+                  autoRenew ? "bg-primary" : "bg-muted"
                 }`}
               >
                 <span

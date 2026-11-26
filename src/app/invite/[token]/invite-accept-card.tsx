@@ -87,7 +87,7 @@ export function InviteAcceptCard({
       <Button
         onClick={handleAccept}
         disabled={loading}
-        className="w-full rounded-xl text-sm font-semibold h-11 bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs cursor-pointer"
+        className="w-full rounded-[6px] text-sm font-semibold h-10 bg-primary hover:bg-primary/90 text-primary-foreground shadow-xs cursor-pointer"
       >
         {loading ? (
           <>

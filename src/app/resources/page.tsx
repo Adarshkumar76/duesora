@@ -128,7 +128,7 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
           {/* Header Bar */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+              <h1 className="text-2xl sm:text-3xl font-serif font-normal tracking-tight text-foreground">
                 Resources
               </h1>
               <p className="text-sm text-muted-foreground">
@@ -249,7 +249,7 @@ export default async function ResourcesPage({ searchParams }: ResourcesPageProps
                   <Link href="/resources/new">
                     <Button
                       size="sm"
-                      className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs gap-1.5 cursor-pointer"
+                      className="rounded-[6px] bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold shadow-xs gap-1.5 cursor-pointer"
                     >
                       <Plus className="w-4 h-4" />
                       <span>Add Resource</span>

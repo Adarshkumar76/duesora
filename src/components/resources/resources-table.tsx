@@ -541,9 +541,9 @@ export function ResourcesTable({
                     key={m}
                     type="button"
                     onClick={() => setTagMode(m)}
-                    className={`py-1.5 text-xs font-medium rounded-xl border transition-colors capitalize cursor-pointer ${
+                    className={`py-1.5 text-xs font-medium rounded-[6px] border transition-colors capitalize cursor-pointer ${
                       tagMode === m
-                        ? "bg-emerald-600 text-white border-emerald-600"
+                        ? "bg-primary text-primary-foreground border-primary"
                         : "border-border bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground"
                     }`}
                   >
@@ -664,7 +664,7 @@ export function ResourcesTable({
                   })
                 }
                 disabled={loading || chosenTags.length === 0}
-                className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold gap-1.5 cursor-pointer"
+                className="rounded-[6px] bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold gap-1.5 cursor-pointer"
               >
                 {loading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 <span>Apply Tags</span>

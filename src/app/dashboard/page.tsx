@@ -65,7 +65,7 @@ export default async function DashboardPage() {
   const isWorkspaceEmpty = kpis.totalResources === 0;
 
   return (
-    <div className="min-h-screen bg-slate-50/50 dark:bg-background flex flex-row">
+    <div className="min-h-screen bg-background flex flex-row">
       {/* Sidebar */}
       <AppSidebar />
 
@@ -84,7 +84,7 @@ export default async function DashboardPage() {
           {/* Page Heading & Quick Actions */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+              <h1 className="text-2xl sm:text-3xl font-serif font-normal tracking-tight text-foreground">
                 Dashboard
               </h1>
               <p className="text-sm text-muted-foreground">

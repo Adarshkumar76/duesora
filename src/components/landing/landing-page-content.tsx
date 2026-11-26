@@ -130,7 +130,10 @@ export function LandingPageContent({ user }: LandingPageContentProps) {
         {/* ================= WHAT YOU CAN TRACK ================= */}
         <section id="track" className="py-14 sm:py-18 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-10 text-left border-t border-border">
           <div className="space-y-2 max-w-2xl">
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground block">
+              Asset Ledger
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-serif font-normal tracking-tight text-foreground">
               What you can track with Duesora
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
@@ -167,7 +170,10 @@ export function LandingPageContent({ user }: LandingPageContentProps) {
         <section id="how-it-works" className="py-14 sm:py-18 bg-muted/20 border-y border-border px-4 sm:px-6 lg:px-8 text-left">
           <div className="max-w-7xl mx-auto space-y-10">
             <div className="space-y-2 max-w-2xl">
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground block">
+                Workflow
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-serif font-normal tracking-tight text-foreground">
                 How Duesora works
               </h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
@@ -230,7 +236,10 @@ export function LandingPageContent({ user }: LandingPageContentProps) {
         {/* ================= CORE FEATURES OVERVIEW ================= */}
         <section id="features" className="py-14 sm:py-18 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-10 text-left">
           <div className="space-y-2 max-w-2xl">
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground block">
+              Capabilities
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-serif font-normal tracking-tight text-foreground">
               Built for precision and clarity
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
@@ -297,7 +306,10 @@ export function LandingPageContent({ user }: LandingPageContentProps) {
         <section id="self-host" className="py-14 sm:py-18 bg-muted/20 border-y border-border px-4 sm:px-6 lg:px-8 text-left">
           <div className="max-w-7xl mx-auto space-y-8">
             <div className="space-y-2 max-w-2xl">
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground block">
+                Deployment
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-serif font-normal tracking-tight text-foreground">
                 Run it on your own terms
               </h2>
               <p className="text-sm text-muted-foreground leading-relaxed">
@@ -318,7 +330,7 @@ export function LandingPageContent({ user }: LandingPageContentProps) {
                   <span>Full Data Sovereignty</span>
                 </h4>
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  Your data is stored in your own PostgreSQL instance. No vendor lock-in and no cloud telemetry.
+                  Your data is stored directly in your own PostgreSQL database with complete privacy and control.
                 </p>
               </div>
 
@@ -348,7 +360,10 @@ export function LandingPageContent({ user }: LandingPageContentProps) {
         {/* ================= FREQUENTLY ASKED QUESTIONS ================= */}
         <section id="faq" className="py-14 sm:py-18 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto space-y-8 text-left">
           <div className="space-y-2">
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-muted-foreground block">
+              A Few Things to Know
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-serif font-normal tracking-tight text-foreground">
               Frequently asked questions
             </h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
@@ -384,7 +399,7 @@ export function LandingPageContent({ user }: LandingPageContentProps) {
         <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
           <div className="rounded-[8px] border border-border bg-card p-6 sm:p-10 shadow-[0_1px_3px_rgba(0,0,0,0.03)] text-left flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-2 max-w-xl">
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+              <h2 className="text-2xl sm:text-3xl font-serif font-normal tracking-tight text-foreground">
                 Start tracking your renewals today
               </h2>
               <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">

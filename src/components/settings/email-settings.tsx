@@ -88,11 +88,11 @@ export function EmailSettings({
   }
 
   return (
-    <div className="rounded-2xl border border-border/80 bg-card p-6 shadow-xs space-y-6">
+    <div className="rounded-[8px] border border-border bg-card p-6 shadow-xs space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-border/60">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-[6px] bg-primary/10 text-primary flex items-center justify-center shrink-0">
             <Mail className="w-5 h-5" />
           </div>
           <div>
@@ -107,7 +107,7 @@ export function EmailSettings({
         {!loading && (
           <div className="flex items-center gap-2">
             {statusData?.isConfigured ? (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20">
                 <CheckCircle2 className="w-3.5 h-3.5" />
                 Live SMTP Connected
               </span>
@@ -123,14 +123,14 @@ export function EmailSettings({
 
       {/* Information Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-        <div className="p-3.5 rounded-xl bg-muted/40 border border-border/50 space-y-1">
+        <div className="p-3.5 rounded-[6px] bg-muted/40 border border-border/50 space-y-1">
           <span className="text-muted-foreground font-medium">Sender Address</span>
           <p className="font-semibold text-foreground truncate">
             {statusData?.sender || "notifications@duesora.com"}
           </p>
         </div>
 
-        <div className="p-3.5 rounded-xl bg-muted/40 border border-border/50 space-y-1">
+        <div className="p-3.5 rounded-[6px] bg-muted/40 border border-border/50 space-y-1">
           <span className="text-muted-foreground font-medium">Delivery Mode</span>
           <p className="font-semibold text-foreground">
             {statusData?.isConfigured
@@ -139,7 +139,7 @@ export function EmailSettings({
           </p>
         </div>
 
-        <div className="p-3.5 rounded-xl bg-muted/40 border border-border/50 space-y-1">
+        <div className="p-3.5 rounded-[6px] bg-muted/40 border border-border/50 space-y-1">
           <span className="text-muted-foreground font-medium">Test Recipient</span>
           <p className="font-semibold text-foreground truncate">
             {currentUserEmail || statusData?.recipientEmail || "Current User"}
@@ -148,8 +148,8 @@ export function EmailSettings({
       </div>
 
       {/* Helper Tip */}
-      <div className="p-3.5 rounded-xl bg-muted/20 border border-border/40 text-xs text-muted-foreground flex items-start gap-2.5">
-        <Info className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+      <div className="p-3.5 rounded-[6px] bg-muted/20 border border-border/40 text-xs text-muted-foreground flex items-start gap-2.5">
+        <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
         <p className="leading-relaxed">
           When SMTP environment variables (<code className="text-foreground font-mono">SMTP_HOST</code>,{" "}
           <code className="text-foreground font-mono">SMTP_USER</code>,{" "}
@@ -161,9 +161,9 @@ export function EmailSettings({
       {/* Feedback Banner */}
       {feedback && (
         <div
-          className={`p-3.5 rounded-xl text-xs flex items-center justify-between border ${
+          className={`p-3.5 rounded-[6px] text-xs flex items-center justify-between border ${
             feedback.type === "success"
-              ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400"
+              ? "bg-primary/10 border-primary/20 text-primary"
               : "bg-rose-500/10 border-rose-500/20 text-rose-600 dark:text-rose-400"
           }`}
         >
@@ -185,11 +185,10 @@ export function EmailSettings({
         {canSend && (
           <Button
             type="button"
-            variant="outline"
             size="sm"
             disabled={sending}
             onClick={handleSendTest}
-            className="rounded-xl border-border/80 shadow-2xs gap-1.5 text-xs font-semibold hover:bg-muted/70 cursor-pointer"
+            className="rounded-[6px] bg-primary hover:bg-primary/90 text-primary-foreground shadow-xs gap-1.5 text-xs font-semibold cursor-pointer"
           >
             {sending ? (
               <>
@@ -198,7 +197,7 @@ export function EmailSettings({
               </>
             ) : (
               <>
-                <Send className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                <Send className="w-3.5 h-3.5" />
                 <span>Send Test Alert Email</span>
               </>
             )}

@@ -324,7 +324,7 @@ export function CommandPalette({ isOpen, onClose, workspaceId }: CommandPaletteP
           <button
             type="submit"
             title="Press Enter to select"
-            className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 px-2 py-1 rounded-md border border-emerald-500/30 transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1 text-[11px] font-semibold text-primary bg-primary/10 hover:bg-primary/20 px-2 py-1 rounded-[6px] border border-primary/20 transition-colors cursor-pointer"
           >
             <span>Enter</span>
             <span className="text-[12px] leading-none">↵</span>

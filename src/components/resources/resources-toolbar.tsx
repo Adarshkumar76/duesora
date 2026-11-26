@@ -234,9 +234,9 @@ export function ResourcesToolbar({
                           key={tag.id}
                           type="button"
                           onClick={() => handleTagFilter(isSelected ? null : tag.name)}
-                          className={`px-2 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                          className={`px-2 py-1 rounded-[6px] text-xs font-medium transition-colors cursor-pointer ${
                             isSelected
-                              ? "bg-emerald-600 text-white"
+                              ? "bg-primary text-primary-foreground"
                               : "bg-muted hover:bg-muted/80 text-foreground"
                           }`}
                         >

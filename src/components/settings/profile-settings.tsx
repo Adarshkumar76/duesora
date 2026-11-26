@@ -105,7 +105,7 @@ export function ProfileSettings({ user, userRole = "member" }: ProfileSettingsPr
     <Card className="rounded-2xl border border-border/80 bg-card shadow-xs">
       <CardHeader className="pb-4 border-b border-border/50">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-600 dark:text-blue-400">
+          <div className="w-8 h-8 rounded-[6px] bg-primary/10 flex items-center justify-center text-primary">
             <User className="w-4 h-4" />
           </div>
           <div>
@@ -146,7 +146,7 @@ export function ProfileSettings({ user, userRole = "member" }: ProfileSettingsPr
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Your full name"
-                className="w-full px-3.5 py-2 text-sm bg-background border border-border/70 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 text-foreground"
+                className="w-full px-3.5 py-2 text-sm bg-background border border-border/70 rounded-[6px] focus:outline-hidden focus:ring-2 focus:ring-primary/20 focus:border-primary text-foreground"
               />
             </div>
 
@@ -266,7 +266,7 @@ export function ProfileSettings({ user, userRole = "member" }: ProfileSettingsPr
             <Button
               type="submit"
               disabled={loading}
-              className="rounded-xl text-xs font-semibold h-9 px-4 bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs cursor-pointer"
+              className="rounded-[6px] text-xs font-semibold h-9 px-4 bg-primary hover:bg-primary/90 text-primary-foreground shadow-xs cursor-pointer"
             >
               {loading ? (
                 <>

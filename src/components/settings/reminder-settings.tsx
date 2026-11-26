@@ -81,10 +81,10 @@ export function ReminderSettings({
   };
 
   return (
-    <Card className="rounded-2xl border border-border/80 bg-card shadow-xs">
+    <Card className="rounded-[8px] border border-border bg-card shadow-xs">
       <CardHeader className="pb-4 border-b border-border/50">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+          <div className="w-8 h-8 rounded-[6px] bg-primary/10 flex items-center justify-center text-primary">
             <BellRing className="w-4 h-4" />
           </div>
           <div>
@@ -100,14 +100,14 @@ export function ReminderSettings({
 
       <CardContent className="pt-5 space-y-5">
         {error && (
-          <div className="p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-xs text-destructive flex items-center gap-2">
+          <div className="p-3 rounded-[6px] bg-destructive/10 border border-destructive/20 text-xs text-destructive flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
         {success && (
-          <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-2 font-medium">
+          <div className="p-3 rounded-[6px] bg-primary/10 border border-primary/20 text-xs text-primary flex items-center gap-2 font-medium">
             <Check className="w-4 h-4 shrink-0" />
             <span>Reminder alert schedule updated successfully.</span>
           </div>
@@ -122,7 +122,7 @@ export function ReminderSettings({
             {selectedDays.map((days) => (
               <span
                 key={days}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[6px] text-xs font-semibold bg-primary/10 text-primary border border-primary/20"
               >
                 <span>{days === 0 ? "Day of renewal (0d)" : `${days} days before`}</span>
                 {canEdit && (
@@ -154,9 +154,9 @@ export function ReminderSettings({
                     key={preset}
                     type="button"
                     onClick={() => toggleDay(preset)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all cursor-pointer border ${
+                    className={`px-3 py-1.5 rounded-[6px] text-xs font-medium transition-all cursor-pointer border ${
                       active
-                        ? "bg-emerald-600 text-white border-emerald-600 shadow-2xs font-semibold"
+                        ? "bg-primary text-primary-foreground border-primary shadow-2xs font-semibold"
                         : "bg-muted/40 border-border text-muted-foreground hover:text-foreground hover:bg-muted"
                     }`}
                   >
@@ -178,14 +178,13 @@ export function ReminderSettings({
               placeholder="Custom days (e.g. 90)"
               value={customDayInput}
               onChange={(e) => setCustomDayInput(e.target.value)}
-              className="w-full px-3 py-1.5 text-xs bg-background border border-border/70 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 text-foreground"
+              className="w-full px-3 py-1.5 text-xs bg-background border border-border/70 rounded-[6px] focus:outline-hidden focus:ring-2 focus:ring-primary/20 focus:border-primary text-foreground"
             />
             <Button
               type="submit"
-              variant="outline"
               size="sm"
               disabled={!customDayInput.trim()}
-              className="h-8 px-3 rounded-xl text-xs cursor-pointer gap-1 shrink-0"
+              className="h-8 px-3 rounded-[6px] text-xs cursor-pointer gap-1 shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-xs"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Add</span>
@@ -200,7 +199,7 @@ export function ReminderSettings({
               type="button"
               onClick={handleSave}
               disabled={saving || selectedDays.length === 0}
-              className="rounded-xl text-xs font-semibold h-9 px-4 bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs cursor-pointer"
+              className="rounded-[6px] text-xs font-semibold h-9 px-4 bg-primary hover:bg-primary/90 text-primary-foreground shadow-xs cursor-pointer"
             >
               {saving ? (
                 <>

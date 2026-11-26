@@ -653,7 +653,7 @@ export function DomainsTable({
               <Link href="/resources/new?type=domain">
                 <Button
                   size="sm"
-                  className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs gap-1.5 text-xs font-medium cursor-pointer"
+                  className="rounded-[6px] bg-primary hover:bg-primary/90 text-primary-foreground shadow-xs gap-1.5 text-xs font-semibold cursor-pointer"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Add First Domain</span>
@@ -687,9 +687,9 @@ export function DomainsTable({
                     <button
                       type="button"
                       onClick={() => updateParam("page", String(p))}
-                      className={`h-7 w-7 text-xs rounded-lg font-medium transition-colors cursor-pointer ${
+                      className={`h-7 w-7 text-xs rounded-[6px] font-medium transition-colors cursor-pointer ${
                         currentPage === p
-                          ? "bg-emerald-600 text-white font-semibold"
+                          ? "bg-primary text-primary-foreground font-semibold"
                           : "text-muted-foreground hover:bg-muted/80 hover:text-foreground"
                       }`}
                     >

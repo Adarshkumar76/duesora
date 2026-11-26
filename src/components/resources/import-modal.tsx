@@ -274,7 +274,7 @@ export function ImportModal({ isOpen, onClose, workspaceId, presetType }: Import
                 <Button
                   size="sm"
                   onClick={handleClose}
-                  className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium cursor-pointer shadow-xs"
+                  className="rounded-[6px] bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold cursor-pointer shadow-xs"
                 >
                   Done
                 </Button>
@@ -558,7 +558,7 @@ export function ImportModal({ isOpen, onClose, workspaceId, presetType }: Import
                 size="sm"
                 onClick={handleCommitImport}
                 disabled={committing || rowsToImportCount === 0}
-                className="flex-1 sm:flex-none rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium cursor-pointer shadow-xs gap-1.5"
+                className="flex-1 sm:flex-none rounded-[6px] bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold cursor-pointer shadow-xs gap-1.5"
               >
                 {committing ? (
                   <>

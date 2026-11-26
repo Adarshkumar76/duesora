@@ -209,7 +209,7 @@ export function ProviderSyncModal({ isOpen, onClose, workspaceId }: ProviderSync
               <div className="pt-2">
                 <Button
                   onClick={handleClose}
-                  className="rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs h-9 px-4 cursor-pointer"
+                  className="rounded-[6px] bg-primary hover:bg-primary/90 text-primary-foreground text-xs h-9 px-4 cursor-pointer"
                 >
                   View Tracked Domains
                 </Button>
@@ -373,7 +373,7 @@ export function ProviderSyncModal({ isOpen, onClose, workspaceId }: ProviderSync
                         type="button"
                         onClick={handleImport}
                         disabled={importing || selectedDomains.size === 0}
-                        className="h-8 text-xs gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white cursor-pointer"
+                        className="h-8 text-xs gap-1.5 rounded-[6px] bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer"
                       >
                         {importing && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                         <ArrowRight className="w-3.5 h-3.5" />

@@ -205,7 +205,7 @@ export function CalendarView({
         <div className="flex items-center gap-2">
           <Button
             onClick={() => setSubscribeModalOpen(true)}
-            className="rounded-xl text-xs font-semibold h-9 px-3.5 bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs cursor-pointer inline-flex items-center gap-1.5"
+            className="rounded-[6px] text-xs font-semibold h-9 px-3.5 bg-primary hover:bg-primary/90 text-primary-foreground shadow-xs cursor-pointer inline-flex items-center gap-1.5"
           >
             <CalendarIcon className="w-4 h-4" />
             <span>Subscribe to iCal (.ics)</span>
@@ -230,13 +230,13 @@ export function CalendarView({
                 key={idx}
                 className={`min-h-[90px] sm:min-h-[110px] p-1.5 sm:p-2 flex flex-col justify-between transition-colors ${
                   cell.isCurrentMonth ? "bg-card" : "bg-muted/20 text-muted-foreground/60"
-                } ${cell.isToday ? "ring-2 ring-inset ring-emerald-500/50 bg-emerald-500/5" : ""}`}
+                } ${cell.isToday ? "ring-2 ring-inset ring-primary/50 bg-primary/5" : ""}`}
               >
                 <div className="flex items-center justify-between">
                   <span
                     className={`text-xs font-semibold inline-flex items-center justify-center w-5 h-5 rounded-full ${
                       cell.isToday
-                        ? "bg-emerald-600 text-white shadow-xs"
+                        ? "bg-primary text-primary-foreground shadow-xs"
                         : cell.isCurrentMonth
                         ? "text-foreground"
                         : "text-muted-foreground/60"
@@ -351,7 +351,7 @@ export function CalendarView({
                 Close
               </Button>
               <Link href={`/resources/${selectedEvent.id}`}>
-                <Button size="sm" className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer">
+                <Button size="sm" className="rounded-[6px] bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer">
                   <span>View Details</span>
                   <ExternalLink className="w-3.5 h-3.5 ml-1.5" />
                 </Button>
@@ -367,7 +367,7 @@ export function CalendarView({
           <div className="bg-card border border-border/80 rounded-2xl shadow-xl max-w-lg w-full p-5 space-y-4 animate-in zoom-in-95 duration-150">
             <div className="flex items-center justify-between border-b border-border/50 pb-3">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-600">
+                <div className="w-8 h-8 rounded-[6px] bg-primary/10 flex items-center justify-center text-primary">
                   <CalendarIcon className="w-4 h-4" />
                 </div>
                 <div>
@@ -397,7 +397,7 @@ export function CalendarView({
                 <Button
                   size="sm"
                   onClick={handleCopy}
-                  className="shrink-0 rounded-xl text-xs font-semibold h-9 px-3 bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
+                  className="shrink-0 rounded-[6px] text-xs font-semibold h-9 px-3 bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer"
                 >
                   {copiedLink ? (
                     <>
@@ -435,7 +435,7 @@ export function CalendarView({
                 <button
                   type="button"
                   onClick={handleOpenDefaultCalendar}
-                  className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+                  className="text-xs font-semibold px-3 py-1.5 rounded-[6px] bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 transition-colors inline-flex items-center gap-1.5 cursor-pointer"
                   title="Directly downloads .ics calendar and prompts default calendar app"
                 >
                   <Download className="w-3.5 h-3.5" />

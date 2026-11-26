@@ -408,7 +408,7 @@ export function CancellationAssistantModal({
                 type="button"
                 variant="outline"
                 size="sm"
-                className="h-8 text-xs gap-1.5 rounded-xl text-emerald-600 dark:text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/10 cursor-pointer"
+                className="h-8 text-xs gap-1.5 rounded-[6px] text-primary border-primary/30 hover:bg-primary/10 cursor-pointer"
                 title="Open directly in default email client"
               >
                 <Mail className="w-3.5 h-3.5" />
@@ -420,7 +420,7 @@ export function CancellationAssistantModal({
               type="button"
               size="sm"
               onClick={handleCopy}
-              className="h-8 text-xs gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white cursor-pointer"
+              className="h-8 text-xs gap-1.5 rounded-[6px] bg-primary hover:bg-primary/90 text-primary-foreground cursor-pointer"
             >
               {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
               <span>{copied ? "Copied!" : "Copy to Clipboard"}</span>

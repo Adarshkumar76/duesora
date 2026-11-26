@@ -175,7 +175,7 @@ export function NotificationsView({
               size="sm"
               onClick={handleRunRenewalCheck}
               disabled={isScanning}
-              className="rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs text-xs font-medium cursor-pointer gap-1.5"
+              className="rounded-[6px] bg-primary hover:bg-primary/90 text-primary-foreground shadow-xs text-xs font-semibold cursor-pointer gap-1.5"
             >
               {isScanning ? (
                 <>
@@ -388,9 +388,9 @@ export function NotificationsView({
                   <button
                     type="button"
                     onClick={() => updatePage(p)}
-                    className={`h-7 w-7 text-xs rounded-lg font-medium transition-colors cursor-pointer ${
+                    className={`h-7 w-7 text-xs rounded-[6px] font-medium transition-colors cursor-pointer ${
                       currentPage === p
-                        ? "bg-emerald-600 text-white font-semibold"
+                        ? "bg-primary text-primary-foreground font-semibold"
                         : "text-muted-foreground hover:bg-muted/80 hover:text-foreground"
                     }`}
                   >

@@ -92,7 +92,7 @@ export default async function SubscriptionsPage({ searchParams }: SubscriptionsP
     activeWorkspace.role === "member";
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground selection:bg-emerald-500/20">
+    <div className="flex min-h-screen bg-background text-foreground selection:bg-primary/20">
       {/* Sidebar */}
       <AppSidebar />
 
@@ -111,7 +111,7 @@ export default async function SubscriptionsPage({ searchParams }: SubscriptionsP
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <CreditCard className="w-5 h-5 text-primary" />
-                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+                <h1 className="text-2xl sm:text-3xl font-serif font-normal tracking-tight text-foreground">
                   Subscriptions &amp; Recurring Spend
                 </h1>
               </div>

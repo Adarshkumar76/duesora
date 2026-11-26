@@ -336,9 +336,9 @@ export function RenewalsPipeline({
               <button
                 key={tab.id}
                 onClick={() => updateParam("bucket", tab.id)}
-                className={`text-xs px-3 py-1.5 rounded-xl font-medium transition-all shrink-0 cursor-pointer ${
+                className={`text-xs px-3 py-1.5 rounded-[6px] font-medium transition-all shrink-0 cursor-pointer ${
                   currentBucket === tab.id
-                    ? "bg-emerald-600 text-white shadow-xs"
+                    ? "bg-primary text-primary-foreground shadow-xs"
                     : "bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground"
                 }`}
               >

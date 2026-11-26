@@ -106,7 +106,7 @@ export function SecuritySettingsCards() {
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
                     placeholder="••••••••••••"
-                    className="w-full px-3.5 py-2 pr-10 text-xs bg-background border border-border/80 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 text-foreground transition-all"
+                    className="w-full px-3.5 py-2 pr-10 text-xs bg-background border border-border/80 rounded-[6px] focus:outline-hidden focus:ring-2 focus:ring-primary/20 focus:border-primary text-foreground transition-all"
                   />
                   <button
                     type="button"
@@ -129,7 +129,7 @@ export function SecuritySettingsCards() {
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     placeholder="••••••••••••"
-                    className="w-full px-3.5 py-2 pr-10 text-xs bg-background border border-border/80 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 text-foreground transition-all"
+                    className="w-full px-3.5 py-2 pr-10 text-xs bg-background border border-border/80 rounded-[6px] focus:outline-hidden focus:ring-2 focus:ring-primary/20 focus:border-primary text-foreground transition-all"
                   />
                   <button
                     type="button"
@@ -152,7 +152,7 @@ export function SecuritySettingsCards() {
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     placeholder="••••••••••••"
-                    className="w-full px-3.5 py-2 pr-10 text-xs bg-background border border-border/80 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-600 text-foreground transition-all"
+                    className="w-full px-3.5 py-2 pr-10 text-xs bg-background border border-border/80 rounded-[6px] focus:outline-hidden focus:ring-2 focus:ring-primary/20 focus:border-primary text-foreground transition-all"
                   />
                   <button
                     type="button"
@@ -169,7 +169,7 @@ export function SecuritySettingsCards() {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full rounded-xl text-xs font-semibold h-9.5 bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs cursor-pointer transition-colors"
+                  className="w-full rounded-[6px] text-xs font-semibold h-9.5 bg-primary hover:bg-primary/90 text-primary-foreground shadow-xs cursor-pointer transition-colors"
                 >
                   {loading ? (
                     <>
@@ -236,7 +236,7 @@ export function SecuritySettingsCards() {
             <div>
               <p className="text-xs font-semibold text-foreground flex items-center gap-2">
                 <span>Session 1: Web Browser</span>
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                <span className="px-1.5 py-0.5 rounded-[4px] text-[10px] font-bold bg-primary/10 text-primary">
                   This Device
                 </span>
               </p>
